@@ -53,8 +53,9 @@ const TYPE_OPTIONS = [
 ];
 
 const STATUS_OPTIONS = [
-    { value: "airing", label: "En Emisión" },
-    { value: "finished", label: "Finalizado" },
+    { value: "emision", label: "En Emisión" },
+    { value: "finalizado", label: "Finalizado" },
+    { value: "proximamente", label: "Próximamente" },
 ];
 
 const MIN_YEAR = 1980;
