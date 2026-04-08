@@ -57,15 +57,56 @@ const STATUS_OPTIONS = [
     { value: "finished", label: "Finalizado" },
 ];
 
-const generateYears = () => {
-    const currentYear = new Date().getFullYear();
-    return Array.from({ length: 20 }, (_, i) => ({
-        value: String(currentYear - i),
-        label: String(currentYear - i),
-    }));
-};
+const MIN_YEAR = 1980;
+const MAX_YEAR = new Date().getFullYear();
 
 const ITEMS_PER_PAGE = 20;
+
+const GENRES = [
+    { slug: "accion", label: "Acción" },
+    { slug: "aventura", label: "Aventura" },
+    { slug: "ciencia-ficcion", label: "Ciencia Ficción" },
+    { slug: "comedia", label: "Comedia" },
+    { slug: "deportes", label: "Deportes" },
+    { slug: "drama", label: "Drama" },
+    { slug: "fantasia", label: "Fantasía" },
+    { slug: "misterio", label: "Misterio" },
+    { slug: "recortes-de-la-vida", label: "Recortes de la Vida" },
+    { slug: "romance", label: "Romance" },
+    { slug: "seinen", label: "Seinen" },
+    { slug: "shoujo", label: "Shoujo" },
+    { slug: "shounen", label: "Shounen" },
+    { slug: "sobrenatural", label: "Sobrenatural" },
+    { slug: "suspenso", label: "Suspenso" },
+    { slug: "terror", label: "Terror" },
+    { slug: "antropomorfico", label: "Antropomórfico" },
+    { slug: "artes-marciales", label: "Artes Marciales" },
+    { slug: "carreras", label: "Carreras" },
+    { slug: "detectives", label: "Detectives" },
+    { slug: "ecchi", label: "Ecchi" },
+    { slug: "escolares", label: "Escolares" },
+    { slug: "espacial", label: "Espacial" },
+    { slug: "gore", label: "Gore" },
+    { slug: "gourmet", label: "Gourmet" },
+    { slug: "harem", label: "Harem" },
+    { slug: "historico", label: "Histórico" },
+    { slug: "infantil", label: "Infantil" },
+    { slug: "isekai", label: "Isekai" },
+    { slug: "josei", label: "Josei" },
+    { slug: "juegos-estrategia", label: "Juegos Estrategia" },
+    { slug: "mahou-shoujo", label: "Mahou Shoujo" },
+    { slug: "mecha", label: "Mecha" },
+    { slug: "militar", label: "Militar" },
+    { slug: "mitologia", label: "Mitología" },
+    { slug: "musica", label: "Música" },
+    { slug: "parodia", label: "Parodia" },
+    { slug: "psicologico", label: "Psicológico" },
+    { slug: "samurai", label: "Samurai" },
+    { slug: "superpoderes", label: "Superpoderes" },
+    { slug: "vampiros", label: "Vampiros" },
+];
+
+const GENRES_INITIAL_SHOW = 11;
 
 export function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -76,6 +117,7 @@ export function Home() {
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
+    const [genreExpanded, setGenreExpanded] = useState(true);
 
     const { favorites } = useFavoritesStore();
     const showFavorites = searchParams.get("favorites") === "true";
@@ -83,8 +125,9 @@ export function Home() {
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
     const genre = searchParams.get("genre") || "";
-    const type = searchParams.get("type") || "";
-    const year = searchParams.get("year") || "";
+    const category = searchParams.get("category") || "";
+    const minYear = searchParams.get("minYear") || "";
+    const maxYear = searchParams.get("maxYear") || "";
     const status = searchParams.get("status") || "";
 
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -104,8 +147,9 @@ export function Home() {
                 };
                 if (letter) params.letter = letter;
                 if (genre) params.genre = genre;
-                if (type) params.type = type;
-                if (year) params.year = parseInt(year, 10);
+                if (category) params.category = category;
+                if (minYear) params.minYear = parseInt(minYear, 10);
+                if (maxYear) params.maxYear = parseInt(maxYear, 10);
                 if (status) params.status = status;
 
                 const response = await getCatalog(params);
@@ -121,7 +165,7 @@ export function Home() {
                 setLoading(false);
             }
         },
-        [letter, genre, type, year, status],
+        [letter, genre, category, minYear, maxYear, status],
     );
 
     const fetchSearch = useCallback(
@@ -169,10 +213,12 @@ export function Home() {
     }, [page, fetchCatalog, debouncedSearchQuery]);
 
     const handleFilterChange = (key: string, value: string) => {
-        setSearchParams(() => {
-            const newParams = new URLSearchParams();
+        setSearchParams((prev) => {
+            const newParams = new URLSearchParams(prev);
             if (value) {
                 newParams.set(key, value);
+            } else {
+                newParams.delete(key);
             }
             newParams.set("page", "1");
             return newParams;
@@ -206,88 +252,40 @@ export function Home() {
                     <div className={styles.filterSection}>
                         <span className={styles.filterLabel}>Géneros</span>
                         <div className={styles.genreChips}>
-                            <Chip
-                                label="Acción"
-                                selected={genre === "accion"}
-                                onClick={() =>
-                                    handleFilterChange(
-                                        "genre",
-                                        genre === "accion" ? "" : "accion",
-                                    )
-                                }
-                            />
-                            <Chip
-                                label="Comedia"
-                                selected={genre === "comedia"}
-                                onClick={() =>
-                                    handleFilterChange(
-                                        "genre",
-                                        genre === "comedia" ? "" : "comedia",
-                                    )
-                                }
-                            />
-                            <Chip
-                                label="Drama"
-                                selected={genre === "drama"}
-                                onClick={() =>
-                                    handleFilterChange(
-                                        "genre",
-                                        genre === "drama" ? "" : "drama",
-                                    )
-                                }
-                            />
-                            <Chip
-                                label="Romance"
-                                selected={genre === "romance"}
-                                onClick={() =>
-                                    handleFilterChange(
-                                        "genre",
-                                        genre === "romance" ? "" : "romance",
-                                    )
-                                }
-                            />
-                            <Chip
-                                label="Terror"
-                                selected={genre === "terror"}
-                                onClick={() =>
-                                    handleFilterChange(
-                                        "genre",
-                                        genre === "terror" ? "" : "terror",
-                                    )
-                                }
-                            />
-                            <Chip
-                                label="Ciencia Ficción"
-                                selected={genre === "ciencia-ficcion"}
-                                onClick={() =>
-                                    handleFilterChange(
-                                        "genre",
-                                        genre === "ciencia-ficcion"
-                                            ? ""
-                                            : "ciencia-ficcion",
-                                    )
-                                }
-                            />
+                            {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
+                                <Chip
+                                    key={g.slug}
+                                    label={g.label}
+                                    selected={genre === g.slug}
+                                    onClick={() =>
+                                        handleFilterChange(
+                                            "genre",
+                                            genre === g.slug ? "" : g.slug,
+                                        )
+                                    }
+                                />
+                            ))}
                         </div>
+                        {GENRES.length > GENRES_INITIAL_SHOW && (
+                            <button
+                                className={styles.expandButton}
+                                onClick={() => setGenreExpanded((e) => !e)}
+                            >
+                                {genreExpanded
+                                    ? `Ver menos`
+                                    : `Ver más (${GENRES.length - GENRES_INITIAL_SHOW} más)`}
+                            </button>
+                        )}
                     </div>
 
                     <div className={styles.filterRow}>
                         <Select
                             options={TYPE_OPTIONS}
-                            value={type}
+                            value={category}
                             onChange={(e) =>
-                                handleFilterChange("type", e.target.value)
+                                handleFilterChange("category", e.target.value)
                             }
                             placeholder="Tipo"
-                            className={styles.filterSelect}
-                        />
-                        <Select
-                            options={generateYears()}
-                            value={year}
-                            onChange={(e) =>
-                                handleFilterChange("year", e.target.value)
-                            }
-                            placeholder="Año"
                             className={styles.filterSelect}
                         />
                         <Select
@@ -299,6 +297,50 @@ export function Home() {
                             placeholder="Estado"
                             className={styles.filterSelect}
                         />
+                        <div className={styles.yearSlider}>
+                            <span className={styles.yearLabel}>Año</span>
+                            <div className={styles.sliderContainer}>
+                                <div className={styles.sliderTrack} />
+                                <div
+                                    className={styles.sliderTrackFilled}
+                                    style={{
+                                        left: `${((parseInt(minYear) || MIN_YEAR) - MIN_YEAR) / (MAX_YEAR - MIN_YEAR) * 100}%`,
+                                        width: `${((parseInt(maxYear) || MAX_YEAR) - (parseInt(minYear) || MIN_YEAR)) / (MAX_YEAR - MIN_YEAR) * 100}%`,
+                                    }}
+                                />
+                                <input
+                                    type="range"
+                                    min={MIN_YEAR}
+                                    max={MAX_YEAR}
+                                    value={parseInt(minYear) || MIN_YEAR}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        const max = parseInt(maxYear) || MAX_YEAR;
+                                        if (val <= max) {
+                                            handleFilterChange("minYear", String(val));
+                                        }
+                                    }}
+                                    className={styles.sliderMin}
+                                />
+                                <input
+                                    type="range"
+                                    min={MIN_YEAR}
+                                    max={MAX_YEAR}
+                                    value={parseInt(maxYear) || MAX_YEAR}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        const min = parseInt(minYear) || MIN_YEAR;
+                                        if (val >= min) {
+                                            handleFilterChange("maxYear", String(val));
+                                        }
+                                    }}
+                                    className={styles.sliderMax}
+                                />
+                            </div>
+                            <span className={styles.yearValue}>
+                                {minYear || MIN_YEAR} — {maxYear || MAX_YEAR}
+                            </span>
+                        </div>
                     </div>
 
                     <div className={styles.filterSection}>
@@ -317,7 +359,7 @@ export function Home() {
                         </div>
                     </div>
 
-                    {(letter || genre || type || year || status) && (
+                    {(letter || genre || category || minYear || maxYear || status) && (
                         <Button variant="ghost" onClick={handleClearFilters}>
                             Limpiar filtros
                         </Button>
@@ -343,8 +385,9 @@ export function Home() {
                         <p>No se encontraron resultados</p>
                         {(letter ||
                             genre ||
-                            type ||
-                            year ||
+                            category ||
+                            minYear ||
+                            maxYear ||
                             status ||
                             searchQuery) && (
                             <Button

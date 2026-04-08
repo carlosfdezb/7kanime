@@ -7,8 +7,9 @@ export async function getCatalog(params: CatalogParams): Promise<CatalogResponse
   if (params.page) qs.set('page', String(params.page));
   if (params.letter) qs.set('letter', params.letter);
   if (params.genre) qs.set('genre', params.genre);
-  if (params.type) qs.set('type', params.type);
-  if (params.year) qs.set('year', String(params.year));
+  if (params.category) qs.set('category', params.category);
+  if (params.minYear) qs.set('minYear', String(params.minYear));
+  if (params.maxYear) qs.set('maxYear', String(params.maxYear));
   if (params.status) qs.set('status', params.status);
   
   const queryString = qs.toString();

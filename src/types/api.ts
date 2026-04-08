@@ -103,7 +103,8 @@ export interface CatalogParams {
   page?: number;
   letter?: string;
   genre?: string;
-  type?: string;
-  year?: number;
-  status?: string;
+  category?: 'tv-anime' | 'ova' | 'pelicula' | 'especial';
+  minYear?: number;
+  maxYear?: number;
+  status?: 'emision' | 'finalizado' | 'proximamente';
 }

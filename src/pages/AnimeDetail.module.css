@@ -9,6 +9,10 @@
   overflow: hidden;
 }
 
+.backdropHidden {
+  height: 0;
+}
+
 .backdrop {
   width: 100%;
   height: 100%;
@@ -33,6 +37,10 @@
   margin-top: -200px;
   position: relative;
   z-index: 1;
+}
+
+.contentNoBackdrop {
+  margin-top: var(--space-lg);
 }
 
 .hero {
@@ -219,4 +227,15 @@
   padding: var(--space-2xl);
   text-align: center;
   color: var(--color-text-muted);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .posterWrapper {
+    width: 180px;
+  }
 }

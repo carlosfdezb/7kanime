@@ -18,6 +18,7 @@ export function AnimeDetail() {
   const { isFavorite, toggleFavorite } = useFavoritesStore();
   const { isWatched } = useWatchedStore();
   const [posterError, setPosterError] = useState(false);
+  const [backdropError, setBackdropError] = useState(false);
 
   const favorite = data ? isFavorite(data.id) : false;
 
@@ -68,24 +69,27 @@ export function AnimeDetail() {
   }
 
   const anime = data;
+  const hasBackdrop = anime.backdrop && !backdropError;
 
   return (
     <div className={styles.page}>
       {/* Backdrop */}
-      <div className={styles.backdropWrapper}>
-        <img
-          src={anime.backdrop || ''}
-          alt=""
-          className={styles.backdrop}
-          aria-hidden="true"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
-        />
-        <div className={styles.backdropOverlay} />
+      <div className={`${styles.backdropWrapper} ${!hasBackdrop ? styles.backdropHidden : ''}`}>
+        {hasBackdrop && (
+          <>
+            <img
+              src={anime.backdrop}
+              alt=""
+              className={styles.backdrop}
+              aria-hidden="true"
+              onError={() => setBackdropError(true)}
+            />
+            <div className={styles.backdropOverlay} />
+          </>
+        )}
       </div>
 
-      <Container className={styles.content}>
+      <Container className={`${styles.content} ${!hasBackdrop ? styles.contentNoBackdrop : ''}`}>
         <Breadcrumb
           items={[
             { label: 'Inicio', href: '/' },

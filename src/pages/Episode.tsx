@@ -16,7 +16,7 @@ const SERVER_PRIORITY = ['HLS', 'UPNShare', 'Mega', 'MP4Upload'];
 const WATCHED_TIMER_MS = 15 * 60 * 1000; // 15 minutes
 
 function sortServers(links: MediaLink[]): MediaLink[] {
-  return [...links].sort((a, b) => {
+  return [...(links || [])].sort((a, b) => {
     const aIndex = SERVER_PRIORITY.indexOf(a.server);
     const bIndex = SERVER_PRIORITY.indexOf(b.server);
     if (aIndex === -1 && bIndex === -1) return 0;
@@ -103,6 +103,13 @@ export function Episode() {
       setCurrentEmbed(sorted[0] || null);
     }
   }, [episodeData, variant]);
+
+  // Auto-switch to DUB if SUB is not available
+  useEffect(() => {
+    if (episodeData && !hasSub && hasDub) {
+      setVariant('DUB');
+    }
+  }, [episodeData, hasSub, hasDub]);
 
   if (episodeLoading) {
     return (
