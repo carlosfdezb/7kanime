@@ -22,6 +22,45 @@
   gap: var(--space-sm);
 }
 
+.filterToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  width: fit-content;
+}
+
+.filterToggle:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.filterChevron {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.filterCount {
+  font-size: 0.75rem;
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
 .filterLabel {
   font-size: 0.875rem;
   color: var(--color-text-muted);

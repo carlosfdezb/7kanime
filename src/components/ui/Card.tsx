@@ -3,6 +3,7 @@ import { useState } from 'react';
 import styles from './Card.module.css';
 import { cn } from '../../utils/cn';
 import type { CatalogItem } from '../../types/api';
+import { Focusable } from './Focusable';
 
 interface CardProps {
   anime: CatalogItem;
@@ -21,11 +22,7 @@ export function Card({ anime, variant = 'default', className }: CardProps) {
   };
 
   return (
-    <Link
-      to={`/anime/${anime.slug}`}
-      className={cn(styles.card, className)}
-      aria-label={`Ver ${anime.title}`}
-    >
+    <Focusable as={Link} id={`card-${anime.id}`} className={className} to={`/anime/${anime.slug}`}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />
@@ -46,6 +43,6 @@ export function Card({ anime, variant = 'default', className }: CardProps) {
           <p className={styles.synopsis}>{anime.synopsis}</p>
         )}
       </div>
-    </Link>
+    </Focusable>
   );
 }
