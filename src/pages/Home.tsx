@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import styles from "./Home.module.css";
 import { Container } from "../components/layout/Container";
 import { Grid } from "../components/layout/Grid";
@@ -138,7 +138,6 @@ function CatalogGrid({ items, containerRef }: { items: CatalogItem[]; containerR
 export function Home() {
     const contentRef = useRef<HTMLDivElement>(null);
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
     const [items, setItems] = useState<CatalogItem[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -147,9 +146,9 @@ export function Home() {
     const [isSearching, setIsSearching] = useState(false);
     const [genreExpanded, setGenreExpanded] = useState(false);
     const [filtersVisible, setFiltersVisible] = useState(false);
+    const [showFavorites, setShowFavorites] = useState(false);
 
     const { favorites } = useFavoritesStore();
-    const showFavorites = searchParams.get("favorites") === "true";
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
@@ -293,7 +292,11 @@ export function Home() {
 
     return (
         <div className={styles.page}>
-            <Header onSearch={setSearchQuery} />
+            <Header 
+                onSearch={setSearchQuery} 
+                showFavorites={showFavorites}
+                onToggleFavorites={() => setShowFavorites(v => !v)}
+            />
 
             <Container className={styles.content} ref={contentRef}>
                 {/* Filters */}
@@ -492,7 +495,7 @@ export function Home() {
                             <p>No tienes favoritos todavía</p>
                             <Button
                                 variant="ghost"
-                                onClick={() => navigate("/")}
+                                onClick={() => setShowFavorites(false)}
                             >
                                 Ver catálogo
                             </Button>

@@ -24,6 +24,20 @@
   margin-left: auto;
 }
 
+.favoritesBtn.favoritesBtn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.favoritesBtnActive {
+  color: var(--color-primary);
+}
+
+.favoritesBtnActive.favoritesBtnActive:hover:not(:disabled) {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
 .logo {
   display: flex;
   align-items: center;
