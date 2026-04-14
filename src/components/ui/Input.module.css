@@ -4,6 +4,11 @@
   gap: var(--space-xs);
 }
 
+.wrapper.tv-focused {
+  box-shadow: 0 0 0 3px var(--color-primary), 0 0 20px 4px rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-md);
+}
+
 .input {
   width: 100%;
   padding: var(--space-sm) var(--space-md);

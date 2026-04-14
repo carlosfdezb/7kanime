@@ -33,11 +33,11 @@ export function Header({ onSearch }: HeaderProps) {
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link to="/" className={styles.logo} aria-label="7Kanime - Inicio">
+        <Link to="/" className={styles.logo} aria-label="7Kanime - Inicio" data-tv-focus="true" data-tv-focus-id="header-logo">
           <span className={styles.logoAccent}>7K</span><span className={styles.logoText}>anime</span>
         </Link>
 
-        <form className={styles.searchForm} onSubmit={handleSubmit}>
+        <form className={styles.searchForm} onSubmit={handleSubmit} data-tv-focus="true" data-tv-focus-id="search-form">
           <Input
             type="search"
             placeholder="Buscar anime..."
@@ -52,6 +52,8 @@ export function Header({ onSearch }: HeaderProps) {
           variant="ghost"
           onClick={() => navigate('/?favorites=true')}
           className={styles.favoritesBtn}
+          data-tv-focus="true"
+          data-tv-focus-id="favorites-btn"
         >
           ♥ {favorites.length}
         </Button>

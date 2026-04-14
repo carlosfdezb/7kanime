@@ -5,6 +5,7 @@ import { AnimeDetail } from "./pages/AnimeDetail";
 import { Episode } from "./pages/Episode";
 import { NotFound } from "./pages/NotFound";
 import { EasterEgg } from "./components/layout/EasterEgg";
+import { useTVFocus } from "./context/TVFocusContext";
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
@@ -12,6 +13,7 @@ const KONAMI_LEN = 17;
 function App() {
     const [showEasterEgg, setShowEasterEgg] = useState(false);
     const bufferRef = useRef("");
+    const { toggleTVMode } = useTVFocus();
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -19,6 +21,13 @@ function App() {
             const target = e.target as HTMLElement;
             if (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
                 return;
+
+            // Ctrl+Alt+Shift+Q to toggle TV mode
+            if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "Q") {
+                e.preventDefault();
+                toggleTVMode();
+                return;
+            }
 
             const char = e.key.toLowerCase();
             // Only track alphanumeric characters to avoid breaking on Shift/special keys

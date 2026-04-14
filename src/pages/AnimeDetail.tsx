@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import styles from './AnimeDetail.module.css';
 import { Container } from '../components/layout/Container';
 import { Breadcrumb } from '../components/layout/Breadcrumb';
@@ -7,9 +7,11 @@ import { Button } from '../components/ui/Button';
 import { Chip } from '../components/ui/Chip';
 import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
+import { Focusable } from '../components/ui/Focusable';
 import { useFetch } from '../hooks/useFetch';
 import { useFavoritesStore } from '../store/favoritesStore';
 import { useWatchedStore } from '../store/watchedStore';
+import { useTVNavigation } from '../hooks/useTVNavigation';
 import type { AnimeDetail } from '../types/api';
 
 export function AnimeDetail() {
@@ -19,6 +21,14 @@ export function AnimeDetail() {
   const { isWatched } = useWatchedStore();
   const [posterError, setPosterError] = useState(false);
   const [backdropError, setBackdropError] = useState(false);
+
+  // Ref for the scrollable content area
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Setup TV navigation for episode buttons
+  useTVNavigation({
+    containerRef: contentRef,
+  });
 
   const favorite = data ? isFavorite(data.id) : false;
 
@@ -89,7 +99,7 @@ export function AnimeDetail() {
         )}
       </div>
 
-      <Container className={`${styles.content} ${!hasBackdrop ? styles.contentNoBackdrop : ''}`}>
+      <Container className={`${styles.content} ${!hasBackdrop ? styles.contentNoBackdrop : ''}`} ref={contentRef}>
         <Breadcrumb
           items={[
             { label: 'Inicio', href: '/' },
@@ -138,13 +148,15 @@ export function AnimeDetail() {
             </div>
 
             <div className={styles.actions}>
-              <Button
+              <Focusable
+                as={Button}
+                id="favorite-btn"
                 variant={favorite ? 'primary' : 'ghost'}
                 onClick={handleFavoriteClick}
                 aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
               >
                 {favorite ? '♥ Favorito' : '♡ Agregar a favoritos'}
-              </Button>
+              </Focusable>
             </div>
 
             <div className={styles.synopsis}>
@@ -171,13 +183,15 @@ export function AnimeDetail() {
           </h2>
           <div className={styles.episodesGrid}>
             {anime.episodes.map(ep => (
-              <Link
+              <Focusable
                 key={ep.id}
+                as={Link}
+                id={`episode-${ep.number}`}
                 to={`/episode/${slug}/${ep.number}`}
                 className={`${styles.episodeButton} ${slug && isWatched(slug, ep.number) ? styles.episodeWatched : ''}`}
               >
                 {ep.number}
-              </Link>
+              </Focusable>
             ))}
           </div>
         </div>

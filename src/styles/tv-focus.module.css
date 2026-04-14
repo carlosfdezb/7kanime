@@ -1,0 +1,11 @@
+/* TV Focus Indicator Styles */
+.focused {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  transition: outline var(--transition-fast);
+}
+
+/* TV Mode global transitions */
+.tvMode .card {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}

@@ -6,8 +6,11 @@ import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { Button } from '../components/ui/Button';
 import { Chip } from '../components/ui/Chip';
 import { Skeleton } from '../components/ui/Skeleton';
+import { Focusable } from '../components/ui/Focusable';
+import { VideoPlayer } from '../components/ui/VideoPlayer';
 import { useFetch } from '../hooks/useFetch';
 import { useWatchedStore } from '../store/watchedStore';
+import { useTVNavigation } from '../hooks/useTVNavigation';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
 
 type Variant = 'DUB' | 'SUB';
@@ -43,6 +46,14 @@ export function Episode() {
   const [currentEmbed, setCurrentEmbed] = useState<MediaLink | null>(null);
   const [isVisible, setIsVisible] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Ref for the scrollable content area
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // Setup TV navigation for variant buttons and episode nav
+  useTVNavigation({
+    containerRef: contentRef,
+  });
 
   const animeTitle = animeData?.title || slug || 'Anime';
   const hasDub = episodeData?.variants.DUB === 1;
@@ -149,7 +160,7 @@ export function Episode() {
 
   return (
     <div className={styles.page}>
-      <Container>
+      <Container ref={contentRef}>
         <Breadcrumb
           items={[
             { label: 'Inicio', href: '/' },
@@ -160,26 +171,42 @@ export function Episode() {
 
         <div className={styles.header}>
           <h1 className={styles.title}>{animeTitle} — Episodio {episode.number}</h1>
-          <Button
+          <Focusable
+            as={Button}
+            id="watched-btn"
             variant={watched ? 'primary' : 'ghost'}
             onClick={() => slug && toggleWatched(slug, episodeNumber)}
             className={styles.watchedBtn}
           >
             {watched ? '✓ Visto' : 'Marcar como visto'}
-          </Button>
+          </Focusable>
         </div>
 
         {/* Player */}
-        <div className={styles.playerWrapper}>
+        <div
+          className={styles.playerWrapper}
+          data-tv-focus="true"
+          data-tv-focus-id="video-player"
+          data-player-fullscreen="true"
+        >
           {currentEmbed ? (
-            <iframe
-              src={currentEmbed.url}
-              className={styles.player}
-              title="Video player"
-              sandbox="allow-scripts allow-same-origin allow-presentation"
-              allowFullScreen
-              loading="lazy"
-            />
+            currentEmbed.url.includes('.m3u8') ? (
+              // Native HLS support when direct stream URL is available
+              <VideoPlayer
+                src={currentEmbed.url}
+                autoPlay
+              />
+            ) : (
+              // Fallback to iframe for embedded players
+              <iframe
+                src={currentEmbed.url}
+                className={styles.player}
+                title="Video player"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
+                allowFullScreen
+                loading="lazy"
+              />
+            )
           ) : (
             <div className={styles.noPlayer}>
               <p>No hay jugador disponible para esta variante</p>
@@ -229,9 +256,14 @@ export function Episode() {
         {/* Previous / Next Navigation */}
         <div className={styles.episodeNav}>
           {prevEpisode ? (
-            <Link to={`/episode/${slug}/${prevEpisode.number}`} className={styles.navButton}>
+            <Focusable
+              as={Link}
+              id="prev-episode"
+              to={`/episode/${slug}/${prevEpisode.number}`}
+              className={styles.navButton}
+            >
               ← Episodio {prevEpisode.number}
-            </Link>
+            </Focusable>
           ) : (
             <span className={styles.navButtonDisabled}>← Sin episodio anterior</span>
           )}
@@ -239,9 +271,14 @@ export function Episode() {
             {episode.number} / {animeData?.episodesCount || episodesList.length}
           </span>
           {nextEpisode ? (
-            <Link to={`/episode/${slug}/${nextEpisode.number}`} className={styles.navButton}>
+            <Focusable
+              as={Link}
+              id="next-episode"
+              to={`/episode/${slug}/${nextEpisode.number}`}
+              className={styles.navButton}
+            >
               Episodio {nextEpisode.number} →
-            </Link>
+            </Focusable>
           ) : (
             <span className={styles.navButtonDisabled}>Sin siguiente episodio →</span>
           )}
