@@ -1,4 +1,4 @@
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState, FormEvent } from 'react';
 import styles from './Header.module.css';
 import { Input } from '../ui/Input';
@@ -16,7 +16,6 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearch = useDebounce(searchValue, 300);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { favorites } = useFavoritesStore();
 
   const handleSubmit = (e: FormEvent) => {

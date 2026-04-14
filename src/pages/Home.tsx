@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import styles from "./Home.module.css";
 import { Container } from "../components/layout/Container";
 import { Grid } from "../components/layout/Grid";
@@ -138,7 +138,6 @@ function CatalogGrid({ items, containerRef }: { items: CatalogItem[]; containerR
 export function Home() {
     const contentRef = useRef<HTMLDivElement>(null);
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
     const [items, setItems] = useState<CatalogItem[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
