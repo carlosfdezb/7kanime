@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import styles from "./Home.module.css";
 import { Container } from "../components/layout/Container";
@@ -9,10 +9,12 @@ import { Chip } from "../components/ui/Chip";
 import { Select } from "../components/ui/Select";
 import { SkeletonCard } from "../components/ui/Skeleton";
 import { Button } from "../components/ui/Button";
+import { Focusable } from "../components/ui/Focusable";
 import { useDebounce } from "../hooks/useDebounce";
 import { getCatalog } from "../api/catalog";
 import { search } from "../api/search";
 import { useFavoritesStore } from "../store/favoritesStore";
+import { useTVNavigation } from "../hooks/useTVNavigation";
 import type { CatalogItem } from "../types/api";
 
 const LETTERS = [
@@ -109,7 +111,23 @@ const GENRES = [
 
 const GENRES_INITIAL_SHOW = 11;
 
+function CatalogGrid({ items, containerRef }: { items: CatalogItem[]; containerRef: React.RefObject<HTMLDivElement | null> }) {
+    // useTVNavigation with the container ref - no items array needed
+    useTVNavigation({
+        containerRef,
+    });
+
+    return (
+        <Grid>
+            {items.map((item) => (
+                <Card key={item.id} anime={item} />
+            ))}
+        </Grid>
+    );
+}
+
 export function Home() {
+    const contentRef = useRef<HTMLDivElement>(null);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const [items, setItems] = useState<CatalogItem[]>([]);
@@ -118,7 +136,8 @@ export function Home() {
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
-    const [genreExpanded, setGenreExpanded] = useState(true);
+    const [genreExpanded, setGenreExpanded] = useState(false);
+    const [filtersVisible, setFiltersVisible] = useState(false);
 
     const { favorites } = useFavoritesStore();
     const showFavorites = searchParams.get("favorites") === "true";
@@ -130,6 +149,8 @@ export function Home() {
     const minYear = searchParams.get("minYear") || "";
     const maxYear = searchParams.get("maxYear") || "";
     const status = searchParams.get("status") || "";
+
+    const activeFilterCount = [letter, genre, category, minYear, maxYear, status].filter(Boolean).length;
 
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -247,10 +268,29 @@ export function Home() {
         <div className={styles.page}>
             <Header onSearch={setSearchQuery} />
 
-            <Container className={styles.content}>
+            <Container className={styles.content} ref={contentRef}>
                 {/* Filters */}
                 <div className={styles.filters}>
-                    <div className={styles.filterSection}>
+                    <button
+                        className={styles.filterToggle}
+                        onClick={() => setFiltersVisible((v) => !v)}
+                        data-tv-focus="true"
+                        data-tv-focus-id="toggle-filters-btn"
+                    >
+                        <span>Filtros</span>
+                        <span className={styles.filterChevron}>
+                            {filtersVisible ? "▼" : "▶"}
+                        </span>
+                        {!filtersVisible && activeFilterCount > 0 && (
+                            <span className={styles.filterCount}>
+                                {activeFilterCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {filtersVisible && (
+                    <>
+                        <div className={styles.filterSection}>
                         <span className={styles.filterLabel}>Géneros</span>
                         <div className={styles.genreChips}>
                             {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
@@ -261,7 +301,7 @@ export function Home() {
                                     onClick={() =>
                                         handleFilterChange(
                                             "genre",
-                                            genre === g.slug ? "" : g.slug,
+                                        genre === g.slug ? "" : g.slug,
                                         )
                                     }
                                 />
@@ -271,6 +311,8 @@ export function Home() {
                             <button
                                 className={styles.expandButton}
                                 onClick={() => setGenreExpanded((e) => !e)}
+                                data-tv-focus="true"
+                                data-tv-focus-id="expand-genres-btn"
                             >
                                 {genreExpanded
                                     ? `Ver menos`
@@ -322,6 +364,8 @@ export function Home() {
                                         }
                                     }}
                                     className={styles.sliderMin}
+                                    data-tv-focus="true"
+                                    data-tv-focus-id="year-min-slider"
                                 />
                                 <input
                                     type="range"
@@ -336,6 +380,8 @@ export function Home() {
                                         }
                                     }}
                                     className={styles.sliderMax}
+                                    data-tv-focus="true"
+                                    data-tv-focus-id="year-max-slider"
                                 />
                             </div>
                             <span className={styles.yearValue}>
@@ -348,22 +394,25 @@ export function Home() {
                         <span className={styles.filterLabel}>Letras</span>
                         <div className={styles.letterGrid}>
                             {LETTERS.map((l) => (
-                                <button
+                                <Focusable
+                                    as="button"
                                     key={l}
+                                    id={`letter-${l}`}
                                     className={`${styles.letterButton} ${letter === l ? styles.letterActive : ""}`}
                                     onClick={() => handleLetterClick(l)}
-                                    aria-pressed={letter === l}
                                 >
                                     {l}
-                                </button>
+                                </Focusable>
                             ))}
                         </div>
                     </div>
 
                     {(letter || genre || category || minYear || maxYear || status) && (
-                        <Button variant="ghost" onClick={handleClearFilters}>
+                        <Button variant="ghost" onClick={handleClearFilters} data-tv-focus="true" data-tv-focus-id="clear-filters-btn">
                             Limpiar filtros
                         </Button>
+                    )}
+                    </>
                     )}
                 </div>
 
@@ -411,19 +460,11 @@ export function Home() {
                             </Button>
                         </div>
                     ) : (
-                        <Grid cols={4}>
-                            {favorites.map((item) => (
-                                <Card key={item.id} anime={item} />
-                            ))}
-                        </Grid>
+                        <CatalogGrid items={favorites} containerRef={contentRef} />
                     )
                 ) : (
                     <>
-                        <Grid cols={4}>
-                            {items.map((item) => (
-                                <Card key={item.id} anime={item} />
-                            ))}
-                        </Grid>
+                        <CatalogGrid items={items} containerRef={contentRef} />
 
                         {/* Pagination */}
                         {!isSearching && totalPages > 1 && (
@@ -432,6 +473,8 @@ export function Home() {
                                     variant="ghost"
                                     onClick={() => handlePageChange(page - 1)}
                                     disabled={!hasPrevPage}
+                                    data-tv-focus="true"
+                                    data-tv-focus-id="pagination-prev"
                                 >
                                     ← Anterior
                                 </Button>
@@ -442,6 +485,8 @@ export function Home() {
                                     variant="ghost"
                                     onClick={() => handlePageChange(page + 1)}
                                     disabled={!hasNextPage}
+                                    data-tv-focus="true"
+                                    data-tv-focus-id="pagination-next"
                                 >
                                     Siguiente →
                                 </Button>
