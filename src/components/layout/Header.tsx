@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, FormEvent } from 'react';
 import styles from './Header.module.css';
 import { Input } from '../ui/Input';
@@ -8,12 +8,15 @@ import { useFavoritesStore } from '../../store/favoritesStore';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
+  showFavorites?: boolean;
+  onToggleFavorites?: () => void;
 }
 
-export function Header({ onSearch }: HeaderProps) {
+export function Header({ onSearch, showFavorites = false, onToggleFavorites }: HeaderProps) {
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearch = useDebounce(searchValue, 300);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { favorites } = useFavoritesStore();
 
   const handleSubmit = (e: FormEvent) => {
@@ -27,6 +30,19 @@ export function Header({ onSearch }: HeaderProps) {
     setSearchValue(value);
     if (onSearch) {
       onSearch(value);
+    }
+  };
+
+  const handleFavoritesClick = () => {
+    if (onToggleFavorites) {
+      onToggleFavorites();
+    } else {
+      // Fallback: use URL params (may cause re-renders)
+      if (showFavorites) {
+        navigate('/');
+      } else {
+        navigate('/?favorites=true');
+      }
     }
   };
 
@@ -50,12 +66,13 @@ export function Header({ onSearch }: HeaderProps) {
 
         <Button
           variant="ghost"
-          onClick={() => navigate('/?favorites=true')}
-          className={styles.favoritesBtn}
+          onClick={handleFavoritesClick}
+          className={`${styles.favoritesBtn} ${showFavorites ? styles.favoritesBtnActive : ''}`}
           data-tv-focus="true"
           data-tv-focus-id="favorites-btn"
+          aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
         >
-          ♥ {favorites.length}
+          {showFavorites ? '✕' : `♥ ${favorites.length}`}
         </Button>
       </div>
     </header>

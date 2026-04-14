@@ -147,9 +147,9 @@ export function Home() {
     const [isSearching, setIsSearching] = useState(false);
     const [genreExpanded, setGenreExpanded] = useState(false);
     const [filtersVisible, setFiltersVisible] = useState(false);
+    const [showFavorites, setShowFavorites] = useState(false);
 
     const { favorites } = useFavoritesStore();
-    const showFavorites = searchParams.get("favorites") === "true";
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
@@ -293,7 +293,11 @@ export function Home() {
 
     return (
         <div className={styles.page}>
-            <Header onSearch={setSearchQuery} />
+            <Header 
+                onSearch={setSearchQuery} 
+                showFavorites={showFavorites}
+                onToggleFavorites={() => setShowFavorites(v => !v)}
+            />
 
             <Container className={styles.content} ref={contentRef}>
                 {/* Filters */}
@@ -492,7 +496,7 @@ export function Home() {
                             <p>No tienes favoritos todavía</p>
                             <Button
                                 variant="ghost"
-                                onClick={() => navigate("/")}
+                                onClick={() => setShowFavorites(false)}
                             >
                                 Ver catálogo
                             </Button>
