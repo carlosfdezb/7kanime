@@ -60,6 +60,15 @@ const STATUS_OPTIONS = [
     { value: "proximamente", label: "Próximamente" },
 ];
 
+const ORDER_OPTIONS = [
+    { value: "", label: "Predeterminado" },
+    { value: "score", label: "Puntuación" },
+    { value: "popular", label: "Popularidad" },
+    { value: "title", label: "Título" },
+    { value: "latest_added", label: "Más recientes" },
+    { value: "latest_released", label: "Último lanzado" },
+];
+
 const MIN_YEAR = 1980;
 const MAX_YEAR = new Date().getFullYear();
 
@@ -144,13 +153,14 @@ export function Home() {
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
-    const genre = searchParams.get("genre") || "";
+    const genres = searchParams.getAll("genre");
     const category = searchParams.get("category") || "";
     const minYear = searchParams.get("minYear") || "";
     const maxYear = searchParams.get("maxYear") || "";
     const status = searchParams.get("status") || "";
+    const order = searchParams.get("order") || "";
 
-    const activeFilterCount = [letter, genre, category, minYear, maxYear, status].filter(Boolean).length;
+    const activeFilterCount = [letter, genres.length > 0, category, minYear, maxYear, status, order].filter(Boolean).length;
 
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -164,15 +174,16 @@ export function Home() {
             setError(null);
 
             try {
-                const params: Record<string, string | number> = {
+                const params: Record<string, string | number | string[]> = {
                     page: pageNum,
                 };
                 if (letter) params.letter = letter;
-                if (genre) params.genre = genre;
+                if (genres.length > 0) params.genre = genres;
                 if (category) params.category = category;
                 if (minYear) params.minYear = parseInt(minYear, 10);
                 if (maxYear) params.maxYear = parseInt(maxYear, 10);
                 if (status) params.status = status;
+                if (order) params.order = order;
 
                 const response = await getCatalog(params);
                 setItems(response.items);
@@ -187,7 +198,7 @@ export function Home() {
                 setLoading(false);
             }
         },
-        [letter, genre, category, minYear, maxYear, status],
+        [letter, genres, category, minYear, maxYear, status, order],
     );
 
     const fetchSearch = useCallback(
@@ -247,6 +258,22 @@ export function Home() {
         });
     };
 
+    const handleGenreToggle = (slug: string) => {
+        setSearchParams((prev) => {
+            const newParams = new URLSearchParams(prev);
+            const currentGenres = newParams.getAll("genre");
+            newParams.delete("genre");
+            if (currentGenres.includes(slug)) {
+                currentGenres.filter(g => g !== slug).forEach(g => newParams.append("genre", g));
+            } else {
+                currentGenres.forEach(g => newParams.append("genre", g));
+                newParams.append("genre", slug);
+            }
+            newParams.set("page", "1");
+            return newParams;
+        });
+    };
+
     const handleClearFilters = () => {
         setSearchParams({ page: "1" });
     };
@@ -297,13 +324,8 @@ export function Home() {
                                 <Chip
                                     key={g.slug}
                                     label={g.label}
-                                    selected={genre === g.slug}
-                                    onClick={() =>
-                                        handleFilterChange(
-                                            "genre",
-                                        genre === g.slug ? "" : g.slug,
-                                        )
-                                    }
+                                    selected={genres.includes(g.slug)}
+                                    onClick={() => handleGenreToggle(g.slug)}
                                 />
                             ))}
                         </div>
@@ -407,7 +429,22 @@ export function Home() {
                         </div>
                     </div>
 
-                    {(letter || genre || category || minYear || maxYear || status) && (
+                    <div className={styles.orderRow}>
+                        <span className={styles.orderLabel}>
+                            <span className={styles.orderIcon}>⇅</span>
+                            Ordenar
+                        </span>
+                        <Select
+                            options={ORDER_OPTIONS}
+                            value={order}
+                            onChange={(e) =>
+                                handleFilterChange("order", e.target.value)
+                            }
+                            className={styles.orderSelect}
+                        />
+                    </div>
+
+                    {(letter || genres.length > 0 || category || minYear || maxYear || status || order) && (
                         <Button variant="ghost" onClick={handleClearFilters} data-tv-focus="true" data-tv-focus-id="clear-filters-btn">
                             Limpiar filtros
                         </Button>
@@ -434,11 +471,12 @@ export function Home() {
                     <div className={styles.emptyState}>
                         <p>No se encontraron resultados</p>
                         {(letter ||
-                            genre ||
+                            genres.length > 0 ||
                             category ||
                             minYear ||
                             maxYear ||
                             status ||
+                            order ||
                             searchQuery) && (
                             <Button
                                 variant="ghost"

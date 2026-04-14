@@ -6,11 +6,14 @@ export async function getCatalog(params: CatalogParams): Promise<CatalogResponse
   
   if (params.page) qs.set('page', String(params.page));
   if (params.letter) qs.set('letter', params.letter);
-  if (params.genre) qs.set('genre', params.genre);
+  if (params.genre && params.genre.length > 0) {
+    params.genre.forEach(g => qs.append('genre', g));
+  }
   if (params.category) qs.set('category', params.category);
   if (params.minYear) qs.set('minYear', String(params.minYear));
   if (params.maxYear) qs.set('maxYear', String(params.maxYear));
   if (params.status) qs.set('status', params.status);
+  if (params.order) qs.set('order', params.order);
   
   const queryString = qs.toString();
   const endpoint = queryString ? `/catalog?${qs}` : '/catalog';
