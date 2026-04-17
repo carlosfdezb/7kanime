@@ -3,12 +3,13 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   font-weight: 500;
   transition: all var(--transition-fast);
   cursor: pointer;
   min-height: 40px;
+  border: none;
+  font-family: inherit;
 }
 
 .button:disabled {
@@ -16,26 +17,116 @@
   cursor: not-allowed;
 }
 
-.primary {
-  background-color: var(--color-primary);
-  color: var(--color-text);
+/* ── 1. Primary Blue CTA ── */
+.primary-blue-cta {
+  background-color: #0071e3;
+  color: #ffffff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 400;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.primary:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+.primary-blue-cta:hover:not(:disabled) {
+  filter: brightness(1.08);
 }
 
+.primary-blue-cta:active:not(:disabled) {
+  background-color: #ededf2;
+  color: #1d1d1f;
+}
+
+.primary-blue-cta:focus-visible:not(:disabled) {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* ── 2. Primary Dark ── */
+.primary-dark {
+  background-color: #1d1d1f;
+  color: #ffffff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 400;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.primary-dark:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.primary-dark:focus-visible:not(:disabled) {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* ── 3. Pill Link (Learn More / Shop) ── */
+.pill-link {
+  background-color: transparent;
+  color: #0066cc;
+  padding: 8px 15px;
+  border-radius: 980px;
+  border: 1px solid #0066cc;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.pill-link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.pill-link:focus-visible:not(:disabled) {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* ── 4. Filter / Search Button ── */
+.filter {
+  background-color: #fafafc;
+  color: rgba(0, 0, 0, 0.8);
+  padding: 0px 14px;
+  border-radius: 11px;
+  border: 3px solid rgba(0, 0, 0, 0.04);
+  font-size: 15px;
+  font-weight: 400;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 32px;
+}
+
+.filter:hover:not(:disabled) {
+  background-color: #f0f0f5;
+}
+
+.filter:focus-visible:not(:disabled) {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* ── 5. Ghost ── */
 .ghost {
   background-color: transparent;
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  color: currentColor;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 17px;
+  font-weight: 400;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .ghost:hover:not(:disabled) {
-  background-color: var(--color-surface);
-  border-color: var(--color-text-muted);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
+.ghost:focus-visible:not(:disabled) {
+  outline: 2px solid #0071e3;
+  outline-offset: 2px;
+}
+
+/* Loading state */
 .loading {
   position: relative;
 }

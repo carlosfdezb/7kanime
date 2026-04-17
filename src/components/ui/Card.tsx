@@ -22,7 +22,7 @@ export function Card({ anime, variant = 'default', className }: CardProps) {
   };
 
   return (
-    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`}>
+    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, variant === 'compact' && styles.compact, className)} to={`/anime/${anime.slug}`}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />

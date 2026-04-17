@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background-color: var(--color-bg);
+  background-color: #000000;
   padding: var(--space-lg) 0;
 }
 
@@ -107,13 +107,13 @@
 }
 
 .navButton {
-  color: var(--color-primary);
+  color: var(--color-blue);
   font-weight: 500;
   transition: color var(--transition-fast);
 }
 
 .navButton:hover {
-  color: var(--color-primary-hover);
+  color: var(--color-link-dark);
 }
 
 .navButtonDisabled {
@@ -136,4 +136,9 @@
   padding: var(--space-2xl);
   text-align: center;
   color: var(--color-text-muted);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
 }

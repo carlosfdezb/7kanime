@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background-color: var(--color-bg);
+  background-color: #000000;
 }
 
 .backdropWrapper {
@@ -28,7 +28,7 @@
 .backdropOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, var(--color-bg) 100%);
+  background: linear-gradient(to bottom, transparent 0%, #000000 100%);
 }
 
 .content {
@@ -89,8 +89,11 @@
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1.07;
+  letter-spacing: -0.28px;
   color: var(--color-text);
 }
 
@@ -107,7 +110,7 @@
 }
 
 .score {
-  color: var(--color-primary);
+  color: var(--color-blue);
   font-weight: 600;
   font-size: 1.125rem;
 }
@@ -136,12 +139,16 @@
 .sectionTitle {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-near-black);
   margin-bottom: var(--space-sm);
+  line-height: 1.2;
 }
 
 .episodesSection {
   margin-top: var(--space-xl);
+  padding: var(--space-xl);
+  background-color: var(--color-light-gray);
+  border-radius: var(--radius-lg);
 }
 
 .episodesGrid {
@@ -155,25 +162,25 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-sm) var(--space-md);
-  background-color: var(--color-surface);
+  background-color: #000000;
   border-radius: var(--radius-sm);
-  color: var(--color-text);
+  color: var(--color-text-white);
   font-weight: 500;
   transition: background-color var(--transition-fast);
 }
 
 .episodeButton:hover {
-  background-color: var(--color-primary);
-  color: var(--color-text);
+  background-color: var(--color-blue);
+  color: var(--color-text-white);
 }
 
 .episodeWatched {
-  background-color: var(--color-primary);
-  color: var(--color-text);
+  background-color: var(--color-blue);
+  color: var(--color-text-white);
 }
 
 .episodeWatched:hover {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-link-dark);
 }
 
 .relations {
@@ -202,8 +209,8 @@
 }
 
 .relationLink:hover {
-  background-color: var(--color-primary);
-  color: var(--color-text);
+  background-color: var(--color-blue);
+  color: var(--color-text-white);
 }
 
 .loading {

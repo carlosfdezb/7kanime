@@ -5,12 +5,11 @@ import { cn } from '../../utils/cn';
 interface GridProps {
   children: ReactNode;
   className?: string;
-  cols?: 2 | 3 | 4 | 5 | 6;
 }
 
-export function Grid({ children, className, cols = 4 }: GridProps) {
+export function Grid({ children, className }: GridProps) {
   return (
-    <div className={cn(styles.grid, styles[`cols${cols}`], className)}>
+    <div className={cn(styles.grid, className)}>
       {children}
     </div>
   );

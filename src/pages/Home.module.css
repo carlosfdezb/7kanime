@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background-color: var(--color-bg);
+  background-color: #000000;
 }
 
 .content {
@@ -40,7 +40,12 @@
 
 .filterToggle:hover {
   background-color: var(--color-surface);
-  border-color: var(--color-primary);
+  border-color: var(--color-blue);
+}
+
+.filterToggle:focus-visible {
+  outline: 2px solid var(--color-blue);
+  outline-offset: 2px;
 }
 
 .filterChevron {
@@ -50,9 +55,9 @@
 
 .filterCount {
   font-size: 0.75rem;
-  background-color: var(--color-primary);
-  color: var(--color-text);
-  border-radius: 50%;
+  background-color: var(--color-blue);
+  color: var(--color-text-white);
+  border-radius: var(--radius-circle);
   min-width: 20px;
   height: 20px;
   display: flex;
@@ -77,7 +82,7 @@
   margin-top: var(--space-xs);
   background: none;
   border: none;
-  color: var(--color-primary);
+  color: var(--color-blue);
   font-size: 0.875rem;
   cursor: pointer;
   padding: 0;
@@ -85,7 +90,7 @@
 }
 
 .expandButton:hover {
-  color: var(--color-primary-hover);
+  color: var(--color-link-dark);
 }
 
 .filterRow {
@@ -134,12 +139,12 @@
 }
 
 .orderSelect:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-blue);
 }
 
 .orderSelect:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--color-blue);
 }
 
 .yearSlider {
@@ -173,7 +178,7 @@
 .sliderTrackFilled {
   position: absolute;
   height: 4px;
-  background: var(--color-primary);
+  background: var(--color-blue);
   border-radius: 2px;
   pointer-events: none;
 }
@@ -209,8 +214,8 @@
   width: 18px;
   height: 18px;
   background: var(--color-surface);
-  border: 2px solid var(--color-primary);
-  border-radius: 50%;
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-circle);
   cursor: pointer;
   pointer-events: auto;
   margin-top: -7px;
@@ -220,14 +225,14 @@
 .sliderMin::-webkit-slider-thumb:hover,
 .sliderMax::-webkit-slider-thumb:hover {
   transform: scale(1.15);
-  background: var(--color-primary);
+  background: var(--color-blue);
 }
 
 .sliderMin::-webkit-slider-thumb:active,
 .sliderMax::-webkit-slider-thumb:active {
   transform: scale(1.2);
-  background: var(--color-primary-hover);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+  background: var(--color-link-dark);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.25);
   z-index: 4;
 }
 
@@ -236,8 +241,8 @@
   width: 18px;
   height: 18px;
   background: var(--color-surface);
-  border: 2px solid var(--color-primary);
-  border-radius: 50%;
+  border: 2px solid var(--color-blue);
+  border-radius: var(--radius-circle);
   cursor: pointer;
   pointer-events: auto;
   transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
@@ -246,20 +251,20 @@
 .sliderMin::-moz-range-thumb:hover,
 .sliderMax::-moz-range-thumb:hover {
   transform: scale(1.15);
-  background: var(--color-primary);
+  background: var(--color-blue);
 }
 
 .sliderMin::-moz-range-thumb:active {
   transform: scale(1.2);
-  background: var(--color-primary-hover);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+  background: var(--color-link-dark);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.25);
   z-index: 4;
 }
 
 .sliderMax::-moz-range-thumb:active {
   transform: scale(1.2);
-  background: var(--color-primary-hover);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+  background: var(--color-link-dark);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.25);
   z-index: 4;
 }
 
@@ -306,13 +311,13 @@
 }
 
 .letterActive {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-text);
+  background-color: var(--color-blue);
+  border-color: var(--color-blue);
+  color: var(--color-text-white);
 }
 
 .letterActive:hover {
-  background-color: var(--color-primary-hover);
+  background-color: var(--color-link-dark);
 }
 
 .sentinel {

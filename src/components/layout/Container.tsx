@@ -5,11 +5,15 @@ import { cn } from '../../utils/cn';
 interface ContainerProps {
   children: ReactNode;
   className?: string;
+  variant?: 'default' | 'narrow' | 'full';
 }
 
-export const Container = forwardRef<HTMLDivElement, ContainerProps>(function Container({ children, className }, ref) {
+export const Container = forwardRef<HTMLDivElement, ContainerProps>(function Container(
+  { children, className, variant = 'default' },
+  ref
+) {
   return (
-    <div ref={ref} className={cn(styles.container, className)}>
+    <div ref={ref} className={cn(styles.container, styles[variant], className)}>
       {children}
     </div>
   );

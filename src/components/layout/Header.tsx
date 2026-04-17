@@ -36,7 +36,6 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
     if (onToggleFavorites) {
       onToggleFavorites();
     } else {
-      // Fallback: use URL params (may cause re-renders)
       if (showFavorites) {
         navigate('/');
       } else {
@@ -48,11 +47,17 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
   return (
     <header className={styles.header}>
       <div className={styles.inner}>
-        <Link to="/" className={styles.logo} aria-label="7Kanime - Inicio" data-tv-focus="true" data-tv-focus-id="header-logo">
+        <Link to="/" className={styles.logo} aria-label="7Kanime - Inicio">
           <span className={styles.logoAccent}>7K</span><span className={styles.logoText}>anime</span>
         </Link>
 
-        <form className={styles.searchForm} onSubmit={handleSubmit} data-tv-focus="true" data-tv-focus-id="search-form">
+        <nav className={styles.nav}>
+          <Link to="/" className={styles.navLink}>Inicio</Link>
+          <Link to="/?type=tv-anime" className={styles.navLink}>Anime</Link>
+          <Link to="/?type=pelicula" className={styles.navLink}>Películas</Link>
+        </nav>
+
+        <form className={styles.searchForm} onSubmit={handleSubmit}>
           <Input
             type="search"
             placeholder="Buscar anime..."
@@ -67,8 +72,6 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
           variant="ghost"
           onClick={handleFavoritesClick}
           className={`${styles.favoritesBtn} ${showFavorites ? styles.favoritesBtnActive : ''}`}
-          data-tv-focus="true"
-          data-tv-focus-id="favorites-btn"
           aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
         >
           {showFavorites ? '✕' : `♥ ${favorites.length}`}

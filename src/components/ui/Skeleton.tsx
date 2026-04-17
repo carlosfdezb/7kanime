@@ -4,7 +4,7 @@ import { cn } from '../../utils/cn';
 interface SkeletonProps {
   width?: string | number;
   height?: string | number;
-  variant?: 'rectangular' | 'circular' | 'text';
+  variant?: 'rectangular' | 'circular' | 'text' | 'light';
   className?: string;
 }
 
