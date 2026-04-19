@@ -1,0 +1,92 @@
+.chapterList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.chapterRow {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.chapterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.chapterHeader:hover {
+  background-color: var(--color-border);
+}
+
+.chapterInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.chapterNumber {
+  font-weight: 600;
+  color: var(--color-text);
+  min-width: 80px;
+}
+
+.chapterTitle {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.expandIcon {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  transition: transform var(--transition-fast);
+}
+
+.expandIcon.expanded {
+  transform: rotate(180deg);
+}
+
+.versionList {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-border);
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.versionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  padding-left: calc(var(--space-md) + 96px);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color var(--transition-fast);
+}
+
+.versionRow:hover {
+  background-color: var(--color-border);
+}
+
+.versionScanlator {
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.versionDate {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-muted);
+}

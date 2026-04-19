@@ -6,6 +6,9 @@ import { Episode } from "./pages/Episode";
 import { NotFound } from "./pages/NotFound";
 import { EasterEgg } from "./components/layout/EasterEgg";
 import { useTVFocus } from "./context/TVFocusContext";
+import { MangaLibrary } from "./pages/MangaLibrary";
+import { MangaDetail } from "./pages/MangaDetail";
+import { ChapterReader } from "./pages/ChapterReader";
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
@@ -56,6 +59,9 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/anime/:slug" element={<AnimeDetail />} />
                 <Route path="/episode/:slug/:number" element={<Episode />} />
+                <Route path="/manga" element={<MangaLibrary />} />
+                <Route path="/manga/:id" element={<MangaDetail />} />
+                <Route path="/manga/:id/chapter/:hash" element={<ChapterReader />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>
