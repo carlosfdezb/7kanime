@@ -60,6 +60,49 @@
   max-width: 200px;
 }
 
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.readToggle {
+  padding: var(--space-xs) var(--space-md);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.readToggle:hover {
+  background-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.readToggle:active {
+  transform: scale(0.97);
+}
+
+.readToggleActive {
+  background-color: rgba(99, 102, 241, 0.12);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.readToggleActive:hover {
+  background-color: rgba(99, 102, 241, 0.2);
+  color: var(--color-primary);
+}
+
+.readToggleActive:active {
+  transform: scale(0.97);
+}
+
 .navArrow {
   font-size: 1.25rem;
   flex-shrink: 0;
@@ -215,6 +258,11 @@
   border-top: 1px solid var(--color-border);
   width: auto;
   max-width: 800px;
+}
+
+/* Header hidden in fullscreen but structure preserved */
+.hiddenInFullscreen {
+  display: none;
 }
 
 .backToTop {

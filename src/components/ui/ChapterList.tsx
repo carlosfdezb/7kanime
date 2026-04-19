@@ -8,9 +8,10 @@ import type { MangaChapter } from '../../types/manga';
 interface ChapterListProps {
   chapters: MangaChapter[];
   mangaId: number;
+  readChapters?: string[];
 }
 
-export function ChapterList({ chapters, mangaId }: ChapterListProps) {
+export function ChapterList({ chapters, mangaId, readChapters = [] }: ChapterListProps) {
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
 
   const toggleChapter = (chapterNumber: string) => {
@@ -35,14 +36,16 @@ export function ChapterList({ chapters, mangaId }: ChapterListProps) {
     <div className={styles.chapterList}>
       {chapters.map((chapter) => {
         const isExpanded = expandedChapters.has(chapter.number);
+        const hasReadVersion = chapter.versions.some(v => readChapters.includes(v.hash));
         return (
-          <div key={chapter.number} className={styles.chapterRow}>
+          <div key={chapter.number} className={cn(styles.chapterRow, hasReadVersion && styles.readChapter)}>
             <button
-              className={styles.chapterHeader}
+              className={cn(styles.chapterHeader, hasReadVersion && styles.readChapterHeader)}
               onClick={() => toggleChapter(chapter.number)}
               aria-expanded={isExpanded}
             >
               <div className={styles.chapterInfo}>
+                {hasReadVersion && <span className={styles.readIndicator}>✓</span>}
                 <span className={styles.chapterNumber}>Cap. {chapter.number}</span>
                 {chapter.title && (
                   <span className={styles.chapterTitle}>{chapter.title}</span>

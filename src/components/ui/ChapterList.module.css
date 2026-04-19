@@ -12,6 +12,10 @@
   overflow: hidden;
 }
 
+.chapterRow.readChapter {
+  opacity: 0.7;
+}
+
 .chapterHeader {
   display: flex;
   align-items: center;
@@ -25,10 +29,20 @@
   background-color: var(--color-border);
 }
 
+.chapterHeader.readChapterHeader .chapterNumber {
+  color: var(--color-text-muted);
+}
+
 .chapterInfo {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+}
+
+.readIndicator {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  min-width: 16px;
 }
 
 .chapterNumber {

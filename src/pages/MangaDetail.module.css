@@ -150,6 +150,25 @@
   margin-top: var(--space-md);
 }
 
+.readingCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+  margin-top: var(--space-md);
+}
+
+.readingCta:hover {
+  background-color: var(--color-primary-hover);
+}
+
 .backLink {
   display: inline-flex;
   align-items: center;

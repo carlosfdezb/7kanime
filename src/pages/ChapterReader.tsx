@@ -6,15 +6,11 @@ import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
 import { useFetch } from '../hooks/useFetch';
+import { useReadChapters } from '../hooks/useReadChapters';
+import { useReadChaptersStore } from '../store/readChaptersStore';
 import { getProxiedImageUrl } from '../api/manga';
-import type { ChapterPage, MangaDetail, MangaChapter, ChapterVersion } from '../types/manga';
-
-interface UniqueChapter {
-  number: string;
-  title: string | null;
-  hash: string;
-  versions: ChapterVersion[];
-}
+import type { ChapterPage, MangaDetail } from '../types/manga';
+import { buildUniqueChapterList } from '../utils/manga';
 
 export function ChapterReader() {
   const { id, hash } = useParams<{ id: string; hash: string }>();
@@ -23,12 +19,64 @@ export function ChapterReader() {
   const { data: chapterData, loading: chapterLoading, error: chapterError } = useFetch<ChapterPage>(hash ? `/manga/chapter/${hash}` : null);
   const { data: mangaData, loading: mangaLoading } = useFetch<MangaDetail>(mangaId ? `/manga/${mangaId}` : null);
 
+  const { markAsRead, removeFromRead } = useReadChapters(mangaId ?? 0);
+
+  // Reactive selector — subscribes to readChapters[mangaId] changes
+  // NOTE: Do NOT use `|| []` here — it creates a NEW empty array on every render
+  // when readChapters[mangaId] is undefined, causing an infinite loop in Zustand.
+  // Return undefined and handle downstream with optional chaining.
+  const readHashes = useReadChaptersStore(s => s.readChapters[mangaId ?? 0]);
+  const isRead = hash ? (readHashes?.includes(hash) ?? false) : false;
+
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const fullscreenRef = useRef<HTMLDivElement>(null);
   const currentImageRef = useRef<HTMLImageElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  // Timestamp when the observer was created — used to prevent immediate firing
+  // when navigating to a new chapter (the observer attaches during render with
+  // the new hash already in scope, so it can fire before any scroll happens)
+  const observerCreatedAt = useRef<number>(0);
+
+  // Callback ref to attach IntersectionObserver to the midpoint page wrapper
+  const midpointRef = useCallback((node: HTMLDivElement | null) => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+    if (!node || !mangaId || !hash) return;
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Guard: don't mark as read if the observer was just created
+          // (within ~50ms). This prevents immediate firing when navigating to
+          // a new chapter where the midpoint is already in the viewport.
+          const now = Date.now();
+          if (now - observerCreatedAt.current < 50) return;
+
+          markAsRead(hash);
+          observerRef.current?.disconnect();
+          observerRef.current = null;
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observerCreatedAt.current = Date.now();
+    observerRef.current.observe(node);
+  }, [mangaId, hash, markAsRead]);
+
+  // Cleanup observer on unmount or hash change
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, [hash]);
 
   // Find the image closest to the top of the viewport (most visible reading position)
   const findMostVisibleImage = useCallback((): HTMLImageElement | null => {
@@ -144,21 +192,6 @@ export function ChapterReader() {
 
   const navigate = useNavigate();
 
-  const buildUniqueChapterList = (chapters: MangaChapter[]): UniqueChapter[] => {
-    const seen = new Map<string, UniqueChapter>();
-    for (const chapter of chapters) {
-      if (!seen.has(chapter.number)) {
-        seen.set(chapter.number, {
-          number: chapter.number,
-          title: chapter.title,
-          hash: chapter.versions[0]?.hash ?? '',
-          versions: chapter.versions,
-        });
-      }
-    }
-    return Array.from(seen.values());
-  };
-
   const uniqueChapters = mangaData ? buildUniqueChapterList(mangaData.chapters) : [];
   const currentChapterIndex = uniqueChapters.findIndex(c => c.hash === hash);
   const prevChapter = currentChapterIndex > 0 ? uniqueChapters[currentChapterIndex - 1] : null;
@@ -166,6 +199,15 @@ export function ChapterReader() {
 
   const currentChapter = currentChapterIndex >= 0 ? uniqueChapters[currentChapterIndex] : null;
   const hasMultipleVersions = currentChapter && currentChapter.versions.length > 1;
+
+  const handleToggleRead = () => {
+    if (!hash || !mangaId) return;
+    if (isRead) {
+      removeFromRead(hash);
+    } else {
+      markAsRead(hash);
+    }
+  };
 
   const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newHash = e.target.value;
@@ -261,16 +303,16 @@ export function ChapterReader() {
 
   return (
     <div className={styles.page}>
-      {!isFullscreen && (
-        <Container className={styles.content}>
-          <MangaBreadcrumb
-            items={[
-              { label: 'Manga', href: '/manga' },
-              ...(mangaId && mangaData ? [{ label: mangaData.title, href: `/manga/${mangaId}` }] : []),
-              ...(currentChapter ? [{ label: `Capítulo ${currentChapter.number}` }] : []),
-            ]}
-          />
+      <Container className={`${styles.content} ${isFullscreen ? styles.hiddenInFullscreen : ''}`}>
+        <MangaBreadcrumb
+          items={[
+            { label: 'Manga', href: '/manga' },
+            ...(mangaId && mangaData ? [{ label: mangaData.title, href: `/manga/${mangaId}` }] : []),
+            ...(currentChapter ? [{ label: `Capítulo ${currentChapter.number}` }] : []),
+          ]}
+        />
 
+        <div className={styles.headerRow}>
           {hasMultipleVersions && (
             <div className={styles.versionSelector}>
               <span className={styles.versionLabel}>Versión:</span>
@@ -286,9 +328,16 @@ export function ChapterReader() {
             </div>
           )}
 
-          {renderNavigation()}
-        </Container>
-      )}
+          <button
+            className={`${styles.readToggle} ${isRead ? styles.readToggleActive : ''}`}
+            onClick={handleToggleRead}
+          >
+            {isRead ? '✓ Leído' : 'Marcar como leído'}
+          </button>
+        </div>
+
+        {renderNavigation()}
+      </Container>
 
       <div ref={fullscreenRef} className={styles.fullscreenWrapper}>
         {chapter.pages.length === 0 ? (
@@ -302,9 +351,14 @@ export function ChapterReader() {
                 const pageNum = page.pageNumber;
                 const hasError = imageErrors.has(pageNum);
                 const isLoaded = visiblePages.has(pageNum);
+                const midpointPage = Math.max(1, Math.floor(chapter.totalPages / 2));
 
                 return (
-                  <div key={pageNum} className={styles.pageWrapper}>
+                  <div
+                    key={pageNum}
+                    ref={pageNum === midpointPage ? midpointRef : undefined}
+                    className={styles.pageWrapper}
+                  >
                     {hasError ? (
                       <div className={styles.imageError}>
                         <span className={styles.imageErrorIcon}>🖼️</span>
