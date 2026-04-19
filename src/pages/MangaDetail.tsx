@@ -24,7 +24,7 @@ const translateStatus = (status: string): string =>
   STATUS_TRANSLATIONS[status] ?? status;
 
 interface ReadingCTAProps {
-  chapters: MangaDetail['chapters'];
+  chapters: MangaDetailType['chapters'];
   readChapters: string[];
   mangaId: number;
 }
