@@ -1,65 +1,70 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import styles from './Card.module.css';
+import styles from './MangaCard.module.css';
 import { cn } from '../../utils/cn';
-import type { CatalogItem } from '../../types/api';
-import { Focusable } from './Focusable';
-import { useFavoritesStore } from '../../store/favoritesStore';
+import { getProxiedImageUrl } from '../../api/manga';
+import { useMangaFavorites } from '../../hooks/useMangaFavorites';
+import type { MangaItem, MangaFavorite } from '../../types/manga';
 
-interface CardProps {
-  anime: CatalogItem;
+interface MangaCardProps {
+  manga: MangaItem | MangaFavorite;
   variant?: 'default' | 'compact';
   className?: string;
 }
 
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300x450"%3E%3Crect fill="%23262626" width="300" height="450"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="system-ui" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 
-export function Card({ anime, variant = 'default', className }: CardProps) {
+export function MangaCard({ manga, variant: _variant = 'default', className }: MangaCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { isFavorite, toggleFavorite } = useFavoritesStore();
+  const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
 
   const handleImageError = () => {
     setImageError(true);
   };
 
-  const favorite = isFavorite(anime.id);
+  const isFavorite = isMangaFavorite(manga.id);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleFavorite(anime);
+    toggleMangaFavorite({
+      id: manga.id,
+      title: manga.title,
+      coverUrl: manga.coverUrl,
+      type: manga.type,
+    });
   };
 
   return (
-    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`}>
+    <Link
+      to={`/manga/${manga.id}`}
+      className={cn(styles.card, className)}
+    >
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />
         )}
         <img
-          src={imageError ? PLACEHOLDER_IMAGE : anime.poster}
-          alt={anime.title}
+          src={imageError ? PLACEHOLDER_IMAGE : getProxiedImageUrl(manga.coverUrl)}
+          alt={manga.title}
           className={cn(styles.poster, !imageLoaded && styles.hidden)}
           loading="lazy"
           onLoad={() => setImageLoaded(true)}
           onError={handleImageError}
         />
         <button
-          className={cn(styles.favoriteBtn, favorite && styles.favoriteBtnActive)}
+          className={cn(styles.favoriteBtn, isFavorite && styles.favoriteBtnActive)}
           onClick={handleFavoriteClick}
-          aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
-          {favorite ? '\u2665' : '\u2661'}
+          {isFavorite ? '\u2665' : '\u2661'}
         </button>
-        <span className={styles.type}>{anime.type}</span>
+        <span className={styles.type}>{manga.type}</span>
       </div>
       <div className={styles.info}>
-        <h3 className={styles.title}>{anime.title}</h3>
-        {variant === 'default' && (
-          <p className={styles.synopsis}>{anime.synopsis}</p>
-        )}
+        <h3 className={styles.title}>{manga.title}</h3>
       </div>
-    </Focusable>
+    </Link>
   );
 }

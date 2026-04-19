@@ -1,10 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, FormEvent } from 'react';
 import styles from './Header.module.css';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useFavoritesStore } from '../../store/favoritesStore';
+import { useMangaFavoritesStore } from '../../store/mangaFavoritesStore';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -16,12 +17,21 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearch = useDebounce(searchValue, 300);
   const navigate = useNavigate();
+  const location = useLocation();
   const { favorites } = useFavoritesStore();
+  const { favorites: mangaFavorites } = useMangaFavoritesStore();
+
+  const isMangaContext = location.pathname.startsWith('/manga');
+  const currentFavorites = isMangaContext ? mangaFavorites : favorites;
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (debouncedSearch.trim().length >= 2) {
-      navigate(`/?search=${encodeURIComponent(debouncedSearch)}`);
+      if (isMangaContext) {
+        navigate(`/manga?q=${encodeURIComponent(debouncedSearch)}`);
+      } else {
+        navigate(`/?search=${encodeURIComponent(debouncedSearch)}`);
+      }
     }
   };
 
@@ -36,11 +46,10 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
     if (onToggleFavorites) {
       onToggleFavorites();
     } else {
-      // Fallback: use URL params (may cause re-renders)
       if (showFavorites) {
-        navigate('/');
+        navigate(isMangaContext ? '/manga' : '/');
       } else {
-        navigate('/?favorites=true');
+        navigate(isMangaContext ? '/manga?favorites=true' : '/?favorites=true');
       }
     }
   };
@@ -52,13 +61,18 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
           <span className={styles.logoAccent}>7K</span><span className={styles.logoText}>anime</span>
         </Link>
 
+        <nav className={styles.nav} aria-label="Navegación principal">
+          <Link to="/" className={styles.navLink}>Anime</Link>
+          <Link to="/manga" className={styles.navLink}>Manga</Link>
+        </nav>
+
         <form className={styles.searchForm} onSubmit={handleSubmit} data-tv-focus="true" data-tv-focus-id="search-form">
           <Input
             type="search"
-            placeholder="Buscar anime..."
+            placeholder={isMangaContext ? 'Buscar manga...' : 'Buscar anime...'}
             value={searchValue}
             onChange={e => handleSearchChange(e.target.value)}
-            aria-label="Buscar anime"
+            aria-label={isMangaContext ? 'Buscar manga' : 'Buscar anime'}
             className={styles.searchInput}
           />
         </form>
@@ -71,7 +85,7 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
           data-tv-focus-id="favorites-btn"
           aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
         >
-          {showFavorites ? '✕' : `♥ ${favorites.length}`}
+          {showFavorites ? '✕' : `♥ ${currentFavorites.length}`}
         </Button>
       </div>
     </header>
