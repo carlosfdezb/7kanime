@@ -59,6 +59,43 @@
   font-weight: 500;
 }
 
+.favoriteBtn {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--color-text);
+  opacity: 0;
+  transition: opacity var(--transition-fast), background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.card:hover .favoriteBtn {
+  opacity: 1;
+}
+
+.favoriteBtn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.favoriteBtnActive {
+  opacity: 1;
+  color: #ef4444;
+}
+
+.favoriteBtnActive:hover {
+  color: #dc2626;
+}
+
 .info {
   padding: var(--space-md);
   display: flex;

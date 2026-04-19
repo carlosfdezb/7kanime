@@ -14,7 +14,7 @@ interface MangaCardProps {
 
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300x450"%3E%3Crect fill="%23262626" width="300" height="450"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="system-ui" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 
-export function MangaCard({ manga, variant = 'default', className }: MangaCardProps) {
+export function MangaCard({ manga, variant: _variant = 'default', className }: MangaCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
@@ -24,7 +24,6 @@ export function MangaCard({ manga, variant = 'default', className }: MangaCardPr
   };
 
   const isFavorite = isMangaFavorite(manga.id);
-  const rating = 'rating' in manga ? manga.rating : 0;
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -59,20 +58,12 @@ export function MangaCard({ manga, variant = 'default', className }: MangaCardPr
           onClick={handleFavoriteClick}
           aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
-          {isFavorite ? '♥' : '♡'}
+          {isFavorite ? '\u2665' : '\u2661'}
         </button>
-        {rating > 0 && (
-          <span className={styles.ratingBadge}>
-            <span className={styles.ratingStar}>★</span>
-            {rating.toFixed(1)}
-          </span>
-        )}
+        <span className={styles.type}>{manga.type}</span>
       </div>
       <div className={styles.info}>
         <h3 className={styles.title}>{manga.title}</h3>
-        {variant === 'default' && (
-          <span className={styles.type}>{manga.type}</span>
-        )}
       </div>
     </Link>
   );
