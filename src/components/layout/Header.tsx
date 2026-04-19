@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useState, FormEvent } from 'react';
+import { useState, useRef, FormEvent } from 'react';
 import styles from './Header.module.css';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
@@ -15,6 +15,7 @@ interface HeaderProps {
 
 export function Header({ onSearch, showFavorites = false, onToggleFavorites }: HeaderProps) {
   const [searchValue, setSearchValue] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const debouncedSearch = useDebounce(searchValue, 300);
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,6 +67,18 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
           <Link to="/manga" className={styles.navLink}>Manga</Link>
         </nav>
 
+        <button
+          type="button"
+          className={styles.searchToggle}
+          aria-label="Buscar"
+          onClick={() => searchInputRef.current?.focus()}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+
         <form className={styles.searchForm} onSubmit={handleSubmit} data-tv-focus="true" data-tv-focus-id="search-form">
           <Input
             type="search"
@@ -74,6 +87,7 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
             onChange={e => handleSearchChange(e.target.value)}
             aria-label={isMangaContext ? 'Buscar manga' : 'Buscar anime'}
             className={styles.searchInput}
+            ref={searchInputRef}
           />
         </form>
 

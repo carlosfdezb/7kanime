@@ -103,3 +103,70 @@
     max-width: 480px;
   }
 }
+
+/* Hide search toggle on desktop */
+@media (min-width: 640px) {
+  .searchToggle {
+    display: none;
+  }
+}
+
+/* ===== Mobile Search Collapse (<640px) ===== */
+@media (max-width: 639px) {
+  .inner {
+    gap: 12px;
+    position: relative;
+  }
+
+  .nav {
+    gap: 8px;
+  }
+
+  .navLink {
+    font-size: 0.875rem;
+  }
+
+  /* Hide the search form by default on mobile */
+  .searchForm {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    transform: scaleY(0);
+    transform-origin: top;
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    z-index: 100;
+  }
+
+  /* Expand search when focused */
+  .searchForm:focus-within {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  /* Search toggle button visible only on mobile */
+  .searchToggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .searchToggle:hover {
+    color: var(--color-text);
+    border-color: var(--color-primary);
+  }
+}

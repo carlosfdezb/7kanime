@@ -363,3 +363,38 @@
 :fullscreen .fullscreenButton {
   bottom: var(--space-lg);
 }
+
+/* ===== Mobile Responsive (<640px) ===== */
+@media (max-width: 639px) {
+  .navigation {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .navLink {
+    min-width: 0;
+    flex: 1;
+    width: 100%;
+  }
+
+  .versionSelect {
+    max-width: 100%;
+  }
+
+  .headerRow {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .bottomNav {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+/* Safe area support for notched devices */
+@media (max-width: 639px) {
+  .backToTop {
+    bottom: calc(var(--space-lg) + 48px + var(--space-sm) + env(safe-area-inset-bottom, 0px));
+  }
+}
