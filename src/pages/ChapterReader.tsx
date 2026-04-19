@@ -1,5 +1,5 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
 import styles from './ChapterReader.module.css';
 import { Container } from '../components/layout/Container';
 import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
@@ -26,6 +26,105 @@ export function ChapterReader() {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const fullscreenRef = useRef<HTMLDivElement>(null);
+  const currentImageRef = useRef<HTMLImageElement | null>(null);
+
+  // Find the image closest to the top of the viewport (most visible reading position)
+  const findMostVisibleImage = useCallback((): HTMLImageElement | null => {
+    const images = fullscreenRef.current?.querySelectorAll('img');
+    if (!images || images.length === 0) return null;
+
+    let closestImage: HTMLImageElement | null = null;
+    let closestDistance = Infinity;
+    const viewportHeight = window.innerHeight;
+    const viewportCenter = viewportHeight / 2;
+
+    images.forEach(img => {
+      const rect = img.getBoundingClientRect();
+      const imgTop = rect.top;
+      const imgCenter = imgTop + rect.height / 2;
+      // Distance from image center to viewport center
+      const distance = Math.abs(imgCenter - viewportCenter);
+      // Only consider images that are at least partially visible
+      if (imgTop < viewportHeight && rect.bottom > 0 && distance < closestDistance) {
+        closestDistance = distance;
+        closestImage = img;
+      }
+    });
+
+    return closestImage;
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    const element = fullscreenRef.current;
+    if (!element) return;
+
+    if (document.fullscreenElement) {
+      // Exiting fullscreen: save reference to the most visible image
+      // (NOT a pixel position — pixel positions become stale after re-render)
+      const currentImage = findMostVisibleImage();
+      if (currentImage) {
+        currentImageRef.current = currentImage;
+      }
+      document.exitFullscreen();
+    } else {
+      // Entering fullscreen: find current reading position and save reference
+      const currentImage = findMostVisibleImage();
+      if (currentImage) {
+        currentImageRef.current = currentImage;
+      }
+      element.requestFullscreen();
+    }
+  }, [findMostVisibleImage]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const entering = !!document.fullscreenElement;
+      setIsFullscreen(entering);
+
+      if (entering) {
+        // Entered fullscreen: scroll to the image that was most visible before
+        setTimeout(() => {
+          const targetImage = currentImageRef.current || findMostVisibleImage();
+          if (targetImage) {
+            targetImage.scrollIntoView({ block: 'start', behavior: 'instant' });
+            currentImageRef.current = targetImage;
+          }
+        }, 100);
+      } else {
+        // Exited fullscreen: scroll to the saved image using scrollIntoView
+        // This works regardless of how much content is above fullscreenWrapper
+        // after re-render, because the image element itself is the reference
+        setTimeout(() => {
+          const targetImage = currentImageRef.current || findMostVisibleImage();
+          if (targetImage) {
+            targetImage.scrollIntoView({ block: 'start', behavior: 'instant' });
+          }
+        }, 100);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [findMostVisibleImage]);
+
+  // Keyboard shortcut for fullscreen (F key)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFullscreen();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleFullscreen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -162,32 +261,36 @@ export function ChapterReader() {
 
   return (
     <div className={styles.page}>
-      <Container className={styles.content}>
-        <MangaBreadcrumb
-          items={[
-            { label: 'Manga', href: '/manga' },
-            ...(mangaId && mangaData ? [{ label: mangaData.title, href: `/manga/${mangaId}` }] : []),
-            ...(currentChapter ? [{ label: `Capítulo ${currentChapter.number}` }] : []),
-          ]}
-        />
+      {!isFullscreen && (
+        <Container className={styles.content}>
+          <MangaBreadcrumb
+            items={[
+              { label: 'Manga', href: '/manga' },
+              ...(mangaId && mangaData ? [{ label: mangaData.title, href: `/manga/${mangaId}` }] : []),
+              ...(currentChapter ? [{ label: `Capítulo ${currentChapter.number}` }] : []),
+            ]}
+          />
 
-        {hasMultipleVersions && (
-          <div className={styles.versionSelector}>
-            <span className={styles.versionLabel}>Versión:</span>
-            <Select
-              options={currentChapter!.versions.map((v, i) => ({
-                value: v.hash,
-                label: v.scanlator || `Versión ${i + 1}`,
-              }))}
-              value={hash}
-              onChange={handleVersionChange}
-              className={styles.versionSelect}
-            />
-          </div>
-        )}
+          {hasMultipleVersions && (
+            <div className={styles.versionSelector}>
+              <span className={styles.versionLabel}>Versión:</span>
+              <Select
+                options={currentChapter!.versions.map((v, i) => ({
+                  value: v.hash,
+                  label: v.scanlator || `Versión ${i + 1}`,
+                }))}
+                value={hash}
+                onChange={handleVersionChange}
+                className={styles.versionSelect}
+              />
+            </div>
+          )}
 
-        {renderNavigation()}
+          {renderNavigation()}
+        </Container>
+      )}
 
+      <div ref={fullscreenRef} className={styles.fullscreenWrapper}>
         {chapter.pages.length === 0 ? (
           <div className={styles.emptyState}>
             <p>No se encontraron páginas para este capítulo</p>
@@ -224,26 +327,51 @@ export function ChapterReader() {
                         />
                       </>
                     )}
-                    <span className={styles.pageNumber}>{pageNum}</span>
+                    {!isFullscreen && <span className={styles.pageNumber}>{pageNum}</span>}
                   </div>
                 );
               })}
             </div>
 
-            <div className={styles.bottomNav}>
-              {renderNavigation()}
-            </div>
+            {!isFullscreen && (
+              <Container className={styles.bottomNav}>
+                {renderNavigation()}
+              </Container>
+            )}
+            {isFullscreen && (
+              <div className={styles.bottomNavFullscreen}>
+                {renderNavigation()}
+              </div>
+            )}
 
-            <button
-              className={`${styles.backToTop} ${showBackToTop ? styles.visible : ''}`}
-              onClick={scrollToTop}
-              aria-label="Volver arriba"
-            >
-              ↑
-            </button>
+            {!isFullscreen && (
+              <button
+                className={`${styles.backToTop} ${showBackToTop ? styles.visible : ''}`}
+                onClick={scrollToTop}
+                aria-label="Volver arriba"
+              >
+                ↑
+              </button>
+            )}
           </>
         )}
-      </Container>
+
+        <button
+          className={styles.fullscreenButton}
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+        >
+          {isFullscreen ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+            </svg>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

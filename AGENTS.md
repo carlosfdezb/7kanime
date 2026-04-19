@@ -149,7 +149,8 @@ src/
 │   ├── anime.ts           # /anime/:slug
 │   ├── catalog.ts         # /catalog
 │   ├── search.ts          # /search
-│   └── episode.ts         # /episode/:slug/:number
+│   ├── episode.ts         # /episode/:slug/:number
+│   └── manga.ts           # /manga/* + image proxy
 ├── components/            # Shared UI components
 │   ├── ui/               # Atoms: Button, Input, Card, Chip
 │   └── layout/            # Header, Footer, Container
@@ -157,15 +158,22 @@ src/
 │   ├── Home.tsx          # Catalog + filters
 │   ├── AnimeDetail.tsx   # Anime info
 │   ├── Episode.tsx       # Player
+│   ├── MangaLibrary.tsx  # Manga catalog + favorites
+│   ├── MangaDetail.tsx   # Manga info + chapter list
+│   ├── ChapterReader.tsx # Chapter reader (fullscreen)
 │   └── NotFound.tsx
 ├── hooks/                 # Custom hooks
 │   ├── useFetch.ts       # Generic fetch with loading/error
 │   ├── useDebounce.ts    # Debounce utility
-│   └── useFavorites.ts   # localStorage favorites
+│   ├── useFavorites.ts   # Anime localStorage favorites
+│   ├── useMangaFavorites.ts # Manga favorites wrapper
+│   └── useMangaLibrary.ts  # Manga library + search
 ├── store/                 # Zustand stores
-│   └── favoritesStore.ts # Favorites with localStorage sync
+│   ├── favoritesStore.ts   # Anime favorites
+│   └── mangaFavoritesStore.ts # Manga favorites
 ├── types/                 # TypeScript interfaces
-│   └── api.ts            # API response types
+│   ├── api.ts            # Anime API types
+│   └── manga.ts          # Manga types
 ├── utils/                 # Helpers
 │   └── cn.ts             # Class name merger
 └── styles/                # Global styles & variables
@@ -216,8 +224,39 @@ export async function getCatalog(params: CatalogParams): Promise<CatalogResponse
   if (params.type) qs.set('type', params.type);
   if (params.year) qs.set('year', String(params.year));
   if (params.status) qs.set('status', params.status);
-  
+
   return apiFetch<CatalogResponse>(`/catalog?${qs}`);
+}
+```
+
+### 2.4 Manga API
+
+```typescript
+// src/api/manga.ts
+import { apiFetch } from './client';
+import type { MangaDetail, ChapterPage, PaginatedMangaResponse } from '../types/manga';
+
+export async function getMangaLibrary(page: number): Promise<PaginatedMangaResponse> {
+  return apiFetch<PaginatedMangaResponse>(`/manga/library?page=${page}`);
+}
+
+export async function searchManga(query: string, page: number): Promise<PaginatedMangaResponse> {
+  return apiFetch<PaginatedMangaResponse>(`/manga/search?q=${encodeURIComponent(query)}&page=${page}`);
+}
+
+export async function getMangaDetail(id: number): Promise<MangaDetail> {
+  return apiFetch<MangaDetail>(`/manga/${id}`);
+}
+
+export async function getChapterPages(hash: string): Promise<ChapterPage> {
+  return apiFetch<ChapterPage>(`/manga/chapter/${hash}`);
+}
+
+// Image proxy — required because manga images may be blocked by CORS
+export const MANGA_PROXY_BASE = 'https://animeav1-api-server.vercel.app/manga/proxy?url=';
+
+export function getProxiedImageUrl(url: string): string {
+  return `${MANGA_PROXY_BASE}${encodeURIComponent(url)}`;
 }
 ```
 
@@ -277,16 +316,87 @@ interface MediaLink {
 }
 ```
 
+### MangaItem
+```typescript
+interface MangaItem {
+  id: number;
+  title: string;
+  type: string;
+  coverUrl: string;
+  latestUpdate: string;
+  rating: number;
+  ratingCount: number;
+  isEro: boolean;
+  url: string;
+}
+```
+
+### MangaDetail (extends MangaItem)
+```typescript
+interface MangaDetail extends MangaItem {
+  description: string;
+  author: string | null;
+  artist: string | null;
+  status: string;
+  demographics: string[];
+  genres: string[];
+  chapters: MangaChapter[];
+}
+```
+
+### MangaChapter
+```typescript
+interface MangaChapter {
+  number: string;
+  title: string;
+  versions: ChapterVersion[];
+}
+```
+
+### ChapterVersion
+```typescript
+interface ChapterVersion {
+  hash: string;
+  scanlator: string;
+  date: string;
+}
+```
+
+### ChapterPage
+```typescript
+interface ChapterPage {
+  chapterHash: string;
+  totalPages: number;
+  pages: { pageNumber: number; imageUrl: string; format: string }[];
+  prevChapterUrl: string | null;
+  nextChapterUrl: string | null;
+}
+```
+
+### PaginatedMangaResponse
+```typescript
+interface PaginatedMangaResponse {
+  items: MangaItem[];
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  hasNextPage: boolean;
+}
+```
+
 ---
 
 ## 4. Routing
 
 ```typescript
 // App routes
-/                    → Home (catalog)
-/anime/:slug         → AnimeDetail
-/episode/:slug/:num  → Episode (player)
-/search?q=           → Search results (query param, no separate route)
+/                      → Home (catalog)
+/anime/:slug           → AnimeDetail
+/episode/:slug/:num    → Episode (player)
+/manga                 → MangaLibrary
+/manga/:id             → MangaDetail
+/manga/:id/chapter/:hash → ChapterReader
+/search?q=             → Search results (query param, no separate route)
 ```
 
 ```typescript
@@ -295,6 +405,9 @@ interface MediaLink {
   <Route path="/" element={<Home />} />
   <Route path="/anime/:slug" element={<AnimeDetail />} />
   <Route path="/episode/:slug/:number" element={<Episode />} />
+  <Route path="/manga" element={<MangaLibrary />} />
+  <Route path="/manga/:id" element={<MangaDetail />} />
+  <Route path="/manga/:id/chapter/:hash" element={<ChapterReader />} />
   <Route path="*" element={<NotFound />} />
 </Routes>
 ```
@@ -332,6 +445,79 @@ export const useFavoritesStore = create<FavoritesStore>()(
 );
 ```
 
+### Manga Favorites Store
+
+```typescript
+// src/store/mangaFavoritesStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface MangaFavorite {
+  id: number;
+  title: string;
+  coverUrl: string;
+  type: string;
+}
+
+interface MangaFavoritesStore {
+  favorites: MangaFavorite[];
+  addFavorite: (manga: MangaFavorite) => void;
+  removeFavorite: (id: number) => void;
+  isFavorite: (id: number) => boolean;
+  toggleFavorite: (manga: MangaFavorite) => void;
+}
+
+export const useMangaFavoritesStore = create<MangaFavoritesStore>()(
+  persist(
+    (set, get) => ({
+      favorites: [],
+      addFavorite: (manga: MangaFavorite) => {
+        const { favorites } = get();
+        if (!favorites.some(f => f.id === manga.id)) {
+          set({ favorites: [...favorites, manga] });
+        }
+      },
+      removeFavorite: (id: number) => {
+        set({ favorites: get().favorites.filter(f => f.id !== id) });
+      },
+      isFavorite: (id: number) => get().favorites.some(f => f.id === id),
+      toggleFavorite: (manga: MangaFavorite) => {
+        if (get().favorites.some(f => f.id === manga.id)) {
+          get().removeFavorite(manga.id);
+        } else {
+          get().addFavorite(manga);
+        }
+      },
+    }),
+    { name: 'animeav1-manga-favorites' }
+  )
+);
+```
+
+### Manga Hooks
+
+```typescript
+// src/hooks/useMangaFavorites.ts — wrapper around mangaFavoritesStore
+export function useMangaFavorites() {
+  const { favorites, addManga, removeManga, isMangaFavorite, toggleMangaFavorite } =
+    useMangaFavoritesStore();
+  return { favorites, addManga, removeManga, isMangaFavorite, toggleMangaFavorite };
+}
+
+// src/hooks/useMangaLibrary.ts — manga catalog + search
+interface UseMangaLibraryResult {
+  items: MangaItem[];
+  page: number;
+  totalPages: number;
+  totalItems: number;
+  hasNextPage: boolean;
+  loading: boolean;
+  error: string | null;
+  fetchPage: (pageNum: number) => Promise<void>;
+  fetchSearch: (query: string, pageNum: number) => Promise<void>;
+}
+```
+
 ---
 
 ## 6. UI Components
@@ -344,14 +530,17 @@ components/
 │   ├── Button.tsx         # Variants: primary, ghost
 │   ├── Input.tsx          # Search input
 │   ├── Card.tsx           # Anime card
+│   ├── MangaCard.tsx       # Manga card (with favorites)
 │   ├── Chip.tsx           # Filter chip (genre, type, etc)
 │   ├── Badge.tsx          # Status badges
 │   ├── Skeleton.tsx       # Loading skeleton
-│   └── Select.tsx         # Dropdown select
+│   ├── Select.tsx         # Dropdown select
+│   └── ChapterList.tsx    # Chapter list accordion
 └── layout/
     ├── Header.tsx         # Logo + search
     ├── Container.tsx      # Max-width wrapper
-    └── Grid.tsx           # Responsive grid
+    ├── Grid.tsx           # Responsive grid
+    └── MangaBreadcrumb.tsx # Manga navigation breadcrumb
 ```
 
 ### Card Component
@@ -370,6 +559,59 @@ interface CardProps {
 // - anime.slug (for link)
 
 // NO recibe synopsis en variant='compact'
+```
+
+### MangaCard Component
+
+```typescript
+// src/components/ui/MangaCard.tsx
+interface MangaCardProps {
+  manga: MangaItem | MangaFavorite;
+  variant?: 'default' | 'compact';
+  className?: string;
+}
+
+// Props que recibe:
+// - manga.coverUrl (image, via getProxiedImageUrl)
+// - manga.title
+// - manga.type
+// - manga.id (for link and favorites)
+
+// Incluye botón de favorito integrado (♡/♥)
+// Usa placeholder SVG si la imagen falla
+```
+
+### ChapterList Component
+
+```typescript
+// src/components/ui/ChapterList.tsx
+interface ChapterListProps {
+  chapters: MangaChapter[];
+  mangaId: number;
+}
+
+// Accordion por capítulo
+// Click en header toggles expanded state
+// Muestra versions (scanlators) cuando expandido
+// Link a cada versión: /manga/:mangaId/chapter/:hash
+```
+
+### MangaBreadcrumb Component
+
+```typescript
+// src/components/layout/MangaBreadcrumb.tsx
+interface MangaBreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface MangaBreadcrumbProps {
+  items: MangaBreadcrumbItem[];
+}
+
+// Items: array de {label, href?}
+// Último item es current page (no link)
+// Separador: › entre items
 ```
 
 ### Chip Component
@@ -446,7 +688,74 @@ const debouncedQuery = useDebounce(searchQuery, 300);
 
 ---
 
-## 10. Filtros del Catálogo
+## 10. Chapter Reader (Manga)
+
+```typescript
+// src/pages/ChapterReader.tsx
+
+// Vertical page display con lazy loading
+// Cada página es un <img> que se carga on-demand
+// El componente mantiene track de:
+// - imageErrors: Set<number> para imágenes que fallaron
+// - visiblePages: Set<number> para saber cuáles cargaron
+// - showBackToTop: boolean para mostrar botón después de scroll 300px
+```
+
+### Fullscreen Mode
+
+```typescript
+// Toggle: floating button (bottom-right) o tecla F
+// Estado: isFullscreen (boolean) basado en document.fullscreenElement
+
+// Immersive reading:
+// - fullscreenWrapper usa :fullscreen pseudo-class
+// - Fondo negro (#000), padding 0
+// - pageImage ocupa 100vw con border-radius 0
+// - pageNumber oculto en fullscreen
+
+// Scroll position preservation:
+// - findMostVisibleImage(): busca la imagen más cercana al centro del viewport
+// - currentImageRef: guarda referencia a la imagen actualmente visible
+// - En fullscreenchange event: scroll a la imagen guardada usando scrollIntoView
+// - Evita guardar pixel positions (se invalidan tras re-render)
+```
+
+### Version Selector
+
+```typescript
+// Muchos capítulos tienen múltiples scanlators
+// buildUniqueChapterList(): deduplica por chapter.number
+// currentChapter.versions: ChapterVersion[]
+// Select component para cambiar entre versiones
+// Navega a /manga/:id/chapter/:newHash
+```
+
+### Chapter Navigation
+
+```typescript
+// prevChapter / nextChapter basado en uniqueChapters array
+// Links a /manga/:id/chapter/:hash
+// Renderizado en top (Container) y bottom (en ambos modos)
+// En fullscreen: bottomNavFullscreen (width auto, max-width 800px)
+```
+
+### Key CSS Classes (ChapterReader.module.css)
+
+| Class | Purpose |
+|-------|---------|
+| `.fullscreenWrapper` | Container que recibe :fullscreen styles |
+| `.fullscreenButton` | Floating button, position fixed bottom-right |
+| `.imageStack` | Flex column, centered, gap-sm |
+| `.pageWrapper` | position relative, text-align center |
+| `.pageImage` | max-width 100%, auto height, border-radius |
+| `.pageNumber` | Absolute bottom-right, bg rgba(0,0,0,0.75) |
+| `.bottomNav` | margin-top 2xl, border-top, max-width container |
+| `.bottomNavFullscreen` | margin-lg auto, max-width 800px |
+| `.backToTop` | Fixed, bottom-(lg+48px), right-lg, 48x48px |
+
+---
+
+## 11. Filtros del Catálogo
 
 ### Query Params de Filtro
 
@@ -468,7 +777,7 @@ const debouncedQuery = useDebounce(searchQuery, 300);
 
 ---
 
-## 11. Estilos CSS
+## 12. Estilos CSS
 
 ### Variables CSS
 
@@ -497,7 +806,7 @@ const debouncedQuery = useDebounce(searchQuery, 300);
 
 ---
 
-## 12. Errores y Edge Cases
+## 13. Errores y Edge Cases
 
 ### Manejo de Errores
 
@@ -518,7 +827,7 @@ const debouncedQuery = useDebounce(searchQuery, 300);
 
 ---
 
-## 13. Conventions
+## 14. Conventions
 
 ### Nombres
 
