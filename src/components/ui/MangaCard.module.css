@@ -25,17 +25,13 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, var(--color-border) 0%, var(--color-surface) 50%, var(--color-border) 100%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: pulse 1.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .poster {
