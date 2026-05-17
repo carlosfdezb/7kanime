@@ -1,36 +1,41 @@
 import { useCallback } from 'react';
 import { useReadChaptersStore } from '../store/readChaptersStore';
+import { useSyncContext } from '../context/SyncContext';
 
 export function useReadChapters(mangaId: number) {
-  const storeReadChapters = useReadChaptersStore(s => s.readChapters);
+  const store = useReadChaptersStore();
+  const { readChaptersAdapter, isAuthenticated } = useSyncContext();
 
-  // Select only this manga's read chapters — returns undefined if none
-  // Do NOT use `|| []` here — that creates a NEW array reference on every call,
-  // causing unnecessary re-renders in consumers.
-  const readChapters = storeReadChapters[mangaId];
+  // Select only this manga's read chapters
+  const readChapters = store.readChapters[mangaId]?.hashes ?? [];
 
-  const markChapterAsRead = useCallback((chapterHash: string) => {
-    useReadChaptersStore.getState().markAsRead(mangaId, chapterHash);
-  }, [mangaId]);
+  const markAsRead = useCallback((chapterHash: string, chapterNum?: string, mangaTitle?: string, coverUrl?: string) => {
+    store.markAsRead(mangaId, chapterHash, chapterNum, mangaTitle, coverUrl, readChaptersAdapter ?? undefined);
+  }, [store, mangaId, readChaptersAdapter]);
 
-  const removeChapterFromRead = useCallback((chapterHash: string) => {
-    useReadChaptersStore.getState().removeFromRead(mangaId, chapterHash);
-  }, [mangaId]);
+  const removeFromRead = useCallback((chapterHash: string) => {
+    store.removeFromRead(mangaId, chapterHash, readChaptersAdapter ?? undefined);
+  }, [store, mangaId, readChaptersAdapter]);
 
-  const isChapterReadByHash = useCallback((versionHashes: string[]) => {
-    return useReadChaptersStore.getState().isChapterRead(mangaId, versionHashes);
-  }, [mangaId]);
+  const isChapterRead = useCallback((versionHashes: string[]) => {
+    return store.isChapterRead(mangaId, versionHashes);
+  }, [store, mangaId]);
 
-  const getReadHashesForManga = useCallback(() => {
-    return useReadChaptersStore.getState().getReadHashes(mangaId);
-  }, [mangaId]);
+  const getReadHashes = useCallback(() => {
+    return store.getReadHashes(mangaId);
+  }, [store, mangaId]);
+
+  const clearMangaRead = useCallback(() => {
+    store.clearMangaRead(mangaId, readChaptersAdapter ?? undefined);
+  }, [store, mangaId, readChaptersAdapter]);
 
   return {
-    readChapters: readChapters ?? [],
-    markAsRead: markChapterAsRead,
-    removeFromRead: removeChapterFromRead,
-    isChapterRead: isChapterReadByHash,
-    getReadHashes: getReadHashesForManga,
-    clearMangaRead: () => useReadChaptersStore.getState().clearMangaRead(mangaId),
+    readChapters,
+    markAsRead,
+    removeFromRead,
+    isChapterRead,
+    getReadHashes,
+    clearMangaRead,
+    isAuthenticated,
   };
 }

@@ -1,3 +1,16 @@
+/// <reference types="vite/client" />
+
+// Vite env variables
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL?: string;
+  readonly VITE_SUPABASE_ANON_KEY?: string;
+  readonly VITE_CLERK_PUBLISHABLE_KEY?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 // Global TV Focus state
 declare global {
   interface Window {
@@ -39,3 +52,5 @@ declare module '*.gif' {
   const src: string;
   export default src;
 }
+
+export {};

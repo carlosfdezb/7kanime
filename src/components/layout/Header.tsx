@@ -1,11 +1,12 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useState, useRef, FormEvent } from 'react';
+import { useState, useRef, FormEvent, useEffect } from 'react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import styles from './Header.module.css';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { useDebounce } from '../../hooks/useDebounce';
-import { useFavoritesStore } from '../../store/favoritesStore';
-import { useMangaFavoritesStore } from '../../store/mangaFavoritesStore';
+import { useAnimeFavorites } from '../../hooks/useAnimeFavorites';
+import { useMangaFavorites } from '../../hooks/useMangaFavorites';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -16,14 +17,44 @@ interface HeaderProps {
 export function Header({ onSearch, showFavorites = false, onToggleFavorites }: HeaderProps) {
   const [searchValue, setSearchValue] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const debouncedSearch = useDebounce(searchValue, 300);
   const navigate = useNavigate();
   const location = useLocation();
-  const { favorites } = useFavoritesStore();
-  const { favorites: mangaFavorites } = useMangaFavoritesStore();
+  const { isSignedIn, signOut } = useAuth();
+  const { user } = useUser();
+  const { favorites, isAuthenticated: isAnimeAuth } = useAnimeFavorites();
+  const { favorites: mangaFavorites, isAuthenticated: isMangaAuth } = useMangaFavorites();
 
   const isMangaContext = location.pathname.startsWith('/manga');
   const currentFavorites = isMangaContext ? mangaFavorites : favorites;
+  const isAuthenticated = isMangaContext ? isMangaAuth : isAnimeAuth;
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setShowUserMenu(false);
+      }
+    };
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showUserMenu]);
+
+  const handleLogout = async () => {
+    setShowUserMenu(false);
+    await signOut();
+    navigate('/');
+  };
+
+  const getUserInitial = () => {
+    const email = user?.primaryEmailAddress?.emailAddress;
+    if (!email) return '?';
+    return email[0].toUpperCase();
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -91,16 +122,61 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
           />
         </form>
 
-        <Button
-          variant="ghost"
-          onClick={handleFavoritesClick}
-          className={`${styles.favoritesBtn} ${showFavorites ? styles.favoritesBtnActive : ''}`}
-          data-tv-focus="true"
-          data-tv-focus-id="favorites-btn"
-          aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
-        >
-          {showFavorites ? '✕' : `♥ ${currentFavorites.length}`}
-        </Button>
+        {isAuthenticated && (
+          <Button
+            variant="ghost"
+            onClick={handleFavoritesClick}
+            className={`${styles.favoritesBtn} ${showFavorites ? styles.favoritesBtnActive : ''}`}
+            data-tv-focus="true"
+            data-tv-focus-id="favorites-btn"
+            aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
+          >
+            {showFavorites ? '✕' : `♥ ${currentFavorites.length}`}
+          </Button>
+        )}
+
+        {isSignedIn ? (
+          <div className={styles.userSection} ref={userMenuRef}>
+            <button
+              type="button"
+              className={styles.avatarBtn}
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              aria-label="Menú de usuario"
+              aria-expanded={showUserMenu}
+              data-tv-focus="true"
+              data-tv-focus-id="user-menu-btn"
+            >
+              <span className={styles.avatar}>{getUserInitial()}</span>
+            </button>
+
+            {showUserMenu && (
+              <div className={styles.userMenu}>
+                <div className={styles.userEmail}>
+                  {user?.primaryEmailAddress?.emailAddress}
+                </div>
+                <button
+                  type="button"
+                  className={styles.logoutBtn}
+                  onClick={handleLogout}
+                  data-tv-focus="true"
+                  data-tv-focus-id="logout-btn"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/login" className={styles.loginLink}>
+            <Button
+              variant="ghost"
+              data-tv-focus="true"
+              data-tv-focus-id="login-btn"
+            >
+              Iniciar sesión
+            </Button>
+          </Link>
+        )}
       </div>
     </header>
   );

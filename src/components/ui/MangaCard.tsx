@@ -17,7 +17,7 @@ const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/20
 export function MangaCard({ manga, variant: _variant = 'default', className }: MangaCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
+  const { isMangaFavorite, toggleMangaFavorite, isAuthenticated } = useMangaFavorites();
 
   const handleImageError = () => {
     setImageError(true);
@@ -28,12 +28,14 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleMangaFavorite({
-      id: manga.id,
-      title: manga.title,
-      coverUrl: manga.coverUrl,
-      type: manga.type,
-    });
+    if (isAuthenticated) {
+      toggleMangaFavorite({
+        id: manga.id,
+        title: manga.title,
+        coverUrl: manga.coverUrl,
+        type: manga.type,
+      });
+    }
   };
 
   return (
@@ -53,13 +55,15 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
           onLoad={() => setImageLoaded(true)}
           onError={handleImageError}
         />
-        <button
-          className={cn(styles.favoriteBtn, isFavorite && styles.favoriteBtnActive)}
-          onClick={handleFavoriteClick}
-          aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-        >
-          {isFavorite ? '\u2665' : '\u2661'}
-        </button>
+        {isAuthenticated && (
+          <button
+            className={cn(styles.favoriteBtn, isFavorite && styles.favoriteBtnActive)}
+            onClick={handleFavoriteClick}
+            aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          >
+            {isFavorite ? '\u2665' : '\u2661'}
+          </button>
+        )}
         <span className={styles.type}>{manga.type}</span>
       </div>
       <div className={styles.info}>

@@ -9,7 +9,7 @@ import { Skeleton } from '../components/ui/Skeleton';
 import { Focusable } from '../components/ui/Focusable';
 import { VideoPlayer } from '../components/ui/VideoPlayer';
 import { useFetch } from '../hooks/useFetch';
-import { useWatchedStore } from '../store/watchedStore';
+import { useWatchedEpisodes } from '../hooks/useWatchedEpisodes';
 import { useTVNavigation } from '../hooks/useTVNavigation';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
 
@@ -41,7 +41,7 @@ export function Episode() {
     slug ? `/anime/${slug}` : null
   );
 
-  const { isWatched, markWatched, toggleWatched } = useWatchedStore();
+  const { isWatched, markWatched, toggleWatched } = useWatchedEpisodes();
   const [variant, setVariant] = useState<Variant>('SUB');
   const [currentEmbed, setCurrentEmbed] = useState<MediaLink | null>(null);
   const [isVisible, setIsVisible] = useState(true);
@@ -68,7 +68,7 @@ export function Episode() {
     }
     if (slug && !isWatched(slug, episodeNumber)) {
       timerRef.current = setTimeout(() => {
-        markWatched(slug, episodeNumber);
+        markWatched(slug, episodeNumber, animeTitle, animeData?.poster);
       }, WATCHED_TIMER_MS);
     }
   }, [slug, episodeNumber, isWatched, markWatched]);
@@ -175,7 +175,7 @@ export function Episode() {
             as={Button}
             id="watched-btn"
             variant={watched ? 'primary' : 'ghost'}
-            onClick={() => slug && toggleWatched(slug, episodeNumber)}
+            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster)}
             className={styles.watchedBtn}
           >
             {watched ? '✓ Visto' : 'Marcar como visto'}

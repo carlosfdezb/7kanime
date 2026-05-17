@@ -7,14 +7,14 @@ import { MangaCard } from '../components/ui/MangaCard';
 import { Button } from '../components/ui/Button';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
-import { useMangaFavoritesStore } from '../store/mangaFavoritesStore';
+import { useMangaFavorites } from '../hooks/useMangaFavorites';
 
 const ITEMS_PER_PAGE = 20;
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, page, totalPages, totalItems, hasNextPage, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
-  const { favorites } = useMangaFavoritesStore();
+  const { favorites } = useMangaFavorites();
   const [showFavorites, setShowFavorites] = useState(false);
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
