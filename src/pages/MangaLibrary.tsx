@@ -13,7 +13,22 @@ import { getTags } from '../api/manga';
 import { translateGenreDisplay } from '../api/manga';
 
 const ITEMS_PER_PAGE = 25;
-const TAGS_INITIAL_SHOW = 12;
+const TAGS_COLLAPSED_COUNT = 30;
+
+// Popular tags shown first when collapsed (in priority order)
+const POPULAR_TAGS = [
+  'Acción', 'Adventure', 'Aventura', 'Comedia', 'Comedy', 'Drama',
+  'Fantasía', 'Fantasy', 'Romance', 'Escolar', 'School', 'School Life',
+  'Vida escolar', 'Shōnen', 'Shonen', 'Seinen', 'Shōjo', 'Shojo',
+  'Isekai', 'Sobrenatural', 'Supernatural', 'Super Natural',
+  'Deportes', 'Sports', 'Artes marciales', 'Martial Arts', 'Misterio',
+  'Mystery', 'Horror', 'Terror', 'Ciencia Ficción', 'Sci-Fi',
+  'Mecha', 'Psicológico', 'Psychological', 'Gore', 'Ecchi',
+  'Harem', 'Hentai', 'Yaoi', 'Yuri', 'Slice of Life',
+  'Recuentos de la vida', 'Vida Cotidiana', 'Histórico', 'Historical',
+  'Guerra', 'War', 'Militar', 'Military', 'Policial',
+  'Police', 'Musica', 'Music', 'Parodia', 'Parody',
+];
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,18 +47,49 @@ export function MangaLibrary() {
     setShowFavorites(favoritesParam === 'true');
   }, [searchParams]);
 
-  // Load available tags
+  // Load and organize available tags
   useEffect(() => {
     getTags()
       .then((tags) => {
-        // Sort tags alphabetically and translate for display
-        const sortedTags = tags.sort((a, b) => a.localeCompare(b));
-        setAvailableTags(sortedTags);
+        setAvailableTags(tags);
       })
       .catch(() => {
         // Silently fail - tags are optional
       });
   }, []);
+
+  // Organize tags for display: popular first when collapsed, alphabetical when expanded
+  const displayedTags = tagsExpanded
+    ? [...availableTags].sort((a, b) => a.localeCompare(b))
+    : (() => {
+        // When collapsed: show popular tags that exist in availableTags
+        const popularSet = new Set<string>();
+        
+        // Add popular tags that exist in the API response
+        for (const popular of POPULAR_TAGS) {
+          const found = availableTags.find(
+            (tag) => tag.toLowerCase() === popular.toLowerCase()
+          );
+          if (found) {
+            popularSet.add(found);
+          }
+          if (popularSet.size >= TAGS_COLLAPSED_COUNT) break;
+        }
+        
+        // If we don't have enough popular tags, fill with remaining tags alphabetically
+        if (popularSet.size < TAGS_COLLAPSED_COUNT) {
+          const remaining = availableTags
+            .filter((tag) => !popularSet.has(tag))
+            .sort((a, b) => a.localeCompare(b));
+          
+          for (const tag of remaining) {
+            popularSet.add(tag);
+            if (popularSet.size >= TAGS_COLLAPSED_COUNT) break;
+          }
+        }
+        
+        return Array.from(popularSet);
+      })();
 
   const loadData = useCallback(async () => {
     if (searchQuery || selectedTag) {
@@ -104,7 +150,7 @@ export function MangaLibrary() {
         {!showFavorites && availableTags.length > 0 && (
           <div className={styles.tagsSection}>
             <div className={styles.tagsList}>
-              {availableTags.slice(0, tagsExpanded ? availableTags.length : TAGS_INITIAL_SHOW).map((tag) => (
+              {displayedTags.map((tag) => (
                 <Chip
                   key={tag}
                   label={translateGenreDisplay(tag)}
@@ -124,14 +170,14 @@ export function MangaLibrary() {
                 />
               ))}
             </div>
-            {availableTags.length > TAGS_INITIAL_SHOW && (
+            {availableTags.length > TAGS_COLLAPSED_COUNT && (
               <button
                 className={styles.expandButton}
                 onClick={() => setTagsExpanded((e) => !e)}
               >
                 {tagsExpanded
                   ? 'Ver menos'
-                  : `Ver más (${availableTags.length - TAGS_INITIAL_SHOW} más)`}
+                  : `Ver más (${availableTags.length - TAGS_COLLAPSED_COUNT} más)`}
               </button>
             )}
           </div>
