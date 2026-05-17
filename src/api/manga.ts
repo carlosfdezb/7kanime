@@ -306,7 +306,7 @@ export async function searchManga(query: string, tag?: string): Promise<MangaSea
   // Backend returns array directly, not { items: [...] }
   let url = `/manga/search?q=${encodeURIComponent(query)}`;
   if (tag) {
-    url += `&tag=${encodeURIComponent(tag)}`;
+    url += `&tags=${encodeURIComponent(tag)}`;
   }
   const raw = await apiFetch<BackendMangaItem[]>(url);
   return {
