@@ -23,22 +23,20 @@ const translateStatus = (status: string): string =>
   STATUS_TRANSLATIONS[status] ?? status;
 
 interface ReadingCTAProps {
-  chapters: MangaDetailType['chapters'];
+  chapters: { publicId: string; numeroCapitulo: string }[];
   readChapters: string[];
   mangaId: string;
 }
 
 function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
-  const sortedChapters = sortChaptersByOrden(chapters);
-
-  if (sortedChapters.length === 0) {
+  if (chapters.length === 0) {
     return null;
   }
 
   // Find which chapters have been read (match by publicId)
   const readIndices: number[] = [];
 
-  sortedChapters.forEach((chapter, index) => {
+  chapters.forEach((chapter, index) => {
     if (readChapters.includes(chapter.publicId)) {
       readIndices.push(index);
     }
@@ -50,20 +48,20 @@ function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
   if (readIndices.length === 0) {
     // No chapters read — show "Empezar a leer"
     buttonText = 'Empezar a leer';
-    targetPublicId = sortedChapters[0].publicId;
+    targetPublicId = chapters[0].publicId;
   } else {
     // Find the last read chapter index
     const lastReadIndex = Math.max(...readIndices);
     const nextIndex = lastReadIndex + 1;
 
-    if (nextIndex >= sortedChapters.length) {
+    if (nextIndex >= chapters.length) {
       // Last chapter was the last read — show "Empezar a leer" (restart)
       buttonText = 'Empezar a leer';
-      targetPublicId = sortedChapters[0].publicId;
+      targetPublicId = chapters[0].publicId;
     } else {
       // There's a next chapter to continue — show "Continuar leyendo"
       buttonText = 'Continuar leyendo';
-      targetPublicId = sortedChapters[nextIndex].publicId;
+      targetPublicId = chapters[nextIndex].publicId;
     }
   }
 
@@ -84,6 +82,11 @@ export const MangaDetail = function MangaDetail() {
   const { readChapters } = useReadChapters(mangaId ?? '');
   const [posterError, setPosterError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [chapterOrder, setChapterOrder] = useState<'asc' | 'desc'>('asc');
+
+  const sortedChapters = chapterOrder === 'asc'
+    ? sortChaptersByOrden(data?.chapters || [])
+    : sortChaptersByOrden(data?.chapters || []).reverse();
 
   useEffect(() => {
     if (!mangaId) return;
@@ -234,9 +237,9 @@ export const MangaDetail = function MangaDetail() {
               </Button>
             </div>
 
-            {manga.chapters.length > 0 && (
+            {sortedChapters.length > 0 && (
               <ReadingCTA
-                chapters={manga.chapters}
+                chapters={sortedChapters}
                 readChapters={readChapters}
                 mangaId={manga.publicId}
               />
@@ -252,10 +255,29 @@ export const MangaDetail = function MangaDetail() {
         </div>
 
         <div className={styles.chaptersSection}>
-          <h2 className={styles.sectionTitle}>
-            Capítulos ({manga.chapters.length})
-          </h2>
-          <ChapterList chapters={manga.chapters} mangaId={manga.publicId} readChapters={readChapters} />
+          <div className={styles.chaptersHeader}>
+            <h2 className={styles.sectionTitle}>
+              Capítulos ({sortedChapters.length})
+            </h2>
+            <button
+              className={styles.orderToggle}
+              onClick={() => setChapterOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              aria-label={chapterOrder === 'asc' ? 'Ordenar descendente' : 'Ordenar ascendente'}
+            >
+              {chapterOrder === 'asc' ? (
+                <>
+                  <span>↑</span>
+                  <span>Primeros</span>
+                </>
+              ) : (
+                <>
+                  <span>↓</span>
+                  <span>Últimos</span>
+                </>
+              )}
+            </button>
+          </div>
+          <ChapterList chapters={sortedChapters} mangaId={manga.publicId} readChapters={readChapters} />
         </div>
 
         <button

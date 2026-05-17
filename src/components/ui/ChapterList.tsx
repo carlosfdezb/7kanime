@@ -1,10 +1,15 @@
 import { Link } from 'react-router-dom';
 import styles from './ChapterList.module.css';
 import { cn } from '../../utils/cn';
-import type { MangaChapter } from '../../types/manga';
+
+interface ChapterItem {
+  publicId: string;
+  numeroCapitulo: string;
+  title?: string;
+}
 
 interface ChapterListProps {
-  chapters: MangaChapter[];
+  chapters: ChapterItem[];
   mangaId: string;
   readChapters?: string[];
 }
@@ -16,12 +21,9 @@ export function ChapterList({ chapters, mangaId, readChapters = [] }: ChapterLis
     );
   }
 
-  // Sort by orden descending (newest first) for display
-  const sortedChapters = [...chapters].sort((a, b) => b.orden - a.orden);
-
   return (
     <div className={styles.chapterList}>
-      {sortedChapters.map((chapter) => {
+      {chapters.map((chapter) => {
         const isRead = readChapters.includes(chapter.publicId);
         return (
           <Link
