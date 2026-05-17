@@ -5,33 +5,99 @@ import { Container } from '../components/layout/Container';
 import { Header } from '../components/layout/Header';
 import { MangaCard } from '../components/ui/MangaCard';
 import { Button } from '../components/ui/Button';
+import { Chip } from '../components/ui/Chip';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
+import { getTags } from '../api/manga';
+import { translateGenreDisplay } from '../api/manga';
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 25;
+const TAGS_COLLAPSED_COUNT = 30;
+
+// Popular tags shown first when collapsed (in priority order)
+const POPULAR_TAGS = [
+  'Acción', 'Adventure', 'Aventura', 'Comedia', 'Comedy', 'Drama',
+  'Fantasía', 'Fantasy', 'Romance', 'Escolar', 'School', 'School Life',
+  'Vida escolar', 'Shōnen', 'Shonen', 'Seinen', 'Shōjo', 'Shojo',
+  'Isekai', 'Sobrenatural', 'Supernatural', 'Super Natural',
+  'Deportes', 'Sports', 'Artes marciales', 'Martial Arts', 'Misterio',
+  'Mystery', 'Horror', 'Terror', 'Ciencia Ficción', 'Sci-Fi',
+  'Mecha', 'Psicológico', 'Psychological', 'Gore', 'Ecchi',
+  'Harem', 'Hentai', 'Yaoi', 'Yuri', 'Slice of Life',
+  'Recuentos de la vida', 'Vida Cotidiana', 'Histórico', 'Historical',
+  'Guerra', 'War', 'Militar', 'Military', 'Policial',
+  'Police', 'Musica', 'Music', 'Parodia', 'Parody',
+];
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, page, totalPages, totalItems, hasNextPage, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
   const { favorites } = useMangaFavorites();
   const [showFavorites, setShowFavorites] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [tagsExpanded, setTagsExpanded] = useState(false);
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const searchQuery = searchParams.get('q') || '';
+  const selectedTag = searchParams.get('tag') || '';
 
   useEffect(() => {
     const favoritesParam = searchParams.get('favorites');
     setShowFavorites(favoritesParam === 'true');
   }, [searchParams]);
 
+  // Load and organize available tags
+  useEffect(() => {
+    getTags()
+      .then((tags) => {
+        setAvailableTags(tags);
+      })
+      .catch(() => {
+        // Silently fail - tags are optional
+      });
+  }, []);
+
+  // Organize tags for display: popular first when collapsed, alphabetical when expanded
+  const displayedTags = tagsExpanded
+    ? [...availableTags].sort((a, b) => a.localeCompare(b))
+    : (() => {
+        // When collapsed: show popular tags that exist in availableTags
+        const popularSet = new Set<string>();
+        
+        // Add popular tags that exist in the API response
+        for (const popular of POPULAR_TAGS) {
+          const found = availableTags.find(
+            (tag) => tag.toLowerCase() === popular.toLowerCase()
+          );
+          if (found) {
+            popularSet.add(found);
+          }
+          if (popularSet.size >= TAGS_COLLAPSED_COUNT) break;
+        }
+        
+        // If we don't have enough popular tags, fill with remaining tags alphabetically
+        if (popularSet.size < TAGS_COLLAPSED_COUNT) {
+          const remaining = availableTags
+            .filter((tag) => !popularSet.has(tag))
+            .sort((a, b) => a.localeCompare(b));
+          
+          for (const tag of remaining) {
+            popularSet.add(tag);
+            if (popularSet.size >= TAGS_COLLAPSED_COUNT) break;
+          }
+        }
+        
+        return Array.from(popularSet);
+      })();
+
   const loadData = useCallback(async () => {
-    if (searchQuery) {
-      await fetchSearch(searchQuery, currentPage);
+    if (searchQuery || selectedTag) {
+      await fetchSearch(searchQuery, selectedTag || undefined);
     } else {
       await fetchPage(currentPage);
     }
-  }, [currentPage, searchQuery, fetchPage, fetchSearch]);
+  }, [currentPage, searchQuery, selectedTag, fetchPage, fetchSearch]);
 
   useEffect(() => {
     if (!showFavorites) {
@@ -71,7 +137,7 @@ export function MangaLibrary() {
       <Container className={styles.content}>
         <div className={styles.header}>
           <h1 className={styles.title}>
-            {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : 'Biblioteca de Manga')}
+            {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : selectedTag ? `Género: ${translateGenreDisplay(selectedTag)}` : 'Biblioteca de Manga')}
           </h1>
           {!showFavorites && totalItems > 0 && (
             <p className={styles.stats}>
@@ -79,6 +145,43 @@ export function MangaLibrary() {
             </p>
           )}
         </div>
+
+        {/* Tag Filters */}
+        {!showFavorites && availableTags.length > 0 && (
+          <div className={styles.tagsSection}>
+            <div className={styles.tagsList}>
+              {displayedTags.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={translateGenreDisplay(tag)}
+                  selected={selectedTag === tag}
+                  onClick={() => {
+                    setSearchParams((prev) => {
+                      const newParams = new URLSearchParams(prev);
+                      if (selectedTag === tag) {
+                        newParams.delete('tag');
+                      } else {
+                        newParams.set('tag', tag);
+                        newParams.delete('page');
+                      }
+                      return newParams;
+                    });
+                  }}
+                />
+              ))}
+            </div>
+            {availableTags.length > TAGS_COLLAPSED_COUNT && (
+              <button
+                className={styles.expandButton}
+                onClick={() => setTagsExpanded((e) => !e)}
+              >
+                {tagsExpanded
+                  ? 'Ver menos'
+                  : `Ver más (${availableTags.length - TAGS_COLLAPSED_COUNT} más)`}
+              </button>
+            )}
+          </div>
+        )}
 
         {error ? (
           <div className={styles.errorState}>
@@ -102,7 +205,7 @@ export function MangaLibrary() {
           ) : (
             <div className={styles.grid}>
               {favorites.map((manga) => (
-                <MangaCard key={manga.id} manga={manga} />
+                <MangaCard key={manga.publicId} manga={manga} />
               ))}
             </div>
           )
@@ -119,7 +222,7 @@ export function MangaLibrary() {
           <>
             <div className={styles.grid}>
               {items.map((manga) => (
-                <MangaCard key={manga.id} manga={manga} />
+                <MangaCard key={manga.publicId} manga={manga} />
               ))}
             </div>
 

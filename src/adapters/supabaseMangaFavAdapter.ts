@@ -29,7 +29,7 @@ export function createSupabaseMangaFavoritesAdapter(
 
       const data = {
         user_id: userId,
-        manga_id: item.id,
+        manga_id: item.publicId,
         title: item.title,
         cover_url: item.coverUrl,
         type: item.type,
@@ -54,7 +54,9 @@ export function createSupabaseMangaFavoritesAdapter(
     remove(id: string | number): void {
       const supabase = createClerkSupabaseClient(getToken);
 
-      const data = { id_column: 'manga_id', id_value: id };
+      const mangaId = String(id);
+
+      const data = { id_column: 'manga_id', id_value: mangaId };
 
       // Wrap with offline queue — network errors get queued for later flush
       withOfflineQueue(
@@ -62,7 +64,7 @@ export function createSupabaseMangaFavoritesAdapter(
           const { error } = await supabase
             .from('manga_favorites')
             .delete()
-            .eq('manga_id', id);
+            .eq('manga_id', mangaId);
           if (error) {
             console.warn('[SupabaseMangaFavAdapter] remove failed:', error.message);
           }

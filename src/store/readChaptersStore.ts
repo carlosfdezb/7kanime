@@ -14,28 +14,28 @@ import type { SyncAdapter } from '../adapters/types';
 import type { ReadMangaData } from '../adapters/supabaseChapterAdapter';
 
 interface ReadChaptersStore {
-  readChapters: Record<number, ReadMangaData>;
-  markAsRead: (mangaId: number, chapterHash: string, chapterNum?: string, mangaTitle?: string, coverUrl?: string, adapter?: SyncAdapter<Record<number, ReadMangaData>>) => void;
-  removeFromRead: (mangaId: number, chapterHash: string, adapter?: SyncAdapter<Record<number, ReadMangaData>>) => void;
-  isChapterRead: (mangaId: number, versionHashes: string[]) => boolean;
-  getReadHashes: (mangaId: number) => string[];
-  clearMangaRead: (mangaId: number, adapter?: SyncAdapter<Record<number, ReadMangaData>>) => void;
-  hydrate: (data: Record<number, ReadMangaData>) => void;
+  readChapters: Record<string, ReadMangaData>;
+  markAsRead: (mangaId: string, capituloId: string, chapterNum?: string, mangaTitle?: string, coverUrl?: string, adapter?: SyncAdapter<Record<string, ReadMangaData>>) => void;
+  removeFromRead: (mangaId: string, capituloId: string, adapter?: SyncAdapter<Record<string, ReadMangaData>>) => void;
+  isChapterRead: (mangaId: string, capituloIds: string[]) => boolean;
+  getReadHashes: (mangaId: string) => string[];
+  clearMangaRead: (mangaId: string, adapter?: SyncAdapter<Record<string, ReadMangaData>>) => void;
+  hydrate: (data: Record<string, ReadMangaData>) => void;
 }
 
 export const useReadChaptersStore = create<ReadChaptersStore>((set, get) => ({
-  readChapters: {} as Record<number, ReadMangaData>,
+  readChapters: {} as Record<string, ReadMangaData>,
 
-  markAsRead: (mangaId: number, chapterHash: string, chapterNum?: string, mangaTitle?: string, coverUrl?: string, adapter?: SyncAdapter<Record<number, ReadMangaData>>) => {
+  markAsRead: (mangaId: string, capituloId: string, chapterNum?: string, mangaTitle?: string, coverUrl?: string, adapter?: SyncAdapter<Record<string, ReadMangaData>>) => {
     set(state => {
       const existing = state.readChapters[mangaId] || { hashes: [], manga_title: '', cover_url: '', chapter_nums: {} };
-      if (!existing.hashes.includes(chapterHash)) {
-        const newChapterNums = { ...existing.chapter_nums, [chapterHash]: chapterNum ?? existing.chapter_nums?.[chapterHash] ?? '' };
+      if (!existing.hashes.includes(capituloId)) {
+        const newChapterNums = { ...existing.chapter_nums, [capituloId]: chapterNum ?? existing.chapter_nums?.[capituloId] ?? '' };
         const newState = {
           readChapters: {
             ...state.readChapters,
             [mangaId]: {
-              hashes: [...existing.hashes, chapterHash],
+              hashes: [...existing.hashes, capituloId],
               manga_title: mangaTitle ?? existing.manga_title,
               cover_url: coverUrl ?? existing.cover_url,
               chapter_nums: newChapterNums,
@@ -53,17 +53,17 @@ export const useReadChaptersStore = create<ReadChaptersStore>((set, get) => ({
     });
   },
 
-  removeFromRead: (mangaId: number, chapterHash: string, adapter?: SyncAdapter<Record<number, ReadMangaData>>) => {
+  removeFromRead: (mangaId: string, capituloId: string, adapter?: SyncAdapter<Record<string, ReadMangaData>>) => {
     set(state => {
       const existing = state.readChapters[mangaId];
       if (!existing) return state;
-      const { [chapterHash]: _, ...remainingChapterNums } = existing.chapter_nums ?? {};
+      const { [capituloId]: _, ...remainingChapterNums } = existing.chapter_nums ?? {};
       const newState = {
         readChapters: {
           ...state.readChapters,
           [mangaId]: {
             ...existing,
-            hashes: existing.hashes.filter(h => h !== chapterHash),
+            hashes: existing.hashes.filter(h => h !== capituloId),
             chapter_nums: remainingChapterNums,
           },
         },
@@ -77,18 +77,18 @@ export const useReadChaptersStore = create<ReadChaptersStore>((set, get) => ({
     });
   },
 
-  isChapterRead: (mangaId: number, versionHashes: string[]) => {
+  isChapterRead: (mangaId: string, capituloIds: string[]) => {
     const stored = get().readChapters[mangaId];
     const hashes = stored?.hashes ?? [];
-    const _versionHashes = Array.isArray(versionHashes) ? versionHashes : [];
-    return _versionHashes.some(h => hashes.includes(h));
+    const _capituloIds = Array.isArray(capituloIds) ? capituloIds : [];
+    return _capituloIds.some(h => hashes.includes(h));
   },
 
-  getReadHashes: (mangaId: number) => {
+  getReadHashes: (mangaId: string) => {
     return get().readChapters[mangaId]?.hashes ?? [];
   },
 
-  clearMangaRead: (mangaId: number, adapter?: SyncAdapter<Record<number, ReadMangaData>>) => {
+  clearMangaRead: (mangaId: string, adapter?: SyncAdapter<Record<string, ReadMangaData>>) => {
     set(state => {
       const { [mangaId]: _, ...rest } = state.readChapters;
 
@@ -100,7 +100,7 @@ export const useReadChaptersStore = create<ReadChaptersStore>((set, get) => ({
     });
   },
 
-  hydrate: (data: Record<number, ReadMangaData>) => {
+  hydrate: (data: Record<string, ReadMangaData>) => {
     set({ readChapters: data });
   },
 }));

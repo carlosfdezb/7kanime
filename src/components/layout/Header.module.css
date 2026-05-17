@@ -24,6 +24,16 @@
   margin-left: auto;
 }
 
+.favoritesCount {
+  display: inline;
+}
+
+@media (max-width: 639px) {
+  .favoritesCount {
+    display: none;
+  }
+}
+
 .favoritesBtn.favoritesBtn:hover:not(:disabled) {
   border-color: var(--color-primary);
 }
@@ -111,63 +121,53 @@
   }
 }
 
-/* ===== Mobile Search Collapse (<640px) ===== */
+/* ===== Mobile (<640px) ===== */
 @media (max-width: 639px) {
   .inner {
-    gap: 12px;
-    position: relative;
+    gap: 6px;
+    padding: 0 var(--space-sm);
   }
 
   .nav {
-    gap: 8px;
+    gap: 2px;
+    margin-left: 0;
   }
 
   .navLink {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    padding: 4px 6px;
   }
 
-  /* Hide the search form by default on mobile */
+  .logoAccent,
+  .logoText {
+    font-size: 1.125rem;
+  }
+
+  .favoritesBtn {
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-left: 0;
+  }
+
+  /* Search form takes remaining space */
   .searchForm {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    max-width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    transform: scaleY(0);
-    transform-origin: top;
-    opacity: 0;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-    z-index: 100;
+    flex: 1;
+    max-width: none;
+    margin: 0;
+    min-width: 0;
   }
 
-  /* Expand search when focused */
-  .searchForm:focus-within {
-    transform: scaleY(1);
-    opacity: 1;
+  .searchInput {
+    width: 100%;
   }
 
-  /* Search toggle button visible only on mobile */
+  /* Search toggle button hidden on mobile since search is always visible */
   .searchToggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
+    display: none;
   }
 
-  .searchToggle:hover {
-    color: var(--color-text);
-    border-color: var(--color-primary);
+  .userMenu {
+    right: 0;
   }
 }
 
@@ -252,12 +252,4 @@
   margin-left: auto;
 }
 
-@media (max-width: 639px) {
-  .userSection {
-    order: 10;
-  }
 
-  .userMenu {
-    right: 0;
-  }
-}

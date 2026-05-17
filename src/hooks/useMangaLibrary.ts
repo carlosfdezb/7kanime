@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { getMangaLibrary, searchManga } from '../api/manga';
-import type { MangaItem, PaginatedMangaResponse } from '../types/manga';
+import { getPopular, searchManga } from '../api/manga';
+import type { MangaItem } from '../types/manga';
 
 interface UseMangaLibraryResult {
   items: MangaItem[];
@@ -11,7 +11,7 @@ interface UseMangaLibraryResult {
   loading: boolean;
   error: string | null;
   fetchPage: (pageNum: number) => Promise<void>;
-  fetchSearch: (query: string, pageNum: number) => Promise<void>;
+  fetchSearch: (query: string, tag?: string) => Promise<void>;
 }
 
 export function useMangaLibrary(): UseMangaLibraryResult {
@@ -28,8 +28,8 @@ export function useMangaLibrary(): UseMangaLibraryResult {
     setError(null);
 
     try {
-      const response: PaginatedMangaResponse = await getMangaLibrary(pageNum);
-      setItems(response.items);
+      const response = await getPopular(pageNum, 25);
+      setItems(response.items || []);
       setPage(response.page);
       setTotalPages(response.totalPages);
       setTotalItems(response.totalItems);
@@ -41,17 +41,17 @@ export function useMangaLibrary(): UseMangaLibraryResult {
     }
   }, []);
 
-  const fetchSearch = useCallback(async (query: string, pageNum: number) => {
+  const fetchSearch = useCallback(async (query: string, tag?: string) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response: PaginatedMangaResponse = await searchManga(query, pageNum);
-      setItems(response.items);
-      setPage(response.page);
-      setTotalPages(response.totalPages);
-      setTotalItems(response.totalItems);
-      setHasNextPage(response.hasNextPage);
+      const response = await searchManga(query, tag);
+      setItems(response.items || []);
+      setPage(1);
+      setTotalPages(1);
+      setTotalItems(response.items.length);
+      setHasNextPage(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error en la búsqueda de manga');
     } finally {

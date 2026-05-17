@@ -1,28 +1,23 @@
-import type { MangaChapter, ChapterVersion } from '../types/manga';
+import type { MangaChapter } from '../types/manga';
 
-export interface UniqueChapter {
-  number: string;
-  title: string | null;
-  hash: string;
-  versions: ChapterVersion[];
+export interface ChapterNavInfo {
+  publicId: string;
+  numeroCapitulo: string;
+  orden: number;
+  title?: string;
 }
 
 /**
- * Builds a de-duplicated list of chapters by chapter number.
- * When multiple versions exist for the same chapter number,
- * the first version's hash is used as canonical.
+ * Sorts chapters by orden (ascending — chapter 1, 2, 3...).
+ * In the shadowmanga API, chapters are already unique by publicId.
  */
-export function buildUniqueChapterList(chapters: MangaChapter[]): UniqueChapter[] {
-  const seen = new Map<string, UniqueChapter>();
-  for (const chapter of chapters) {
-    if (!seen.has(chapter.number)) {
-      seen.set(chapter.number, {
-        number: chapter.number,
-        title: chapter.title,
-        hash: chapter.versions[0]?.hash ?? '',
-        versions: chapter.versions,
-      });
-    }
-  }
-  return Array.from(seen.values());
+export function sortChaptersByOrden(chapters: MangaChapter[]): ChapterNavInfo[] {
+  return [...chapters]
+    .sort((a, b) => a.orden - b.orden)
+    .map(ch => ({
+      publicId: ch.publicId,
+      numeroCapitulo: ch.numeroCapitulo,
+      orden: ch.orden,
+      title: ch.title,
+    }));
 }

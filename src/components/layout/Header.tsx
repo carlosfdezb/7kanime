@@ -131,7 +131,11 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
             data-tv-focus-id="favorites-btn"
             aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
           >
-            {showFavorites ? '✕' : `♥ ${currentFavorites.length}`}
+            {showFavorites ? '✕' : (
+              <>
+                ♥<span className={styles.favoritesCount}> {currentFavorites.length}</span>
+              </>
+            )}
           </Button>
         )}
 

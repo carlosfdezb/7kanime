@@ -16,8 +16,8 @@ import { SyncAdapter } from '../adapters/types';
 interface MangaFavoritesStore {
   favorites: MangaFavorite[];
   addFavorite: (manga: MangaFavorite, adapter?: SyncAdapter<MangaFavorite>) => void;
-  removeFavorite: (id: number, adapter?: SyncAdapter<MangaFavorite>) => void;
-  isFavorite: (id: number) => boolean;
+  removeFavorite: (publicId: string, adapter?: SyncAdapter<MangaFavorite>) => void;
+  isFavorite: (publicId: string) => boolean;
   toggleFavorite: (manga: MangaFavorite, adapter?: SyncAdapter<MangaFavorite>) => void;
   hydrate: (items: MangaFavorite[]) => void;
 }
@@ -27,7 +27,7 @@ export const useMangaFavoritesStore = create<MangaFavoritesStore>((set, get) => 
 
   addFavorite: (manga: MangaFavorite, adapter?: SyncAdapter<MangaFavorite>) => {
     const { favorites } = get();
-    if (!favorites.some(f => f.id === manga.id)) {
+    if (!favorites.some(f => f.publicId === manga.publicId)) {
       const newFavorites = [...favorites, manga];
       set({ favorites: newFavorites });
 
@@ -37,24 +37,24 @@ export const useMangaFavoritesStore = create<MangaFavoritesStore>((set, get) => 
     }
   },
 
-  removeFavorite: (id: number, adapter?: SyncAdapter<MangaFavorite>) => {
+  removeFavorite: (publicId: string, adapter?: SyncAdapter<MangaFavorite>) => {
     const { favorites } = get();
-    const newFavorites = favorites.filter(f => f.id !== id);
+    const newFavorites = favorites.filter(f => f.publicId !== publicId);
     set({ favorites: newFavorites });
 
     if (adapter) {
-      adapter.remove(id);
+      adapter.remove(publicId);
     }
   },
 
-  isFavorite: (id: number) => {
-    return get().favorites.some(f => f.id === id);
+  isFavorite: (publicId: string) => {
+    return get().favorites.some(f => f.publicId === publicId);
   },
 
   toggleFavorite: (manga: MangaFavorite, adapter?: SyncAdapter<MangaFavorite>) => {
     const { favorites, addFavorite, removeFavorite } = get();
-    if (favorites.some(f => f.id === manga.id)) {
-      removeFavorite(manga.id, adapter);
+    if (favorites.some(f => f.publicId === manga.publicId)) {
+      removeFavorite(manga.publicId, adapter);
     } else {
       addFavorite(manga, adapter);
     }

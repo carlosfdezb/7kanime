@@ -8,11 +8,10 @@ import { Chip } from '../components/ui/Chip';
 import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { ChapterList } from '../components/ui/ChapterList';
-import { useFetch } from '../hooks/useFetch';
+import { getMangaDetail, translateGenreDisplay } from '../api/manga';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useReadChapters } from '../hooks/useReadChapters';
-import { getProxiedImageUrl } from '../api/manga';
-import { buildUniqueChapterList } from '../utils/manga';
+import { sortChaptersByOrden } from '../utils/manga';
 import type { MangaDetail as MangaDetailType } from '../types/manga';
 
 const STATUS_TRANSLATIONS: Record<string, string> = {
@@ -24,68 +23,80 @@ const translateStatus = (status: string): string =>
   STATUS_TRANSLATIONS[status] ?? status;
 
 interface ReadingCTAProps {
-  chapters: MangaDetailType['chapters'];
+  chapters: { publicId: string; numeroCapitulo: string; orden: number }[];
   readChapters: string[];
-  mangaId: number;
+  mangaId: string;
 }
 
 function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
-  const uniqueChapters = buildUniqueChapterList(chapters);
-
-  if (uniqueChapters.length === 0) {
+  if (chapters.length === 0) {
     return null;
   }
 
-  // Find which unique chapters have been read (match by hash)
-  const readHashSet = new Set(readChapters);
-  const readIndices: number[] = [];
+  // Find read chapters by their orden value (reading order)
+  const readOrdens = chapters
+    .filter(ch => readChapters.includes(ch.publicId))
+    .map(ch => ch.orden);
 
-  uniqueChapters.forEach((chapter, index) => {
-    // Check if any version of this chapter has been read
-    const isRead = chapter.versions.some(v => readHashSet.has(v.hash));
-    if (isRead) {
-      readIndices.push(index);
-    }
-  });
-
-  let buttonText: string;
-  let targetHash: string;
-
-  if (readIndices.length === 0) {
-    // No chapters read — show "Empezar a leer"
-    buttonText = 'Empezar a leer';
-    targetHash = uniqueChapters[0].hash;
-  } else {
-    // Find the last read chapter index
-    const lastReadIndex = Math.max(...readIndices);
-    const nextIndex = lastReadIndex + 1;
-
-    if (nextIndex >= uniqueChapters.length) {
-      // Last chapter was the last read — show "Empezar a leer" (restart)
-      buttonText = 'Empezar a leer';
-      targetHash = uniqueChapters[0].hash;
-    } else {
-      // There's a next chapter to continue — show "Continuar leyendo"
-      buttonText = 'Continuar leyendo';
-      targetHash = uniqueChapters[nextIndex].hash;
-    }
+  if (readOrdens.length === 0) {
+    // Nothing read — start from chapter 1 (lowest orden)
+    const firstChapter = [...chapters].sort((a, b) => a.orden - b.orden)[0];
+    return (
+      <Link to={`/manga/${mangaId}/chapter/${firstChapter.publicId}`} className={styles.readingCta}>
+        Empezar a leer
+      </Link>
+    );
   }
 
+  // Find the highest orden read (last in reading order)
+  const lastReadOrden = Math.max(...readOrdens);
+
+  // Find the next chapter in reading order (orden + 1)
+  const nextChapter = chapters.find(ch => ch.orden === lastReadOrden + 1);
+
+  if (!nextChapter) {
+    // All chapters read — restart from chapter 1
+    const firstChapter = [...chapters].sort((a, b) => a.orden - b.orden)[0];
+    return (
+      <Link to={`/manga/${mangaId}/chapter/${firstChapter.publicId}`} className={styles.readingCta}>
+        Empezar a leer
+      </Link>
+    );
+  }
+
+  // There are read chapters and a next chapter exists — always "Continuar leyendo"
   return (
-    <Link to={`/manga/${mangaId}/chapter/${targetHash}`} className={styles.readingCta}>
-      {buttonText}
+    <Link to={`/manga/${mangaId}/chapter/${nextChapter.publicId}`} className={styles.readingCta}>
+      Continuar leyendo
     </Link>
   );
 }
 
 export const MangaDetail = function MangaDetail() {
   const { id } = useParams<{ id: string }>();
-  const mangaId = id ? parseInt(id, 10) : null;
-  const { data, loading, error } = useFetch<MangaDetailType>(mangaId ? `/manga/${mangaId}` : null);
+  const mangaId = id || null;
+  const [data, setData] = useState<MangaDetailType | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
-  const { readChapters } = useReadChapters(mangaId ?? 0);
+  const { readChapters } = useReadChapters(mangaId ?? '');
   const [posterError, setPosterError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [chapterOrder, setChapterOrder] = useState<'asc' | 'desc'>('asc');
+
+  const sortedChapters = chapterOrder === 'asc'
+    ? sortChaptersByOrden(data?.chapters || [])
+    : sortChaptersByOrden(data?.chapters || []).reverse();
+
+  useEffect(() => {
+    if (!mangaId) return;
+    setLoading(true);
+    setError(null);
+    getMangaDetail(mangaId)
+      .then(setData)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Error al cargar el manga'))
+      .finally(() => setLoading(false));
+  }, [mangaId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -99,12 +110,12 @@ export const MangaDetail = function MangaDetail() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const favorite = data ? isMangaFavorite(data.id) : false;
+  const favorite = data ? isMangaFavorite(data.publicId) : false;
 
   const handleFavoriteClick = () => {
     if (data) {
       toggleMangaFavorite({
-        id: data.id,
+        publicId: data.publicId,
         title: data.title,
         coverUrl: data.coverUrl,
         type: data.type,
@@ -160,7 +171,7 @@ export const MangaDetail = function MangaDetail() {
           <div className={styles.posterWrapper}>
             {!posterError && (
               <img
-                src={getProxiedImageUrl(manga.coverUrl)}
+                src={manga.coverUrl}
                 alt={manga.title}
                 className={styles.poster}
                 onError={() => setPosterError(true)}
@@ -212,27 +223,28 @@ export const MangaDetail = function MangaDetail() {
             {manga.genres.length > 0 && (
               <div className={styles.genres}>
                 {manga.genres.map((genre) => (
-                  <Chip key={genre} label={genre} />
+                  <Chip key={genre} label={translateGenreDisplay(genre)} />
                 ))}
               </div>
             )}
 
-            <div className={styles.actions}>
+            <div className={styles.ctaRow}>
               <Button
                 variant={favorite ? 'primary' : 'ghost'}
                 onClick={handleFavoriteClick}
+                className={styles.ctaButton}
               >
                 {favorite ? '♥ Favorito' : '♡ Agregar a favoritos'}
               </Button>
-            </div>
 
-            {manga.chapters.length > 0 && (
-              <ReadingCTA
-                chapters={manga.chapters}
-                readChapters={readChapters}
-                mangaId={manga.id}
-              />
-            )}
+              {sortedChapters.length > 0 && (
+                <ReadingCTA
+                  chapters={sortedChapters}
+                  readChapters={readChapters}
+                  mangaId={manga.publicId}
+                />
+              )}
+            </div>
 
             {manga.description && (
               <div className={styles.description}>
@@ -244,10 +256,29 @@ export const MangaDetail = function MangaDetail() {
         </div>
 
         <div className={styles.chaptersSection}>
-          <h2 className={styles.sectionTitle}>
-            Capítulos ({manga.chapters.length})
-          </h2>
-          <ChapterList chapters={manga.chapters} mangaId={manga.id} readChapters={readChapters} />
+          <div className={styles.chaptersHeader}>
+            <h2 className={styles.sectionTitle}>
+              Capítulos ({sortedChapters.length})
+            </h2>
+            <button
+              className={styles.orderToggle}
+              onClick={() => setChapterOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              aria-label={chapterOrder === 'asc' ? 'Ordenar descendente' : 'Ordenar ascendente'}
+            >
+              {chapterOrder === 'asc' ? (
+                <>
+                  <span>↑</span>
+                  <span>Primeros</span>
+                </>
+              ) : (
+                <>
+                  <span>↓</span>
+                  <span>Últimos</span>
+                </>
+              )}
+            </button>
+          </div>
+          <ChapterList chapters={sortedChapters} mangaId={manga.publicId} readChapters={readChapters} />
         </div>
 
         <button

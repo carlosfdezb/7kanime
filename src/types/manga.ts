@@ -1,5 +1,5 @@
 export interface MangaItem {
-  id: number;
+  publicId: string;
   title: string;
   type: string;
   coverUrl: string;
@@ -11,7 +11,7 @@ export interface MangaItem {
 }
 
 export interface MangaFavorite {
-  id: number;
+  publicId: string;
   title: string;
   coverUrl: string;
   type: string;
@@ -28,29 +28,31 @@ export interface MangaDetail extends MangaItem {
 }
 
 export interface MangaChapter {
-  number: string;
-  title: string;
-  versions: ChapterVersion[];
+  publicId: string;
+  numeroCapitulo: string;
+  orden: number;
+  title?: string;
 }
 
-export interface ChapterVersion {
-  hash: string;
-  scanlator: string;
-  date: string;
+export interface ChapterPages {
+  paginas: string[];
+  prevCapituloId: string | null;
+  nextCapituloId: string | null;
 }
 
-export interface ChapterPage {
-  chapterHash: string;
-  totalPages: number;
-  pages: { pageNumber: number; imageUrl: string; format: string }[];
-  prevChapterUrl: string | null;
-  nextChapterUrl: string | null;
-}
-
-export interface PaginatedMangaResponse {
+export interface PopularMangaResponse {
   items: MangaItem[];
   page: number;
   totalPages: number;
   totalItems: number;
   hasNextPage: boolean;
+}
+
+export interface MangaSearchResponse {
+  items: MangaItem[];
+}
+
+export interface MangaTag {
+  slug: string;
+  name: string;
 }

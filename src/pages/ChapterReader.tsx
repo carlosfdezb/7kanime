@@ -1,26 +1,47 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import styles from './ChapterReader.module.css';
 import { Container } from '../components/layout/Container';
 import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { Button } from '../components/ui/Button';
-import { Select } from '../components/ui/Select';
-import { useFetch } from '../hooks/useFetch';
 import { useReadChapters } from '../hooks/useReadChapters';
-import { getProxiedImageUrl } from '../api/manga';
-import type { ChapterPage, MangaDetail } from '../types/manga';
-import { buildUniqueChapterList } from '../utils/manga';
+import { getChapterPages, getMangaDetail } from '../api/manga';
+import type { ChapterPages, MangaDetail } from '../types/manga';
 
 export function ChapterReader() {
-  const { id, hash } = useParams<{ id: string; hash: string }>();
-  const mangaId = id ? parseInt(id, 10) : null;
+  const { serieId, capituloId } = useParams<{ serieId: string; capituloId: string }>();
+  const mangaId = serieId || null;
 
-  const { data: chapterData, loading: chapterLoading, error: chapterError } = useFetch<ChapterPage>(hash ? `/manga/chapter/${hash}` : null);
-  const { data: mangaData, loading: mangaLoading } = useFetch<MangaDetail>(mangaId ? `/manga/${mangaId}` : null);
+  const [chapterData, setChapterData] = useState<ChapterPages | null>(null);
+  const [chapterLoading, setChapterLoading] = useState(false);
+  const [chapterError, setChapterError] = useState<string | null>(null);
+  const [mangaData, setMangaData] = useState<MangaDetail | null>(null);
+  const [mangaLoading, setMangaLoading] = useState(false);
 
-  const { markAsRead, removeFromRead, readChapters, isAuthenticated } = useReadChapters(mangaId ?? 0);
+  useEffect(() => {
+    if (!serieId || !capituloId) return;
+    setChapterLoading(true);
+    setChapterError(null);
+    getChapterPages(serieId, capituloId)
+      .then(setChapterData)
+      .catch((err) => setChapterError(err instanceof Error ? err.message : 'Error al cargar el capítulo'))
+      .finally(() => setChapterLoading(false));
+  }, [serieId, capituloId]);
 
-  const isRead = hash ? (readChapters.includes(hash) ?? false) : false;
+  useEffect(() => {
+    if (!mangaId) return;
+    setMangaLoading(true);
+    getMangaDetail(mangaId)
+      .then(setMangaData)
+      .catch(() => {
+        // Silently fail — manga detail is only for navigation/breadcrumbs
+      })
+      .finally(() => setMangaLoading(false));
+  }, [mangaId]);
+
+  const { markAsRead, removeFromRead, readChapters, isAuthenticated } = useReadChapters(mangaId ?? '');
+
+  const isRead = capituloId ? readChapters.includes(capituloId) : false;
 
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
@@ -29,10 +50,14 @@ export function ChapterReader() {
   const fullscreenRef = useRef<HTMLDivElement>(null);
   const currentImageRef = useRef<HTMLImageElement | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  // Timestamp when the observer was created — used to prevent immediate firing
-  // when navigating to a new chapter (the observer attaches during render with
-  // the new hash already in scope, so it can fire before any scroll happens)
   const observerCreatedAt = useRef<number>(0);
+
+  // Find current chapter info from manga detail
+  const currentChapter = mangaData?.chapters.find(ch => ch.publicId === capituloId);
+  const prevCapituloId = chapterData?.prevCapituloId ?? null;
+  const nextCapituloId = chapterData?.nextCapituloId ?? null;
+  const prevChapter = prevCapituloId ? mangaData?.chapters.find(ch => ch.publicId === prevCapituloId) : null;
+  const nextChapter = nextCapituloId ? mangaData?.chapters.find(ch => ch.publicId === nextCapituloId) : null;
 
   // Callback ref to attach IntersectionObserver to the midpoint page wrapper
   const midpointRef = useCallback((node: HTMLDivElement | null) => {
@@ -40,18 +65,20 @@ export function ChapterReader() {
       observerRef.current.disconnect();
       observerRef.current = null;
     }
-    if (!node || !mangaId || !hash) return;
+    if (!node || !mangaId || !capituloId) return;
 
     observerRef.current = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          // Guard: don't mark as read if the observer was just created
-          // (within ~50ms). This prevents immediate firing when navigating to
-          // a new chapter where the midpoint is already in the viewport.
           const now = Date.now();
           if (now - observerCreatedAt.current < 50) return;
 
-markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
+          markAsRead(
+            capituloId,
+            currentChapter?.numeroCapitulo,
+            mangaData?.title,
+            mangaData?.coverUrl
+          );
           observerRef.current?.disconnect();
           observerRef.current = null;
         }
@@ -60,9 +87,9 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
     );
     observerCreatedAt.current = Date.now();
     observerRef.current.observe(node);
-  }, [mangaId, hash, markAsRead]);
+  }, [mangaId, capituloId, markAsRead, currentChapter, mangaData]);
 
-  // Cleanup observer on unmount or hash change
+  // Cleanup observer on unmount or capituloId change
   useEffect(() => {
     return () => {
       if (observerRef.current) {
@@ -70,9 +97,9 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
         observerRef.current = null;
       }
     };
-  }, [hash]);
+  }, [capituloId]);
 
-  // Find the image closest to the top of the viewport (most visible reading position)
+  // Find the image closest to the top of the viewport
   const findMostVisibleImage = useCallback((): HTMLImageElement | null => {
     const images = fullscreenRef.current?.querySelectorAll('img');
     if (!images || images.length === 0) return null;
@@ -86,9 +113,7 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
       const rect = img.getBoundingClientRect();
       const imgTop = rect.top;
       const imgCenter = imgTop + rect.height / 2;
-      // Distance from image center to viewport center
       const distance = Math.abs(imgCenter - viewportCenter);
-      // Only consider images that are at least partially visible
       if (imgTop < viewportHeight && rect.bottom > 0 && distance < closestDistance) {
         closestDistance = distance;
         closestImage = img;
@@ -103,15 +128,12 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
     if (!element) return;
 
     if (document.fullscreenElement) {
-      // Exiting fullscreen: save reference to the most visible image
-      // (NOT a pixel position — pixel positions become stale after re-render)
       const currentImage = findMostVisibleImage();
       if (currentImage) {
         currentImageRef.current = currentImage;
       }
       document.exitFullscreen();
     } else {
-      // Entering fullscreen: find current reading position and save reference
       const currentImage = findMostVisibleImage();
       if (currentImage) {
         currentImageRef.current = currentImage;
@@ -126,7 +148,6 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
       setIsFullscreen(entering);
 
       if (entering) {
-        // Entered fullscreen: scroll to the image that was most visible before
         setTimeout(() => {
           const targetImage = currentImageRef.current || findMostVisibleImage();
           if (targetImage) {
@@ -135,9 +156,6 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
           }
         }, 100);
       } else {
-        // Exited fullscreen: scroll to the saved image using scrollIntoView
-        // This works regardless of how much content is above fullscreenWrapper
-        // after re-render, because the image element itself is the reference
         setTimeout(() => {
           const targetImage = currentImageRef.current || findMostVisibleImage();
           if (targetImage) {
@@ -154,7 +172,6 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
   // Keyboard shortcut for fullscreen (F key)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input or textarea
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
 
@@ -184,28 +201,13 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
     setVisiblePages(prev => new Set(prev).add(pageNumber));
   };
 
-  const navigate = useNavigate();
-
-  const uniqueChapters = mangaData ? buildUniqueChapterList(mangaData.chapters) : [];
-  const currentChapterIndex = uniqueChapters.findIndex(c => c.hash === hash);
-  const prevChapter = currentChapterIndex > 0 ? uniqueChapters[currentChapterIndex - 1] : null;
-  const nextChapter = currentChapterIndex < uniqueChapters.length - 1 ? uniqueChapters[currentChapterIndex + 1] : null;
-
-  const currentChapter = currentChapterIndex >= 0 ? uniqueChapters[currentChapterIndex] : null;
-  const hasMultipleVersions = currentChapter && currentChapter.versions.length > 1;
-
   const handleToggleRead = () => {
-    if (!hash || !mangaId) return;
+    if (!capituloId || !mangaId) return;
     if (isRead) {
-      removeFromRead(hash);
+      removeFromRead(capituloId);
     } else {
-          markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
+      markAsRead(capituloId, currentChapter?.numeroCapitulo, mangaData?.title, mangaData?.coverUrl);
     }
-  };
-
-  const handleVersionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newHash = e.target.value;
-    navigate(`/manga/${id}/chapter/${newHash}`);
   };
 
   const scrollToTop = () => {
@@ -214,15 +216,21 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
 
   const renderNavigation = () => (
     <div className={styles.navigation}>
-      {prevChapter ? (
+      {prevCapituloId ? (
         <Link
-          to={`/manga/${id}/chapter/${prevChapter.hash}`}
+          to={`/manga/${serieId}/chapter/${prevCapituloId}`}
           className={styles.navLink}
         >
           <span className={styles.navArrow}>←</span>
           <span className={styles.navLabel}>
-            <span className={styles.navChapterNum}>Cap. {prevChapter.number}</span>
-            {prevChapter.title && <span className={styles.navChapterTitle}>{prevChapter.title}</span>}
+            {prevChapter ? (
+              <>
+                <span className={styles.navChapterNum}>Cap. {prevChapter.numeroCapitulo}</span>
+                {prevChapter.title && <span className={styles.navChapterTitle}>{prevChapter.title}</span>}
+              </>
+            ) : (
+              <span className={styles.navLabel}>Anterior</span>
+            )}
           </span>
         </Link>
       ) : (
@@ -233,17 +241,23 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
       )}
 
       <span className={styles.pageIndicator}>
-        {chapter.totalPages} página{chapter.totalPages !== 1 ? 's' : ''}
+        {chapterData?.paginas.length ?? 0} página{chapterData?.paginas.length !== 1 ? 's' : ''}
       </span>
 
-      {nextChapter ? (
+      {nextCapituloId ? (
         <Link
-          to={`/manga/${id}/chapter/${nextChapter.hash}`}
+          to={`/manga/${serieId}/chapter/${nextCapituloId}`}
           className={styles.navLink}
         >
           <span className={styles.navLabel}>
-            <span className={styles.navChapterNum}>Cap. {nextChapter.number}</span>
-            {nextChapter.title && <span className={styles.navChapterTitle}>{nextChapter.title}</span>}
+            {nextChapter ? (
+              <>
+                <span className={styles.navChapterNum}>Cap. {nextChapter.numeroCapitulo}</span>
+                {nextChapter.title && <span className={styles.navChapterTitle}>{nextChapter.title}</span>}
+              </>
+            ) : (
+              <span className={styles.navLabel}>Siguiente</span>
+            )}
           </span>
           <span className={styles.navArrow}>→</span>
         </Link>
@@ -294,6 +308,8 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
   }
 
   const chapter = chapterData;
+  const totalPages = chapter.paginas.length;
+  const midpointPage = Math.max(1, Math.floor(totalPages / 2));
 
   return (
     <div className={styles.page}>
@@ -302,26 +318,11 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
           items={[
             { label: 'Manga', href: '/manga' },
             ...(mangaId && mangaData ? [{ label: mangaData.title, href: `/manga/${mangaId}` }] : []),
-            ...(currentChapter ? [{ label: `Capítulo ${currentChapter.number}` }] : []),
+            ...(currentChapter ? [{ label: `Capítulo ${currentChapter.numeroCapitulo}` }] : []),
           ]}
         />
 
         <div className={styles.headerRow}>
-          {hasMultipleVersions && (
-            <div className={styles.versionSelector}>
-              <span className={styles.versionLabel}>Versión:</span>
-              <Select
-                options={currentChapter!.versions.map((v, i) => ({
-                  value: v.hash,
-                  label: v.scanlator || `Versión ${i + 1}`,
-                }))}
-                value={hash}
-                onChange={handleVersionChange}
-                className={styles.versionSelect}
-              />
-            </div>
-          )}
-
           {isAuthenticated && (
             <button
               className={`${styles.readToggle} ${isRead ? styles.readToggleActive : ''}`}
@@ -336,18 +337,17 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
       </Container>
 
       <div ref={fullscreenRef} className={styles.fullscreenWrapper}>
-        {chapter.pages.length === 0 ? (
+        {chapter.paginas.length === 0 ? (
           <div className={styles.emptyState}>
             <p>No se encontraron páginas para este capítulo</p>
           </div>
         ) : (
           <>
             <div className={styles.imageStack}>
-              {chapter.pages.map((page) => {
-                const pageNum = page.pageNumber;
+              {chapter.paginas.map((imageUrl, index) => {
+                const pageNum = index + 1;
                 const hasError = imageErrors.has(pageNum);
                 const isLoaded = visiblePages.has(pageNum);
-                const midpointPage = Math.max(1, Math.floor(chapter.totalPages / 2));
 
                 return (
                   <div
@@ -368,7 +368,7 @@ markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
                           </div>
                         )}
                         <img
-                          src={getProxiedImageUrl(page.imageUrl)}
+                          src={imageUrl}
                           alt={`Página ${pageNum}`}
                           className={styles.pageImage}
                           style={{ display: isLoaded ? 'block' : 'none' }}
