@@ -4,20 +4,40 @@ import styles from './ChapterReader.module.css';
 import { Container } from '../components/layout/Container';
 import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { Button } from '../components/ui/Button';
-import { useFetch } from '../hooks/useFetch';
 import { useReadChapters } from '../hooks/useReadChapters';
+import { getChapterPages, getMangaDetail } from '../api/manga';
 import type { ChapterPages, MangaDetail } from '../types/manga';
 
 export function ChapterReader() {
   const { serieId, capituloId } = useParams<{ serieId: string; capituloId: string }>();
   const mangaId = serieId || null;
 
-  const { data: chapterData, loading: chapterLoading, error: chapterError } = useFetch<ChapterPages>(
-    serieId && capituloId ? `/manga/chapter/${serieId}/${capituloId}` : null
-  );
-  const { data: mangaData, loading: mangaLoading } = useFetch<MangaDetail>(
-    mangaId ? `/manga/${mangaId}` : null
-  );
+  const [chapterData, setChapterData] = useState<ChapterPages | null>(null);
+  const [chapterLoading, setChapterLoading] = useState(false);
+  const [chapterError, setChapterError] = useState<string | null>(null);
+  const [mangaData, setMangaData] = useState<MangaDetail | null>(null);
+  const [mangaLoading, setMangaLoading] = useState(false);
+
+  useEffect(() => {
+    if (!serieId || !capituloId) return;
+    setChapterLoading(true);
+    setChapterError(null);
+    getChapterPages(serieId, capituloId)
+      .then(setChapterData)
+      .catch((err) => setChapterError(err instanceof Error ? err.message : 'Error al cargar el capítulo'))
+      .finally(() => setChapterLoading(false));
+  }, [serieId, capituloId]);
+
+  useEffect(() => {
+    if (!mangaId) return;
+    setMangaLoading(true);
+    getMangaDetail(mangaId)
+      .then(setMangaData)
+      .catch(() => {
+        // Silently fail — manga detail is only for navigation/breadcrumbs
+      })
+      .finally(() => setMangaLoading(false));
+  }, [mangaId]);
 
   const { markAsRead, removeFromRead, readChapters, isAuthenticated } = useReadChapters(mangaId ?? '');
 

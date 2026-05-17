@@ -8,7 +8,7 @@ import { Chip } from '../components/ui/Chip';
 import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { ChapterList } from '../components/ui/ChapterList';
-import { useFetch } from '../hooks/useFetch';
+import { getMangaDetail } from '../api/manga';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useReadChapters } from '../hooks/useReadChapters';
 import { sortChaptersByOrden } from '../utils/manga';
@@ -77,11 +77,23 @@ function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
 export const MangaDetail = function MangaDetail() {
   const { id } = useParams<{ id: string }>();
   const mangaId = id || null;
-  const { data, loading, error } = useFetch<MangaDetailType>(mangaId ? `/manga/${mangaId}` : null);
+  const [data, setData] = useState<MangaDetailType | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
   const { readChapters } = useReadChapters(mangaId ?? '');
   const [posterError, setPosterError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    if (!mangaId) return;
+    setLoading(true);
+    setError(null);
+    getMangaDetail(mangaId)
+      .then(setData)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Error al cargar el manga'))
+      .finally(() => setLoading(false));
+  }, [mangaId]);
 
   useEffect(() => {
     const handleScroll = () => {
