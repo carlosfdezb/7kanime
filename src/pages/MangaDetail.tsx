@@ -23,50 +23,56 @@ const translateStatus = (status: string): string =>
   STATUS_TRANSLATIONS[status] ?? status;
 
 interface ReadingCTAProps {
-  chapters: { publicId: string; numeroCapitulo: string }[];
+  chapters: { publicId: string; numeroCapitulo: string; orden: number }[];
   readChapters: string[];
   mangaId: string;
+  chapterOrder: 'asc' | 'desc';
 }
 
-function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
+function ReadingCTA({ chapters, readChapters, mangaId, chapterOrder: _chapterOrder }: ReadingCTAProps) {
   if (chapters.length === 0) {
     return null;
   }
 
-  // Find which chapters have been read (match by publicId)
-  const readIndices: number[] = [];
+  // Find read chapters by their orden value (reading order)
+  const readOrdens = chapters
+    .filter(ch => readChapters.includes(ch.publicId))
+    .map(ch => ch.orden);
 
-  chapters.forEach((chapter, index) => {
-    if (readChapters.includes(chapter.publicId)) {
-      readIndices.push(index);
-    }
-  });
-
-  let buttonText: string;
-  let targetPublicId: string;
-
-  if (readIndices.length === 0) {
-    // No chapters read — show "Empezar a leer"
-    buttonText = 'Empezar a leer';
-    targetPublicId = chapters[0].publicId;
-  } else {
-    // Find the last read chapter index
-    const lastReadIndex = Math.max(...readIndices);
-    const nextIndex = lastReadIndex + 1;
-
-    if (nextIndex >= chapters.length) {
-      // Last chapter was the last read — show "Empezar a leer" (restart)
-      buttonText = 'Empezar a leer';
-      targetPublicId = chapters[0].publicId;
-    } else {
-      // There's a next chapter to continue — show "Continuar leyendo"
-      buttonText = 'Continuar leyendo';
-      targetPublicId = chapters[nextIndex].publicId;
-    }
+  if (readOrdens.length === 0) {
+    // Nothing read — start from the first chapter in the current view
+    return (
+      <Link to={`/manga/${mangaId}/chapter/${chapters[0].publicId}`} className={styles.readingCta}>
+        Empezar a leer
+      </Link>
+    );
   }
 
+  // Find the highest orden read (last in reading order)
+  const lastReadOrden = Math.max(...readOrdens);
+
+  // Find the next chapter in reading order (orden + 1)
+  const nextChapter = chapters.find(ch => ch.orden === lastReadOrden + 1);
+
+  if (!nextChapter) {
+    // All chapters read — restart from the first in current view
+    return (
+      <Link to={`/manga/${mangaId}/chapter/${chapters[0].publicId}`} className={styles.readingCta}>
+        Empezar a leer
+      </Link>
+    );
+  }
+
+  // Determine button text based on relative position in current view:
+  // - If next chapter is BELOW the last read in the list → "Continuar leyendo"
+  // - If next chapter is ABOVE the last read in the list → "Empezar a leer"
+  const lastReadIndex = chapters.findIndex(ch => ch.orden === lastReadOrden);
+  const nextIndex = chapters.findIndex(ch => ch.orden === nextChapter.orden);
+
+  const buttonText = nextIndex > lastReadIndex ? 'Continuar leyendo' : 'Empezar a leer';
+
   return (
-    <Link to={`/manga/${mangaId}/chapter/${targetPublicId}`} className={styles.readingCta}>
+    <Link to={`/manga/${mangaId}/chapter/${nextChapter.publicId}`} className={styles.readingCta}>
       {buttonText}
     </Link>
   );
@@ -242,6 +248,7 @@ export const MangaDetail = function MangaDetail() {
                 chapters={sortedChapters}
                 readChapters={readChapters}
                 mangaId={manga.publicId}
+                chapterOrder={chapterOrder}
               />
             )}
 
