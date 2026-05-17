@@ -114,16 +114,28 @@
 /* ===== Mobile Search Collapse (<640px) ===== */
 @media (max-width: 639px) {
   .inner {
-    gap: 12px;
-    position: relative;
+    gap: 8px;
+    padding: 0 var(--space-sm);
   }
 
   .nav {
-    gap: 8px;
+    gap: 4px;
+    margin-left: var(--space-xs);
   }
 
   .navLink {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
+    padding: var(--space-xs);
+  }
+
+  .logoAccent,
+  .logoText {
+    font-size: 1.25rem;
+  }
+
+  .favoritesBtn {
+    padding-left: var(--space-xs);
+    padding-right: var(--space-xs);
   }
 
   /* Hide the search form by default on mobile */
