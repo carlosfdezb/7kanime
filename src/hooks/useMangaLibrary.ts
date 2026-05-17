@@ -28,7 +28,7 @@ export function useMangaLibrary(): UseMangaLibraryResult {
     setError(null);
 
     try {
-      const response = await getPopular(pageNum);
+      const response = await getPopular(pageNum, 25);
       setItems(response.items || []);
       setPage(response.page);
       setTotalPages(response.totalPages);

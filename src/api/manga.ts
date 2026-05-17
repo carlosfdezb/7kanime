@@ -119,8 +119,8 @@ function mapBackendDetail(raw: BackendMangaDetail): MangaDetail {
 // API Functions
 // ============================================================================
 
-export async function getPopular(page: number): Promise<PopularMangaResponse> {
-  const raw = await apiFetch<BackendPopularResponse>(`/manga/popular?page=${page}`);
+export async function getPopular(page: number, pageSize: number = 25): Promise<PopularMangaResponse> {
+  const raw = await apiFetch<BackendPopularResponse>(`/manga/popular?page=${page}&pageSize=${pageSize}`);
   return {
     items: raw.items.map(mapBackendItem),
     page: raw.page,

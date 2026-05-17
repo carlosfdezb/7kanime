@@ -9,7 +9,7 @@ import { SkeletonCard } from '../components/ui/Skeleton';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 25;
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
