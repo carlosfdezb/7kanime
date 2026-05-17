@@ -29,7 +29,7 @@ export function useMangaLibrary(): UseMangaLibraryResult {
 
     try {
       const response = await getPopular(pageNum);
-      setItems(response.items);
+      setItems(response.items || []);
       setPage(response.page);
       setTotalPages(response.totalPages);
       setTotalItems(response.totalItems);
@@ -47,7 +47,7 @@ export function useMangaLibrary(): UseMangaLibraryResult {
 
     try {
       const response = await searchManga(query);
-      setItems(response.items);
+      setItems(response.items || []);
       setPage(1);
       setTotalPages(1);
       setTotalItems(response.items.length);
