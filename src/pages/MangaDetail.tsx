@@ -26,10 +26,9 @@ interface ReadingCTAProps {
   chapters: { publicId: string; numeroCapitulo: string; orden: number }[];
   readChapters: string[];
   mangaId: string;
-  chapterOrder: 'asc' | 'desc';
 }
 
-function ReadingCTA({ chapters, readChapters, mangaId, chapterOrder: _chapterOrder }: ReadingCTAProps) {
+function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
   if (chapters.length === 0) {
     return null;
   }
@@ -40,9 +39,10 @@ function ReadingCTA({ chapters, readChapters, mangaId, chapterOrder: _chapterOrd
     .map(ch => ch.orden);
 
   if (readOrdens.length === 0) {
-    // Nothing read — start from the first chapter in the current view
+    // Nothing read — start from chapter 1 (lowest orden)
+    const firstChapter = [...chapters].sort((a, b) => a.orden - b.orden)[0];
     return (
-      <Link to={`/manga/${mangaId}/chapter/${chapters[0].publicId}`} className={styles.readingCta}>
+      <Link to={`/manga/${mangaId}/chapter/${firstChapter.publicId}`} className={styles.readingCta}>
         Empezar a leer
       </Link>
     );
@@ -55,25 +55,19 @@ function ReadingCTA({ chapters, readChapters, mangaId, chapterOrder: _chapterOrd
   const nextChapter = chapters.find(ch => ch.orden === lastReadOrden + 1);
 
   if (!nextChapter) {
-    // All chapters read — restart from the first in current view
+    // All chapters read — restart from chapter 1
+    const firstChapter = [...chapters].sort((a, b) => a.orden - b.orden)[0];
     return (
-      <Link to={`/manga/${mangaId}/chapter/${chapters[0].publicId}`} className={styles.readingCta}>
+      <Link to={`/manga/${mangaId}/chapter/${firstChapter.publicId}`} className={styles.readingCta}>
         Empezar a leer
       </Link>
     );
   }
 
-  // Determine button text based on relative position in current view:
-  // - If next chapter is BELOW the last read in the list → "Continuar leyendo"
-  // - If next chapter is ABOVE the last read in the list → "Empezar a leer"
-  const lastReadIndex = chapters.findIndex(ch => ch.orden === lastReadOrden);
-  const nextIndex = chapters.findIndex(ch => ch.orden === nextChapter.orden);
-
-  const buttonText = nextIndex > lastReadIndex ? 'Continuar leyendo' : 'Empezar a leer';
-
+  // There are read chapters and a next chapter exists — always "Continuar leyendo"
   return (
     <Link to={`/manga/${mangaId}/chapter/${nextChapter.publicId}`} className={styles.readingCta}>
-      {buttonText}
+      Continuar leyendo
     </Link>
   );
 }
@@ -248,7 +242,6 @@ export const MangaDetail = function MangaDetail() {
                 chapters={sortedChapters}
                 readChapters={readChapters}
                 mangaId={manga.publicId}
-                chapterOrder={chapterOrder}
               />
             )}
 
