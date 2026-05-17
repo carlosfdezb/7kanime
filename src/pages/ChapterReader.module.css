@@ -63,9 +63,10 @@
 .headerRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: var(--space-md);
   flex-wrap: wrap;
+  margin-bottom: var(--space-md);
 }
 
 .readToggle {
@@ -382,8 +383,16 @@
   }
 
   .headerRow {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
     gap: var(--space-sm);
+  }
+
+  .readToggle {
+    width: 100%;
+    text-align: center;
+    padding: var(--space-sm) var(--space-md);
+    min-height: 40px;
   }
 
   .bottomNav {
