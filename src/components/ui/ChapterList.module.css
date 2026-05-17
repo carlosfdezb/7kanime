@@ -1,106 +1,139 @@
 .chapterList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: var(--space-xs);
+}
+
+@media (min-width: 640px) {
+  .chapterList {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+  }
+}
+
+@media (min-width: 1024px) {
+  .chapterList {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .chapterRow {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  text-decoration: none;
+  color: inherit;
+  transition: all var(--transition-fast);
+  position: relative;
   overflow: hidden;
 }
 
+.chapterRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--color-primary);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.chapterRow:hover {
+  background-color: var(--color-border);
+  border-color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.chapterRow:hover::before {
+  opacity: 1;
+}
+
 .chapterRow.readChapter {
-  opacity: 0.7;
+  opacity: 0.6;
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
-.chapterHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md);
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.chapterHeader:hover {
+.chapterRow.readChapter:hover {
+  opacity: 0.8;
   background-color: var(--color-border);
 }
 
-.chapterHeader.readChapterHeader .chapterNumber {
+.chapterNumberBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 32px;
+  background-color: var(--color-primary);
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.chapterRow.readChapter .chapterNumberBadge {
+  background-color: var(--color-border);
   color: var(--color-text-muted);
 }
 
 .chapterInfo {
   display: flex;
-  align-items: center;
-  gap: var(--space-sm);
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
 }
 
-.readIndicator {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  min-width: 16px;
-}
-
-.chapterNumber {
+.chapterLabel {
   font-weight: 600;
   color: var(--color-text);
-  min-width: 80px;
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapterRow.readChapter .chapterLabel {
+  color: var(--color-text-muted);
 }
 
 .chapterTitle {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.expandIcon {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  transition: transform var(--transition-fast);
-}
-
-.expandIcon.expanded {
-  transform: rotate(180deg);
-}
-
-.versionList {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--color-border);
-  background-color: rgba(0, 0, 0, 0.2);
-}
-
-.versionRow {
+.readIndicator {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: var(--space-sm) var(--space-md);
-  padding-left: calc(var(--space-md) + 96px);
-  text-decoration: none;
-  color: inherit;
-  transition: background-color var(--transition-fast);
-}
-
-.versionRow:hover {
-  background-color: var(--color-border);
-}
-
-.versionScanlator {
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(99, 102, 241, 0.15);
   color: var(--color-primary);
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
-.versionDate {
+.chapterRow.readChapter .readIndicator {
+  background-color: rgba(161, 161, 170, 0.15);
   color: var(--color-text-muted);
-  font-size: 0.75rem;
 }
 
 .emptyState {
   text-align: center;
-  padding: var(--space-xl);
+  padding: var(--space-2xl);
   color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  grid-column: 1 / -1;
 }

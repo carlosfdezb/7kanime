@@ -31,13 +31,14 @@ export function ChapterList({ chapters, mangaId, readChapters = [] }: ChapterLis
             to={`/manga/${mangaId}/chapter/${chapter.publicId}`}
             className={cn(styles.chapterRow, isRead && styles.readChapter)}
           >
+            <span className={styles.chapterNumberBadge}>{chapter.numeroCapitulo}</span>
             <div className={styles.chapterInfo}>
-              {isRead && <span className={styles.readIndicator}>✓</span>}
-              <span className={styles.chapterNumber}>Cap. {chapter.numeroCapitulo}</span>
+              <span className={styles.chapterLabel}>Capítulo {chapter.numeroCapitulo}</span>
               {chapter.title && (
                 <span className={styles.chapterTitle}>{chapter.title}</span>
               )}
             </div>
+            {isRead && <span className={styles.readIndicator}>✓</span>}
           </Link>
         );
       })}
