@@ -302,9 +302,13 @@ export async function getTags(): Promise<string[]> {
   return apiFetch<string[]>(`/manga/tags`);
 }
 
-export async function searchManga(query: string): Promise<MangaSearchResponse> {
+export async function searchManga(query: string, tag?: string): Promise<MangaSearchResponse> {
   // Backend returns array directly, not { items: [...] }
-  const raw = await apiFetch<BackendMangaItem[]>(`/manga/search?q=${encodeURIComponent(query)}`);
+  let url = `/manga/search?q=${encodeURIComponent(query)}`;
+  if (tag) {
+    url += `&tag=${encodeURIComponent(tag)}`;
+  }
+  const raw = await apiFetch<BackendMangaItem[]>(url);
   return {
     items: raw.map(mapBackendItem),
   };

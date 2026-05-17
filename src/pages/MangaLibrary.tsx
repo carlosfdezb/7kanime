@@ -5,9 +5,12 @@ import { Container } from '../components/layout/Container';
 import { Header } from '../components/layout/Header';
 import { MangaCard } from '../components/ui/MangaCard';
 import { Button } from '../components/ui/Button';
+import { Chip } from '../components/ui/Chip';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
+import { getTags } from '../api/manga';
+import { translateGenreDisplay } from '../api/manga';
 
 const ITEMS_PER_PAGE = 25;
 
@@ -16,22 +19,37 @@ export function MangaLibrary() {
   const { items, page, totalPages, totalItems, hasNextPage, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
   const { favorites } = useMangaFavorites();
   const [showFavorites, setShowFavorites] = useState(false);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const searchQuery = searchParams.get('q') || '';
+  const selectedTag = searchParams.get('tag') || '';
 
   useEffect(() => {
     const favoritesParam = searchParams.get('favorites');
     setShowFavorites(favoritesParam === 'true');
   }, [searchParams]);
 
+  // Load available tags
+  useEffect(() => {
+    getTags()
+      .then((tags) => {
+        // Sort tags alphabetically and translate for display
+        const sortedTags = tags.sort((a, b) => a.localeCompare(b));
+        setAvailableTags(sortedTags);
+      })
+      .catch(() => {
+        // Silently fail - tags are optional
+      });
+  }, []);
+
   const loadData = useCallback(async () => {
-    if (searchQuery) {
-      await fetchSearch(searchQuery);
+    if (searchQuery || selectedTag) {
+      await fetchSearch(searchQuery, selectedTag || undefined);
     } else {
       await fetchPage(currentPage);
     }
-  }, [currentPage, searchQuery, fetchPage, fetchSearch]);
+  }, [currentPage, searchQuery, selectedTag, fetchPage, fetchSearch]);
 
   useEffect(() => {
     if (!showFavorites) {
@@ -71,7 +89,7 @@ export function MangaLibrary() {
       <Container className={styles.content}>
         <div className={styles.header}>
           <h1 className={styles.title}>
-            {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : 'Biblioteca de Manga')}
+            {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : selectedTag ? `Género: ${translateGenreDisplay(selectedTag)}` : 'Biblioteca de Manga')}
           </h1>
           {!showFavorites && totalItems > 0 && (
             <p className={styles.stats}>
@@ -79,6 +97,33 @@ export function MangaLibrary() {
             </p>
           )}
         </div>
+
+        {/* Tag Filters */}
+        {!showFavorites && availableTags.length > 0 && (
+          <div className={styles.tagsSection}>
+            <div className={styles.tagsList}>
+              {availableTags.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={translateGenreDisplay(tag)}
+                  selected={selectedTag === tag}
+                  onClick={() => {
+                    setSearchParams((prev) => {
+                      const newParams = new URLSearchParams(prev);
+                      if (selectedTag === tag) {
+                        newParams.delete('tag');
+                      } else {
+                        newParams.set('tag', tag);
+                        newParams.delete('page');
+                      }
+                      return newParams;
+                    });
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {error ? (
           <div className={styles.errorState}>

@@ -11,7 +11,7 @@ interface UseMangaLibraryResult {
   loading: boolean;
   error: string | null;
   fetchPage: (pageNum: number) => Promise<void>;
-  fetchSearch: (query: string) => Promise<void>;
+  fetchSearch: (query: string, tag?: string) => Promise<void>;
 }
 
 export function useMangaLibrary(): UseMangaLibraryResult {
@@ -41,12 +41,12 @@ export function useMangaLibrary(): UseMangaLibraryResult {
     }
   }, []);
 
-  const fetchSearch = useCallback(async (query: string) => {
+  const fetchSearch = useCallback(async (query: string, tag?: string) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await searchManga(query);
+      const response = await searchManga(query, tag);
       setItems(response.items || []);
       setPage(1);
       setTotalPages(1);
