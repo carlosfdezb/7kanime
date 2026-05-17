@@ -9,16 +9,16 @@ import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { Focusable } from '../components/ui/Focusable';
 import { useFetch } from '../hooks/useFetch';
-import { useFavoritesStore } from '../store/favoritesStore';
-import { useWatchedStore } from '../store/watchedStore';
+import { useAnimeFavorites } from '../hooks/useAnimeFavorites';
+import { useWatchedEpisodes } from '../hooks/useWatchedEpisodes';
 import { useTVNavigation } from '../hooks/useTVNavigation';
 import type { AnimeDetail } from '../types/api';
 
 export function AnimeDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data, loading, error } = useFetch<AnimeDetail>(slug ? `/anime/${slug}` : null);
-  const { isFavorite, toggleFavorite } = useFavoritesStore();
-  const { isWatched } = useWatchedStore();
+  const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
+  const { isWatched } = useWatchedEpisodes();
   const [posterError, setPosterError] = useState(false);
   const [backdropError, setBackdropError] = useState(false);
 
@@ -148,15 +148,17 @@ export function AnimeDetail() {
             </div>
 
             <div className={styles.actions}>
-              <Focusable
-                as={Button}
-                id="favorite-btn"
-                variant={favorite ? 'primary' : 'ghost'}
-                onClick={handleFavoriteClick}
-                aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-              >
-                {favorite ? '♥ Favorito' : '♡ Agregar a favoritos'}
-              </Focusable>
+              {isAuthenticated && (
+                <Focusable
+                  as={Button}
+                  id="favorite-btn"
+                  variant={favorite ? 'primary' : 'ghost'}
+                  onClick={handleFavoriteClick}
+                  aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+                >
+                  {favorite ? '♥ Favorito' : '♡ Agregar a favoritos'}
+                </Focusable>
+              )}
             </div>
 
             <div className={styles.synopsis}>

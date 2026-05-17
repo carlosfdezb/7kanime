@@ -4,7 +4,7 @@ import styles from './Card.module.css';
 import { cn } from '../../utils/cn';
 import type { CatalogItem } from '../../types/api';
 import { Focusable } from './Focusable';
-import { useFavoritesStore } from '../../store/favoritesStore';
+import { useAnimeFavorites } from '../../hooks/useAnimeFavorites';
 
 interface CardProps {
   anime: CatalogItem;
@@ -17,7 +17,7 @@ const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/20
 export function Card({ anime, variant = 'default', className }: CardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { isFavorite, toggleFavorite } = useFavoritesStore();
+  const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
 
   const handleImageError = () => {
     setImageError(true);
@@ -28,7 +28,9 @@ export function Card({ anime, variant = 'default', className }: CardProps) {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleFavorite(anime);
+    if (isAuthenticated) {
+      toggleFavorite(anime);
+    }
   };
 
   return (
@@ -45,13 +47,15 @@ export function Card({ anime, variant = 'default', className }: CardProps) {
           onLoad={() => setImageLoaded(true)}
           onError={handleImageError}
         />
-        <button
-          className={cn(styles.favoriteBtn, favorite && styles.favoriteBtnActive)}
-          onClick={handleFavoriteClick}
-          aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-        >
-          {favorite ? '\u2665' : '\u2661'}
-        </button>
+        {isAuthenticated && (
+          <button
+            className={cn(styles.favoriteBtn, favorite && styles.favoriteBtnActive)}
+            onClick={handleFavoriteClick}
+            aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          >
+            {favorite ? '\u2665' : '\u2661'}
+          </button>
+        )}
         <span className={styles.type}>{anime.type}</span>
       </div>
       <div className={styles.info}>

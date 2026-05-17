@@ -13,7 +13,7 @@ import { Focusable } from "../components/ui/Focusable";
 import { useDebounce } from "../hooks/useDebounce";
 import { getCatalog } from "../api/catalog";
 import { search } from "../api/search";
-import { useFavoritesStore } from "../store/favoritesStore";
+import { useAnimeFavorites } from "../hooks/useAnimeFavorites";
 import { useTVNavigation } from "../hooks/useTVNavigation";
 import type { CatalogItem } from "../types/api";
 
@@ -148,11 +148,12 @@ export function Home() {
     const [filtersVisible, setFiltersVisible] = useState(false);
     const [showFavorites, setShowFavorites] = useState(false);
 
-    const { favorites } = useFavoritesStore();
+    const { favorites } = useAnimeFavorites();
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
     const genres = searchParams.getAll("genre");
+    const genresKey = genres.join(",");
     const category = searchParams.get("category") || "";
     const minYear = searchParams.get("minYear") || "";
     const maxYear = searchParams.get("maxYear") || "";
@@ -197,7 +198,7 @@ export function Home() {
                 setLoading(false);
             }
         },
-        [letter, genres, category, minYear, maxYear, status, order],
+        [letter, genresKey, category, minYear, maxYear, status, order],
     );
 
     const fetchSearch = useCallback(

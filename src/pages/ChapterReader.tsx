@@ -7,7 +7,6 @@ import { Button } from '../components/ui/Button';
 import { Select } from '../components/ui/Select';
 import { useFetch } from '../hooks/useFetch';
 import { useReadChapters } from '../hooks/useReadChapters';
-import { useReadChaptersStore } from '../store/readChaptersStore';
 import { getProxiedImageUrl } from '../api/manga';
 import type { ChapterPage, MangaDetail } from '../types/manga';
 import { buildUniqueChapterList } from '../utils/manga';
@@ -19,14 +18,9 @@ export function ChapterReader() {
   const { data: chapterData, loading: chapterLoading, error: chapterError } = useFetch<ChapterPage>(hash ? `/manga/chapter/${hash}` : null);
   const { data: mangaData, loading: mangaLoading } = useFetch<MangaDetail>(mangaId ? `/manga/${mangaId}` : null);
 
-  const { markAsRead, removeFromRead } = useReadChapters(mangaId ?? 0);
+  const { markAsRead, removeFromRead, readChapters, isAuthenticated } = useReadChapters(mangaId ?? 0);
 
-  // Reactive selector — subscribes to readChapters[mangaId] changes
-  // NOTE: Do NOT use `|| []` here — it creates a NEW empty array on every render
-  // when readChapters[mangaId] is undefined, causing an infinite loop in Zustand.
-  // Return undefined and handle downstream with optional chaining.
-  const readHashes = useReadChaptersStore(s => s.readChapters[mangaId ?? 0]);
-  const isRead = hash ? (readHashes?.includes(hash) ?? false) : false;
+  const isRead = hash ? (readChapters.includes(hash) ?? false) : false;
 
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
@@ -57,7 +51,7 @@ export function ChapterReader() {
           const now = Date.now();
           if (now - observerCreatedAt.current < 50) return;
 
-          markAsRead(hash);
+markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
           observerRef.current?.disconnect();
           observerRef.current = null;
         }
@@ -205,7 +199,7 @@ export function ChapterReader() {
     if (isRead) {
       removeFromRead(hash);
     } else {
-      markAsRead(hash);
+          markAsRead(hash, currentChapter?.number, mangaData?.title, mangaData?.coverUrl);
     }
   };
 
@@ -328,12 +322,14 @@ export function ChapterReader() {
             </div>
           )}
 
-          <button
-            className={`${styles.readToggle} ${isRead ? styles.readToggleActive : ''}`}
-            onClick={handleToggleRead}
-          >
-            {isRead ? '✓ Leído' : 'Marcar como leído'}
-          </button>
+          {isAuthenticated && (
+            <button
+              className={`${styles.readToggle} ${isRead ? styles.readToggleActive : ''}`}
+              onClick={handleToggleRead}
+            >
+              {isRead ? '✓ Leído' : 'Marcar como leído'}
+            </button>
+          )}
         </div>
 
         {renderNavigation()}
