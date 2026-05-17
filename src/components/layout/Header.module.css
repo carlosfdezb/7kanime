@@ -124,37 +124,37 @@
 /* ===== Mobile (<640px) ===== */
 @media (max-width: 639px) {
   .inner {
-    gap: 8px;
+    gap: 6px;
     padding: 0 var(--space-sm);
-    flex-wrap: wrap;
   }
 
   .nav {
-    gap: 4px;
-    margin-left: var(--space-xs);
+    gap: 2px;
+    margin-left: 0;
   }
 
   .navLink {
-    font-size: 0.8125rem;
-    padding: var(--space-xs);
+    font-size: 0.75rem;
+    padding: 4px 6px;
   }
 
   .logoAccent,
   .logoText {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 
   .favoritesBtn {
-    padding-left: var(--space-xs);
-    padding-right: var(--space-xs);
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-left: 0;
   }
 
-  /* Search form always visible on mobile, full width */
+  /* Search form takes remaining space */
   .searchForm {
-    flex: 1 1 100%;
+    flex: 1;
     max-width: none;
     margin: 0;
-    order: 5;
+    min-width: 0;
   }
 
   .searchInput {
@@ -164,10 +164,6 @@
   /* Search toggle button hidden on mobile since search is always visible */
   .searchToggle {
     display: none;
-  }
-
-  .userSection {
-    order: 10;
   }
 
   .userMenu {
