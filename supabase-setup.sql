@@ -82,7 +82,7 @@ create policy "Users can delete own anime favorites"
 -- =============================================
 create table public.manga_favorites (
   user_id     uuid references auth.users on delete cascade not null,
-  manga_id    integer not null,
+  manga_id    text not null,
   title       text not null,
   cover_url   text not null,
   type        text default '',
@@ -138,13 +138,13 @@ create policy "Users can delete own episode history"
 -- =============================================
 create table public.chapter_history (
   user_id      uuid references auth.users on delete cascade not null,
-  manga_id     integer not null,
+  manga_id     text not null,
   manga_title  text not null,
   cover_url    text,
-  chapter_hash text not null,
+  chapter_id   text not null,
   chapter_num  text not null,
   read_at      timestamptz default now() not null,
-  primary key (user_id, manga_id, chapter_hash)
+  primary key (user_id, manga_id, chapter_id)
 );
 
 alter table public.chapter_history enable row level security;
