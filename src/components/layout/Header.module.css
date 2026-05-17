@@ -24,6 +24,16 @@
   margin-left: auto;
 }
 
+.favoritesCount {
+  display: inline;
+}
+
+@media (max-width: 639px) {
+  .favoritesCount {
+    display: none;
+  }
+}
+
 .favoritesBtn.favoritesBtn:hover:not(:disabled) {
   border-color: var(--color-primary);
 }
@@ -111,11 +121,12 @@
   }
 }
 
-/* ===== Mobile Search Collapse (<640px) ===== */
+/* ===== Mobile (<640px) ===== */
 @media (max-width: 639px) {
   .inner {
     gap: 8px;
     padding: 0 var(--space-sm);
+    flex-wrap: wrap;
   }
 
   .nav {
@@ -138,48 +149,29 @@
     padding-right: var(--space-xs);
   }
 
-  /* Hide the search form by default on mobile */
+  /* Search form always visible on mobile, full width */
   .searchForm {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    max-width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    transform: scaleY(0);
-    transform-origin: top;
-    opacity: 0;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-    z-index: 100;
+    flex: 1 1 100%;
+    max-width: none;
+    margin: 0;
+    order: 5;
   }
 
-  /* Expand search when focused */
-  .searchForm:focus-within {
-    transform: scaleY(1);
-    opacity: 1;
+  .searchInput {
+    width: 100%;
   }
 
-  /* Search toggle button visible only on mobile */
+  /* Search toggle button hidden on mobile since search is always visible */
   .searchToggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: none;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    color: var(--color-text-muted);
-    cursor: pointer;
-    flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
+    display: none;
   }
 
-  .searchToggle:hover {
-    color: var(--color-text);
-    border-color: var(--color-primary);
+  .userSection {
+    order: 10;
+  }
+
+  .userMenu {
+    right: 0;
   }
 }
 
@@ -264,12 +256,4 @@
   margin-left: auto;
 }
 
-@media (max-width: 639px) {
-  .userSection {
-    order: 10;
-  }
 
-  .userMenu {
-    right: 0;
-  }
-}

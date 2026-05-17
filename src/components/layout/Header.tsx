@@ -24,10 +24,11 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
   const location = useLocation();
   const { isSignedIn, signOut } = useAuth();
   const { user } = useUser();
-  const { isAuthenticated: isAnimeAuth } = useAnimeFavorites();
-  const { isAuthenticated: isMangaAuth } = useMangaFavorites();
+  const { favorites, isAuthenticated: isAnimeAuth } = useAnimeFavorites();
+  const { favorites: mangaFavorites, isAuthenticated: isMangaAuth } = useMangaFavorites();
 
   const isMangaContext = location.pathname.startsWith('/manga');
+  const currentFavorites = isMangaContext ? mangaFavorites : favorites;
   const isAuthenticated = isMangaContext ? isMangaAuth : isAnimeAuth;
 
   // Close user menu when clicking outside
@@ -130,7 +131,11 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
             data-tv-focus-id="favorites-btn"
             aria-label={showFavorites ? 'Cerrar favoritos' : 'Ver favoritos'}
           >
-            {showFavorites ? '✕' : `♥`}
+            {showFavorites ? '✕' : (
+              <>
+                ♥<span className={styles.favoritesCount}> {currentFavorites.length}</span>
+              </>
+            )}
           </Button>
         )}
 
