@@ -76,6 +76,44 @@ interface BackendChapterPages {
 }
 
 // ============================================================================
+// Genre display translations (English → Spanish) — VISUAL ONLY
+// Data stays in original language for API calls
+// ============================================================================
+
+const GENRE_DISPLAY_MAP: Record<string, string> = {
+  'action': 'Acción',
+  'adventure': 'Aventura',
+  'comedy': 'Comedia',
+  'drama': 'Drama',
+  'fantasy': 'Fantasía',
+  'horror': 'Horror',
+  'isekai': 'Isekai',
+  'martial arts': 'Artes Marciales',
+  'mystery': 'Misterio',
+  'psychological': 'Psicológico',
+  'romance': 'Romance',
+  'school': 'Escolar',
+  'school life': 'Vida Escolar',
+  'sci-fi': 'Ciencia Ficción',
+  'seinen': 'Seinen',
+  'shonen': 'Shōnen',
+  'shoujo': 'Shōjo',
+  'slice of life': 'Recuentos de la vida',
+  'sports': 'Deportes',
+  'supernatural': 'Sobrenatural',
+  'thriller': 'Thriller',
+};
+
+/**
+ * Translates genre for display purposes only.
+ * Original values are preserved in data for API compatibility.
+ */
+export function translateGenreDisplay(genre: string): string {
+  const lower = genre.toLowerCase().trim();
+  return GENRE_DISPLAY_MAP[lower] || genre;
+}
+
+// ============================================================================
 // Mappers: Backend → Frontend
 // ============================================================================
 

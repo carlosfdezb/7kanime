@@ -8,7 +8,7 @@ import { Chip } from '../components/ui/Chip';
 import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { ChapterList } from '../components/ui/ChapterList';
-import { getMangaDetail } from '../api/manga';
+import { getMangaDetail, translateGenreDisplay } from '../api/manga';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useReadChapters } from '../hooks/useReadChapters';
 import { sortChaptersByOrden } from '../utils/manga';
@@ -223,7 +223,7 @@ export const MangaDetail = function MangaDetail() {
             {manga.genres.length > 0 && (
               <div className={styles.genres}>
                 {manga.genres.map((genre) => (
-                  <Chip key={genre} label={genre} />
+                  <Chip key={genre} label={translateGenreDisplay(genre)} />
                 ))}
               </div>
             )}
