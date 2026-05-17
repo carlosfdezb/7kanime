@@ -184,7 +184,7 @@
 @media (min-width: 640px) {
   .ctaRow {
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
   }
 }
 
@@ -199,7 +199,7 @@
 }
 
 .readingCta {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-sm) var(--space-lg);
@@ -210,7 +210,12 @@
   border-radius: var(--radius-md);
   text-decoration: none;
   transition: background-color var(--transition-fast);
-  margin-top: var(--space-md);
+  min-height: 40px;
+}
+
+.ctaRow .readingCta {
+  margin-top: 0;
+  flex: 1;
 }
 
 .readingCta:hover {
