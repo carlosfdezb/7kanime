@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import styles from './MangaCard.module.css';
 import { cn } from '../../utils/cn';
-import { getProxiedImageUrl } from '../../api/manga';
 import { useMangaFavorites } from '../../hooks/useMangaFavorites';
 import type { MangaItem, MangaFavorite } from '../../types/manga';
 
@@ -23,14 +22,14 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
     setImageError(true);
   };
 
-  const isFavorite = isMangaFavorite(manga.id);
+  const isFavorite = isMangaFavorite(manga.publicId);
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isAuthenticated) {
       toggleMangaFavorite({
-        id: manga.id,
+        publicId: manga.publicId,
         title: manga.title,
         coverUrl: manga.coverUrl,
         type: manga.type,
@@ -40,7 +39,7 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
 
   return (
     <Link
-      to={`/manga/${manga.id}`}
+      to={`/manga/${manga.publicId}`}
       className={cn(styles.card, className)}
     >
       <div className={styles.posterWrapper}>
@@ -48,7 +47,7 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
           <div className={styles.skeleton} aria-hidden="true" />
         )}
         <img
-          src={imageError ? PLACEHOLDER_IMAGE : getProxiedImageUrl(manga.coverUrl)}
+          src={imageError ? PLACEHOLDER_IMAGE : manga.coverUrl}
           alt={manga.title}
           className={cn(styles.poster, !imageLoaded && styles.hidden)}
           loading="lazy"

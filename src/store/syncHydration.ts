@@ -133,7 +133,7 @@ async function hydrateReadChapters(supabase: SupabaseClient): Promise<void> {
   try {
     const { data, error } = await supabase
       .from('chapter_history')
-      .select('manga_id, manga_title, cover_url, chapter_hash');
+      .select('manga_id, manga_title, cover_url, chapter_id');
 
     if (error) {
       console.warn('[hydrateReadChapters] failed:', error.message);
@@ -146,7 +146,7 @@ async function hydrateReadChapters(supabase: SupabaseClient): Promise<void> {
     const grouped: Record<string, { hashes: string[]; manga_title: string; cover_url: string }> = {};
     for (const row of data) {
       const mangaId = row.manga_id as string;
-      const hash = row.chapter_hash as string;
+      const hash = row.chapter_id as string;
       const mangaTitle = (row.manga_title as string) || '';
       const coverUrl = (row.cover_url as string) || '';
       if (!grouped[mangaId]) {

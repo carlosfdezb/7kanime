@@ -27,7 +27,7 @@ export function MangaLibrary() {
 
   const loadData = useCallback(async () => {
     if (searchQuery) {
-      await fetchSearch(searchQuery, currentPage);
+      await fetchSearch(searchQuery);
     } else {
       await fetchPage(currentPage);
     }
@@ -102,7 +102,7 @@ export function MangaLibrary() {
           ) : (
             <div className={styles.grid}>
               {favorites.map((manga) => (
-                <MangaCard key={manga.id} manga={manga} />
+                <MangaCard key={manga.publicId} manga={manga} />
               ))}
             </div>
           )
@@ -119,7 +119,7 @@ export function MangaLibrary() {
           <>
             <div className={styles.grid}>
               {items.map((manga) => (
-                <MangaCard key={manga.id} manga={manga} />
+                <MangaCard key={manga.publicId} manga={manga} />
               ))}
             </div>
 

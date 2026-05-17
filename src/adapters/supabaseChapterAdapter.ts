@@ -14,7 +14,7 @@ import type { SyncAdapter } from './types';
 
 /**
  * Read chapters state — single record, not array.
- * Maps mangaId (string) → read manga data with chapter hashes and metadata.
+ * Maps mangaId (string) → read manga data with chapter ids and metadata.
  */
 export interface ReadMangaData {
   hashes: string[];
@@ -43,17 +43,17 @@ export function createSupabaseChapterAdapter(
       // Batch all mangaId+capituloId combinations into the debounce queue
       // to avoid excessive Supabase writes on rapid marking
       const entries = Object.entries(item);
-      const rows: { user_id: string; manga_id: string; manga_title: string; cover_url: string; chapter_hash: string; chapter_num: string; read_at: string }[] = [];
+      const rows: { user_id: string; manga_id: string; manga_title: string; cover_url: string; chapter_id: string; chapter_num: string; read_at: string }[] = [];
 
       for (const [mangaId, data] of entries) {
-        for (const chapterHash of data.hashes) {
+        for (const capituloId of data.hashes) {
           rows.push({
             user_id: userId,
             manga_id: mangaId,
             manga_title: data.manga_title || '',
             cover_url: data.cover_url || '',
-            chapter_hash: chapterHash,
-            chapter_num: data.chapter_nums?.[chapterHash] || '',
+            chapter_id: capituloId,
+            chapter_num: data.chapter_nums?.[capituloId] || '',
             read_at: new Date().toISOString(),
           });
         }
@@ -70,7 +70,7 @@ export function createSupabaseChapterAdapter(
             for (const row of rows) {
               await sb
                 .from('chapter_history')
-                .upsert(row, { onConflict: 'user_id,manga_id,chapter_hash' });
+                .upsert(row, { onConflict: 'user_id,manga_id,chapter_id' });
             }
             return null;
           },
