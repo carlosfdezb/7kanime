@@ -13,6 +13,7 @@ import { getTags } from '../api/manga';
 import { translateGenreDisplay } from '../api/manga';
 
 const ITEMS_PER_PAGE = 25;
+const TAGS_INITIAL_SHOW = 12;
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +21,7 @@ export function MangaLibrary() {
   const { favorites } = useMangaFavorites();
   const [showFavorites, setShowFavorites] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [tagsExpanded, setTagsExpanded] = useState(false);
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const searchQuery = searchParams.get('q') || '';
@@ -102,7 +104,7 @@ export function MangaLibrary() {
         {!showFavorites && availableTags.length > 0 && (
           <div className={styles.tagsSection}>
             <div className={styles.tagsList}>
-              {availableTags.map((tag) => (
+              {availableTags.slice(0, tagsExpanded ? availableTags.length : TAGS_INITIAL_SHOW).map((tag) => (
                 <Chip
                   key={tag}
                   label={translateGenreDisplay(tag)}
@@ -122,6 +124,16 @@ export function MangaLibrary() {
                 />
               ))}
             </div>
+            {availableTags.length > TAGS_INITIAL_SHOW && (
+              <button
+                className={styles.expandButton}
+                onClick={() => setTagsExpanded((e) => !e)}
+              >
+                {tagsExpanded
+                  ? 'Ver menos'
+                  : `Ver más (${availableTags.length - TAGS_INITIAL_SHOW} más)`}
+              </button>
+            )}
           </div>
         )}
 

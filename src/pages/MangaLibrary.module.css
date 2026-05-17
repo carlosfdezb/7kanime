@@ -22,22 +22,25 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
-  max-height: 120px;
-  overflow-y: auto;
-  padding-right: var(--space-sm);
 }
 
-.tagsList::-webkit-scrollbar {
-  width: 4px;
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
-.tagsList::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.tagsList::-webkit-scrollbar-thumb {
-  background-color: var(--color-border);
-  border-radius: 2px;
+.expandButton:hover {
+  color: var(--color-primary);
 }
 
 .title {
