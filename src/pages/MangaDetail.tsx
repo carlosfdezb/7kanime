@@ -228,22 +228,23 @@ export const MangaDetail = function MangaDetail() {
               </div>
             )}
 
-            <div className={styles.actions}>
+            <div className={styles.ctaRow}>
               <Button
                 variant={favorite ? 'primary' : 'ghost'}
                 onClick={handleFavoriteClick}
+                className={styles.ctaButton}
               >
                 {favorite ? '♥ Favorito' : '♡ Agregar a favoritos'}
               </Button>
-            </div>
 
-            {sortedChapters.length > 0 && (
-              <ReadingCTA
-                chapters={sortedChapters}
-                readChapters={readChapters}
-                mangaId={manga.publicId}
-              />
-            )}
+              {sortedChapters.length > 0 && (
+                <ReadingCTA
+                  chapters={sortedChapters}
+                  readChapters={readChapters}
+                  mangaId={manga.publicId}
+                />
+              )}
+            </div>
 
             {manga.description && (
               <div className={styles.description}>

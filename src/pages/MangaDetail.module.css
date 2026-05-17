@@ -174,10 +174,28 @@
   color: var(--color-text);
 }
 
-.actions {
+.ctaRow {
   display: flex;
+  flex-direction: column;
   gap: var(--space-sm);
   margin-top: var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .ctaRow {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.ctaButton {
+  flex: 1;
+}
+
+@media (min-width: 640px) {
+  .ctaButton {
+    flex: 0 0 auto;
+  }
 }
 
 .readingCta {
