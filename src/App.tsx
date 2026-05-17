@@ -94,7 +94,7 @@ function App() {
         <Route path="/episode/:slug/:number" element={<Episode />} />
         <Route path="/manga" element={<MangaLibrary />} />
         <Route path="/manga/:id" element={<MangaDetail />} />
-        <Route path="/manga/:id/chapter/:hash" element={<ChapterReader />} />
+        <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

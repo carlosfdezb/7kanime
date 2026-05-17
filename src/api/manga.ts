@@ -1,24 +1,22 @@
 import { apiFetch } from './client';
-import type { MangaDetail, ChapterPage, PaginatedMangaResponse } from '../types/manga';
+import type { MangaDetail, ChapterPages, PopularMangaResponse, MangaSearchResponse, MangaTag } from '../types/manga';
 
-export async function getMangaLibrary(page: number): Promise<PaginatedMangaResponse> {
-  return apiFetch<PaginatedMangaResponse>(`/manga/library?page=${page}`);
+export async function getPopular(page: number): Promise<PopularMangaResponse> {
+  return apiFetch<PopularMangaResponse>(`/manga/popular?page=${page}`);
 }
 
-export async function searchManga(query: string, page: number): Promise<PaginatedMangaResponse> {
-  return apiFetch<PaginatedMangaResponse>(`/manga/search?q=${encodeURIComponent(query)}&page=${page}`);
+export async function getTags(): Promise<MangaTag[]> {
+  return apiFetch<MangaTag[]>(`/manga/tags`);
 }
 
-export async function getMangaDetail(id: number): Promise<MangaDetail> {
-  return apiFetch<MangaDetail>(`/manga/${id}`);
+export async function searchManga(query: string): Promise<MangaSearchResponse> {
+  return apiFetch<MangaSearchResponse>(`/manga/search?q=${encodeURIComponent(query)}`);
 }
 
-export async function getChapterPages(hash: string): Promise<ChapterPage> {
-  return apiFetch<ChapterPage>(`/manga/chapter/${hash}`);
+export async function getMangaDetail(publicId: string): Promise<MangaDetail> {
+  return apiFetch<MangaDetail>(`/manga/${publicId}`);
 }
 
-export const MANGA_PROXY_BASE = 'https://animeav1-api-server.vercel.app/manga/proxy?url=';
-
-export function getProxiedImageUrl(url: string): string {
-  return `${MANGA_PROXY_BASE}${encodeURIComponent(url)}`;
+export async function getChapterPages(serieId: string, capituloId: string): Promise<ChapterPages> {
+  return apiFetch<ChapterPages>(`/manga/chapter/${serieId}/${capituloId}`);
 }
