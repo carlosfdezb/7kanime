@@ -38,12 +38,6 @@
 
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .grid {
     grid-template-columns: repeat(5, 1fr);
   }
 }
@@ -96,12 +90,6 @@
 }
 
 @media (min-width: 1024px) {
-  .loadingGrid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
   .loadingGrid {
     grid-template-columns: repeat(5, 1fr);
   }
