@@ -11,8 +11,8 @@ export function useMangaFavorites() {
     addFavorite(manga, mangaFavoritesAdapter ?? undefined);
   }, [addFavorite, mangaFavoritesAdapter]);
 
-  const removeManga = useCallback((id: number) => {
-    removeFavorite(id, mangaFavoritesAdapter ?? undefined);
+  const removeManga = useCallback((publicId: string) => {
+    removeFavorite(publicId, mangaFavoritesAdapter ?? undefined);
   }, [removeFavorite, mangaFavoritesAdapter]);
 
   const toggleMangaFavorite = useCallback((manga: MangaFavorite) => {

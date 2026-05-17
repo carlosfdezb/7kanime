@@ -8,12 +8,12 @@ export interface ChapterNavInfo {
 }
 
 /**
- * Sorts chapters by orden (descending — newest first).
+ * Sorts chapters by orden (ascending — chapter 1, 2, 3...).
  * In the shadowmanga API, chapters are already unique by publicId.
  */
 export function sortChaptersByOrden(chapters: MangaChapter[]): ChapterNavInfo[] {
   return [...chapters]
-    .sort((a, b) => b.orden - a.orden)
+    .sort((a, b) => a.orden - b.orden)
     .map(ch => ({
       publicId: ch.publicId,
       numeroCapitulo: ch.numeroCapitulo,

@@ -78,7 +78,7 @@ async function hydrateMangaFavorites(supabase: SupabaseClient): Promise<void> {
     if (!data || data.length === 0) return;
 
     const items = data.map(row => ({
-      id: row.manga_id as number,
+      publicId: row.manga_id as string,
       title: row.title as string,
       coverUrl: row.cover_url as string,
       type: row.type as string,
@@ -143,9 +143,9 @@ async function hydrateReadChapters(supabase: SupabaseClient): Promise<void> {
     if (!data || data.length === 0) return;
 
     // Group by mangaId: { mangaId: { hashes: [hash1, hash2], manga_title: "", cover_url: "" } }
-    const grouped: Record<number, { hashes: string[]; manga_title: string; cover_url: string }> = {};
+    const grouped: Record<string, { hashes: string[]; manga_title: string; cover_url: string }> = {};
     for (const row of data) {
-      const mangaId = row.manga_id as number;
+      const mangaId = row.manga_id as string;
       const hash = row.chapter_hash as string;
       const mangaTitle = (row.manga_title as string) || '';
       const coverUrl = (row.cover_url as string) || '';

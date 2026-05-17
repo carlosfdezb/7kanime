@@ -11,8 +11,7 @@ import { ChapterList } from '../components/ui/ChapterList';
 import { useFetch } from '../hooks/useFetch';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useReadChapters } from '../hooks/useReadChapters';
-import { getProxiedImageUrl } from '../api/manga';
-import { buildUniqueChapterList } from '../utils/manga';
+import { sortChaptersByOrden } from '../utils/manga';
 import type { MangaDetail as MangaDetailType } from '../types/manga';
 
 const STATUS_TRANSLATIONS: Record<string, string> = {
@@ -26,53 +25,50 @@ const translateStatus = (status: string): string =>
 interface ReadingCTAProps {
   chapters: MangaDetailType['chapters'];
   readChapters: string[];
-  mangaId: number;
+  mangaId: string;
 }
 
 function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
-  const uniqueChapters = buildUniqueChapterList(chapters);
+  const sortedChapters = sortChaptersByOrden(chapters);
 
-  if (uniqueChapters.length === 0) {
+  if (sortedChapters.length === 0) {
     return null;
   }
 
-  // Find which unique chapters have been read (match by hash)
-  const readHashSet = new Set(readChapters);
+  // Find which chapters have been read (match by publicId)
   const readIndices: number[] = [];
 
-  uniqueChapters.forEach((chapter, index) => {
-    // Check if any version of this chapter has been read
-    const isRead = chapter.versions.some(v => readHashSet.has(v.hash));
-    if (isRead) {
+  sortedChapters.forEach((chapter, index) => {
+    if (readChapters.includes(chapter.publicId)) {
       readIndices.push(index);
     }
   });
 
   let buttonText: string;
-  let targetHash: string;
+  let targetPublicId: string;
 
   if (readIndices.length === 0) {
     // No chapters read — show "Empezar a leer"
     buttonText = 'Empezar a leer';
-    targetHash = uniqueChapters[0].hash;
+    targetPublicId = sortedChapters[0].publicId;
   } else {
     // Find the last read chapter index
     const lastReadIndex = Math.max(...readIndices);
     const nextIndex = lastReadIndex + 1;
 
-    if (nextIndex >= uniqueChapters.length) {
+    if (nextIndex >= sortedChapters.length) {
       // Last chapter was the last read — show "Empezar a leer" (restart)
       buttonText = 'Empezar a leer';
-      targetHash = uniqueChapters[0].hash;
+      targetPublicId = sortedChapters[0].publicId;
     } else {
       // There's a next chapter to continue — show "Continuar leyendo"
       buttonText = 'Continuar leyendo';
-      targetHash = uniqueChapters[nextIndex].hash;
+      targetPublicId = sortedChapters[nextIndex].publicId;
     }
   }
 
   return (
-    <Link to={`/manga/${mangaId}/chapter/${targetHash}`} className={styles.readingCta}>
+    <Link to={`/manga/${mangaId}/chapter/${targetPublicId}`} className={styles.readingCta}>
       {buttonText}
     </Link>
   );
@@ -80,10 +76,10 @@ function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
 
 export const MangaDetail = function MangaDetail() {
   const { id } = useParams<{ id: string }>();
-  const mangaId = id ? parseInt(id, 10) : null;
+  const mangaId = id || null;
   const { data, loading, error } = useFetch<MangaDetailType>(mangaId ? `/manga/${mangaId}` : null);
   const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
-  const { readChapters } = useReadChapters(mangaId ?? 0);
+  const { readChapters } = useReadChapters(mangaId ?? '');
   const [posterError, setPosterError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -99,12 +95,12 @@ export const MangaDetail = function MangaDetail() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const favorite = data ? isMangaFavorite(data.id) : false;
+  const favorite = data ? isMangaFavorite(data.publicId) : false;
 
   const handleFavoriteClick = () => {
     if (data) {
       toggleMangaFavorite({
-        id: data.id,
+        publicId: data.publicId,
         title: data.title,
         coverUrl: data.coverUrl,
         type: data.type,
@@ -160,7 +156,7 @@ export const MangaDetail = function MangaDetail() {
           <div className={styles.posterWrapper}>
             {!posterError && (
               <img
-                src={getProxiedImageUrl(manga.coverUrl)}
+                src={manga.coverUrl}
                 alt={manga.title}
                 className={styles.poster}
                 onError={() => setPosterError(true)}
@@ -230,7 +226,7 @@ export const MangaDetail = function MangaDetail() {
               <ReadingCTA
                 chapters={manga.chapters}
                 readChapters={readChapters}
-                mangaId={manga.id}
+                mangaId={manga.publicId}
               />
             )}
 
@@ -247,7 +243,7 @@ export const MangaDetail = function MangaDetail() {
           <h2 className={styles.sectionTitle}>
             Capítulos ({manga.chapters.length})
           </h2>
-          <ChapterList chapters={manga.chapters} mangaId={manga.id} readChapters={readChapters} />
+          <ChapterList chapters={manga.chapters} mangaId={manga.publicId} readChapters={readChapters} />
         </div>
 
         <button
