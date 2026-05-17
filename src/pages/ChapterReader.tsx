@@ -6,6 +6,7 @@ import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { Button } from '../components/ui/Button';
 import { useReadChapters } from '../hooks/useReadChapters';
 import { getChapterPages, getMangaDetail } from '../api/manga';
+import { sortChaptersByOrden } from '../utils/manga';
 import type { ChapterPages, MangaDetail } from '../types/manga';
 
 export function ChapterReader() {
@@ -52,12 +53,14 @@ export function ChapterReader() {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const observerCreatedAt = useRef<number>(0);
 
-  // Find current chapter info from manga detail
-  const currentChapter = mangaData?.chapters.find(ch => ch.publicId === capituloId);
-  const prevCapituloId = chapterData?.prevCapituloId ?? null;
-  const nextCapituloId = chapterData?.nextCapituloId ?? null;
-  const prevChapter = prevCapituloId ? mangaData?.chapters.find(ch => ch.publicId === prevCapituloId) : null;
-  const nextChapter = nextCapituloId ? mangaData?.chapters.find(ch => ch.publicId === nextCapituloId) : null;
+  // Derive prev/next chapter from manga detail (backend no longer provides these)
+  const sortedChapters = mangaData ? sortChaptersByOrden(mangaData.chapters) : [];
+  const currentIndex = sortedChapters.findIndex(ch => ch.publicId === capituloId);
+  const currentChapter = currentIndex >= 0 ? sortedChapters[currentIndex] : undefined;
+  const prevChapter = currentIndex > 0 ? sortedChapters[currentIndex - 1] : null;
+  const nextChapter = currentIndex >= 0 && currentIndex < sortedChapters.length - 1 ? sortedChapters[currentIndex + 1] : null;
+  const prevCapituloId = prevChapter?.publicId ?? null;
+  const nextCapituloId = nextChapter?.publicId ?? null;
 
   // Callback ref to attach IntersectionObserver to the midpoint page wrapper
   const midpointRef = useCallback((node: HTMLDivElement | null) => {
