@@ -4,10 +4,17 @@ import styles from './ChapterReader.module.css';
 import { Container } from '../components/layout/Container';
 import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { Button } from '../components/ui/Button';
+import { CascadeView } from '../components/reader/CascadeView';
+import { PaginatedView } from '../components/reader/PaginatedView';
+import { ReaderControls } from '../components/reader/ReaderControls';
+import { ReaderNavigation } from '../components/reader/ReaderNavigation';
 import { useReadChapters } from '../hooks/useReadChapters';
+import { useSyncContext } from '../context/SyncContext';
+import { usePreferencesStore } from '../store/preferencesStore';
 import { getChapterPages, getMangaDetail } from '../api/manga';
 import { sortChaptersByOrden } from '../utils/manga';
-import type { ChapterPages, MangaDetail } from '../types/manga';
+import type { ChapterPages, MangaDetail, MangaChapter } from '../types/manga';
+import type { ReadingMode } from '../types/preferences';
 
 export function ChapterReader() {
   const { serieId, capituloId } = useParams<{ serieId: string; capituloId: string }>();
@@ -18,6 +25,9 @@ export function ChapterReader() {
   const [chapterError, setChapterError] = useState<string | null>(null);
   const [mangaData, setMangaData] = useState<MangaDetail | null>(null);
   const [mangaLoading, setMangaLoading] = useState(false);
+
+  const { preferencesAdapter } = useSyncContext();
+  const { preferences, setReadingMode } = usePreferencesStore();
 
   useEffect(() => {
     if (!serieId || !capituloId) return;
@@ -44,66 +54,35 @@ export function ChapterReader() {
 
   const isRead = capituloId ? readChapters.includes(capituloId) : false;
 
+  // State shared between view modes
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
-  const [visiblePages, setVisiblePages] = useState<Set<number>>(new Set());
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Paginated mode state
+  const [currentPage, setCurrentPage] = useState(0);
+
   const fullscreenRef = useRef<HTMLDivElement>(null);
   const currentImageRef = useRef<HTMLImageElement | null>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const observerCreatedAt = useRef<number>(0);
+  const lastPageBeforeFullscreen = useRef<number>(0);
+
+  // Reading mode from preferences store
+  const readingMode: ReadingMode = preferences.readingMode;
 
   // Derive prev/next chapter from manga detail (backend no longer provides these)
   const sortedChapters = mangaData ? sortChaptersByOrden(mangaData.chapters) : [];
   const currentIndex = sortedChapters.findIndex(ch => ch.publicId === capituloId);
   const currentChapter = currentIndex >= 0 ? sortedChapters[currentIndex] : undefined;
-  const prevChapter = currentIndex > 0 ? sortedChapters[currentIndex - 1] : null;
-  const nextChapter = currentIndex >= 0 && currentIndex < sortedChapters.length - 1 ? sortedChapters[currentIndex + 1] : null;
-  const prevCapituloId = prevChapter?.publicId ?? null;
-  const nextCapituloId = nextChapter?.publicId ?? null;
-
-  // Callback ref to attach IntersectionObserver to the midpoint page wrapper
-  const midpointRef = useCallback((node: HTMLDivElement | null) => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-      observerRef.current = null;
-    }
-    if (!node || !mangaId || !capituloId) return;
-
-    observerRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const now = Date.now();
-          if (now - observerCreatedAt.current < 50) return;
-
-          markAsRead(
-            capituloId,
-            currentChapter?.numeroCapitulo,
-            mangaData?.title,
-            mangaData?.coverUrl
-          );
-          observerRef.current?.disconnect();
-          observerRef.current = null;
-        }
-      },
-      { threshold: 0.1 }
-    );
-    observerCreatedAt.current = Date.now();
-    observerRef.current.observe(node);
-  }, [mangaId, capituloId, markAsRead, currentChapter, mangaData]);
-
-  // Cleanup observer on unmount or capituloId change
-  useEffect(() => {
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
-      }
-    };
-  }, [capituloId]);
+  const prevChapter: MangaChapter | null = currentIndex > 0 ? sortedChapters[currentIndex - 1] : null;
+  const nextChapter: MangaChapter | null = currentIndex >= 0 && currentIndex < sortedChapters.length - 1 ? sortedChapters[currentIndex + 1] : null;
 
   // Find the image closest to the top of the viewport
   const findMostVisibleImage = useCallback((): HTMLImageElement | null => {
+    if (readingMode === 'paginated') {
+      // In paginated mode, we track the current page directly
+      return null;
+    }
+
     const images = fullscreenRef.current?.querySelectorAll('img');
     if (!images || images.length === 0) return null;
 
@@ -124,26 +103,36 @@ export function ChapterReader() {
     });
 
     return closestImage;
-  }, []);
+  }, [readingMode]);
 
   const toggleFullscreen = useCallback(() => {
     const element = fullscreenRef.current;
     if (!element) return;
 
     if (document.fullscreenElement) {
-      const currentImage = findMostVisibleImage();
-      if (currentImage) {
-        currentImageRef.current = currentImage;
+      // Exiting fullscreen - save current position
+      if (readingMode === 'paginated') {
+        lastPageBeforeFullscreen.current = currentPage;
+      } else {
+        const currentImage = findMostVisibleImage();
+        if (currentImage) {
+          currentImageRef.current = currentImage;
+        }
       }
       document.exitFullscreen();
     } else {
-      const currentImage = findMostVisibleImage();
-      if (currentImage) {
-        currentImageRef.current = currentImage;
+      // Entering fullscreen - save current position
+      if (readingMode === 'paginated') {
+        lastPageBeforeFullscreen.current = currentPage;
+      } else {
+        const currentImage = findMostVisibleImage();
+        if (currentImage) {
+          currentImageRef.current = currentImage;
+        }
       }
       element.requestFullscreen();
     }
-  }, [findMostVisibleImage]);
+  }, [findMostVisibleImage, readingMode, currentPage]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -152,17 +141,28 @@ export function ChapterReader() {
 
       if (entering) {
         setTimeout(() => {
-          const targetImage = currentImageRef.current || findMostVisibleImage();
-          if (targetImage) {
-            targetImage.scrollIntoView({ block: 'start', behavior: 'instant' });
-            currentImageRef.current = targetImage;
+          if (readingMode === 'paginated') {
+            // In paginated mode, stay on the same page - CSS handles centering
+            // No scrollIntoView needed since PaginatedView just renders centered
+          } else {
+            // Cascade mode - restore scroll position
+            const targetImage = currentImageRef.current || findMostVisibleImage();
+            if (targetImage) {
+              targetImage.scrollIntoView({ block: 'start', behavior: 'instant' });
+              currentImageRef.current = targetImage;
+            }
           }
         }, 100);
       } else {
         setTimeout(() => {
-          const targetImage = currentImageRef.current || findMostVisibleImage();
-          if (targetImage) {
-            targetImage.scrollIntoView({ block: 'start', behavior: 'instant' });
+          if (readingMode === 'paginated') {
+            // Restore the page we were on before fullscreen
+            setCurrentPage(lastPageBeforeFullscreen.current);
+          } else {
+            const targetImage = currentImageRef.current || findMostVisibleImage();
+            if (targetImage) {
+              targetImage.scrollIntoView({ block: 'start', behavior: 'instant' });
+            }
           }
         }, 100);
       }
@@ -170,7 +170,7 @@ export function ChapterReader() {
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, [findMostVisibleImage]);
+  }, [findMostVisibleImage, readingMode]);
 
   // Keyboard shortcut for fullscreen (F key)
   useEffect(() => {
@@ -188,20 +188,33 @@ export function ChapterReader() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [toggleFullscreen]);
 
+  // Back-to-top visibility - only in cascade mode
   useEffect(() => {
+    if (readingMode !== 'cascade') {
+      setShowBackToTop(false);
+      return;
+    }
+
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 300);
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [readingMode]);
+
+  // Reset current page when chapter changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [capituloId]);
 
   const handleImageError = (pageNumber: number) => {
     setImageErrors(prev => new Set(prev).add(pageNumber));
   };
 
-  const handleImageLoad = (pageNumber: number) => {
-    setVisiblePages(prev => new Set(prev).add(pageNumber));
+  // Image load tracking - kept for potential future use, currently handled by sub-components
+  const handleImageLoad = (_pageNumber: number) => {
+    // No-op: image loading state is tracked by CascadeView/PaginatedView if needed
   };
 
   const handleToggleRead = () => {
@@ -217,61 +230,11 @@ export function ChapterReader() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const renderNavigation = () => (
-    <div className={styles.navigation}>
-      {prevCapituloId ? (
-        <Link
-          to={`/manga/${serieId}/chapter/${prevCapituloId}`}
-          className={styles.navLink}
-        >
-          <span className={styles.navArrow}>←</span>
-          <span className={styles.navLabel}>
-            {prevChapter ? (
-              <>
-                <span className={styles.navChapterNum}>Cap. {prevChapter.numeroCapitulo}</span>
-                {prevChapter.title && <span className={styles.navChapterTitle}>{prevChapter.title}</span>}
-              </>
-            ) : (
-              <span className={styles.navLabel}>Anterior</span>
-            )}
-          </span>
-        </Link>
-      ) : (
-        <span className={`${styles.navLink} ${styles.disabled}`}>
-          <span className={styles.navArrow}>←</span>
-          <span className={styles.navLabel}>Anterior</span>
-        </span>
-      )}
-
-      <span className={styles.pageIndicator}>
-        {chapterData?.paginas.length ?? 0} página{chapterData?.paginas.length !== 1 ? 's' : ''}
-      </span>
-
-      {nextCapituloId ? (
-        <Link
-          to={`/manga/${serieId}/chapter/${nextCapituloId}`}
-          className={styles.navLink}
-        >
-          <span className={styles.navLabel}>
-            {nextChapter ? (
-              <>
-                <span className={styles.navChapterNum}>Cap. {nextChapter.numeroCapitulo}</span>
-                {nextChapter.title && <span className={styles.navChapterTitle}>{nextChapter.title}</span>}
-              </>
-            ) : (
-              <span className={styles.navLabel}>Siguiente</span>
-            )}
-          </span>
-          <span className={styles.navArrow}>→</span>
-        </Link>
-      ) : (
-        <span className={`${styles.navLink} ${styles.disabled}`}>
-          <span className={styles.navLabel}>Siguiente</span>
-          <span className={styles.navArrow}>→</span>
-        </span>
-      )}
-    </div>
-  );
+  const handleReadingModeChange = (mode: ReadingMode) => {
+    setReadingMode(mode, preferencesAdapter ?? undefined);
+    // Reset page when switching modes
+    setCurrentPage(0);
+  };
 
   const loading = chapterLoading || mangaLoading;
   const error = chapterError;
@@ -310,9 +273,7 @@ export function ChapterReader() {
     );
   }
 
-  const chapter = chapterData;
-  const totalPages = chapter.paginas.length;
-  const midpointPage = Math.max(1, Math.floor(totalPages / 2));
+  const totalPages = chapterData.paginas.length;
 
   return (
     <div className={styles.page}>
@@ -334,97 +295,90 @@ export function ChapterReader() {
               {isRead ? '✓ Leído' : 'Marcar como leído'}
             </button>
           )}
+
+          <ReaderControls
+            readingMode={readingMode}
+            onReadingModeChange={handleReadingModeChange}
+            isFullscreen={isFullscreen}
+            onToggleFullscreen={toggleFullscreen}
+          />
         </div>
 
-        {renderNavigation()}
+        <ReaderNavigation
+          prevChapter={prevChapter}
+          nextChapter={nextChapter}
+          mangaId={serieId || ''}
+        />
       </Container>
 
       <div ref={fullscreenRef} className={styles.fullscreenWrapper}>
-        {chapter.paginas.length === 0 ? (
+        {totalPages === 0 ? (
           <div className={styles.emptyState}>
             <p>No se encontraron páginas para este capítulo</p>
           </div>
+        ) : readingMode === 'cascade' ? (
+          <CascadeView
+            pages={chapterData.paginas}
+            imageErrors={imageErrors}
+            onImageError={handleImageError}
+            onImageLoad={handleImageLoad}
+            onMidpointReached={() => {
+              if (capituloId && currentChapter && mangaData) {
+                markAsRead(capituloId, currentChapter.numeroCapitulo, mangaData.title, mangaData.coverUrl);
+              }
+            }}
+          />
         ) : (
-          <>
-            <div className={styles.imageStack}>
-              {chapter.paginas.map((imageUrl, index) => {
-                const pageNum = index + 1;
-                const hasError = imageErrors.has(pageNum);
-                const isLoaded = visiblePages.has(pageNum);
-
-                return (
-                  <div
-                    key={pageNum}
-                    ref={pageNum === midpointPage ? midpointRef : undefined}
-                    className={styles.pageWrapper}
-                  >
-                    {hasError ? (
-                      <div className={styles.imageError}>
-                        <span className={styles.imageErrorIcon}>🖼️</span>
-                        <span>Error al cargar la imagen</span>
-                      </div>
-                    ) : (
-                      <>
-                        {!isLoaded && (
-                          <div className={styles.imageError}>
-                            <div className={styles.loadingSpinner} />
-                          </div>
-                        )}
-                        <img
-                          src={imageUrl}
-                          alt={`Página ${pageNum}`}
-                          className={styles.pageImage}
-                          style={{ display: isLoaded ? 'block' : 'none' }}
-                          onLoad={() => handleImageLoad(pageNum)}
-                          onError={() => handleImageError(pageNum)}
-                        />
-                      </>
-                    )}
-                    {!isFullscreen && <span className={styles.pageNumber}>{pageNum}</span>}
-                  </div>
-                );
-              })}
-            </div>
-
-            {!isFullscreen && (
-              <Container className={styles.bottomNav}>
-                {renderNavigation()}
-              </Container>
-            )}
-            {isFullscreen && (
-              <div className={styles.bottomNavFullscreen}>
-                {renderNavigation()}
-              </div>
-            )}
-
-            {!isFullscreen && (
-              <button
-                className={`${styles.backToTop} ${showBackToTop ? styles.visible : ''}`}
-                onClick={scrollToTop}
-                aria-label="Volver arriba"
-              >
-                ↑
-              </button>
-            )}
-          </>
+          <PaginatedView
+            pages={chapterData.paginas}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onLastPageReached={() => {
+              if (capituloId && currentChapter && mangaData) {
+                markAsRead(capituloId, currentChapter.numeroCapitulo, mangaData.title, mangaData.coverUrl);
+              }
+            }}
+            imageErrors={imageErrors}
+            onImageError={handleImageError}
+            onImageLoad={handleImageLoad}
+          />
         )}
 
-        <button
-          className={styles.fullscreenButton}
-          onClick={toggleFullscreen}
-          aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-        >
-          {isFullscreen ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-            </svg>
-          )}
-        </button>
+        {/* Bottom navigation inside fullscreen */}
+        {isFullscreen && (
+          <div className={styles.bottomNavFullscreen}>
+            <ReaderNavigation
+              prevChapter={prevChapter}
+              nextChapter={nextChapter}
+              mangaId={serieId || ''}
+              currentPage={readingMode === 'paginated' ? currentPage : undefined}
+              totalPages={totalPages}
+            />
+          </div>
+        )}
+
+        {/* Back-to-top button - cascade only */}
+        {readingMode === 'cascade' && (
+          <button
+            className={`${styles.backToTop} ${showBackToTop ? styles.visible : ''}`}
+            onClick={scrollToTop}
+            aria-label="Volver arriba"
+          >
+            ↑
+          </button>
+        )}
       </div>
+
+      {/* Bottom navigation outside fullscreen */}
+      {!isFullscreen && (
+        <Container className={styles.bottomNav}>
+          <ReaderNavigation
+            prevChapter={prevChapter}
+            nextChapter={nextChapter}
+            mangaId={serieId || ''}
+          />
+        </Container>
+      )}
     </div>
   );
 }

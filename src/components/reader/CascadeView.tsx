@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './CascadeView.module.css';
 
 interface CascadeViewProps {
@@ -16,6 +16,7 @@ export function CascadeView({
   onImageLoad,
   onMidpointReached,
 }: CascadeViewProps) {
+  const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
   const observerRef = useRef<IntersectionObserver | null>(null);
   const observerCreatedAt = useRef<number>(0);
 
@@ -53,6 +54,11 @@ export function CascadeView({
     };
   }, []);
 
+  const handleImageLoad = (pageNum: number) => {
+    setLoadedPages(prev => new Set(prev).add(pageNum));
+    onImageLoad(pageNum);
+  };
+
   if (pages.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -66,6 +72,7 @@ export function CascadeView({
       {pages.map((imageUrl, index) => {
         const pageNum = index + 1;
         const hasError = imageErrors.has(pageNum);
+        const isLoaded = loadedPages.has(pageNum);
 
         return (
           <div
@@ -79,13 +86,21 @@ export function CascadeView({
                 <span>Error al cargar la imagen</span>
               </div>
             ) : (
-              <img
-                src={imageUrl}
-                alt={`Página ${pageNum}`}
-                className={styles.pageImage}
-                onLoad={() => onImageLoad(pageNum)}
-                onError={() => onImageError(pageNum)}
-              />
+              <>
+                {!isLoaded && (
+                  <div className={styles.imageLoading}>
+                    <div className={styles.loadingSpinner} />
+                  </div>
+                )}
+                <img
+                  src={imageUrl}
+                  alt={`Página ${pageNum}`}
+                  className={styles.pageImage}
+                  style={{ display: isLoaded ? 'block' : 'none' }}
+                  onLoad={() => handleImageLoad(pageNum)}
+                  onError={() => onImageError(pageNum)}
+                />
+              </>
             )}
             <span className={styles.pageNumber}>{pageNum}</span>
           </div>

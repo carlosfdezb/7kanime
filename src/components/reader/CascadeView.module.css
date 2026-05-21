@@ -55,6 +55,15 @@
   color: var(--color-text-muted);
 }
 
+.imageLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+}
+
 .loadingSpinner {
   width: 40px;
   height: 40px;
