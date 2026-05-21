@@ -22,27 +22,6 @@ export interface Relation {
   type: string;
 }
 
-export interface AnimeDetail {
-  id: number;
-  title: string;
-  aka: { "en-us"?: string; "ja-jp"?: string };
-  genres: Genre[];
-  synopsis: string;
-  poster: string;
-  backdrop: string;
-  trailer: string | null;
-  status: number;
-  statusText: string;  // "Airing", "Finished"
-  episodesCount: number;
-  score: number;
-  votes: number;
-  slug: string;
-  type: string;
-  typeSlug: string;
-  category: Category;
-  episodes: { id: number; number: number }[];
-}
-
 export interface CatalogItem {
   id: number;
   title: string;
