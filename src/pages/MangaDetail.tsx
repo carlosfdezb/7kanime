@@ -231,6 +231,22 @@ export const MangaDetail = function MangaDetail() {
                   <span className={styles.metadataValue}>{manga.demographics.join(', ')}</span>
                 </div>
               )}
+              {sortedChapters.length > 0 && (
+                <div className={styles.metadataItem}>
+                  <span className={styles.metadataLabel}>Progreso</span>
+                  <span className={styles.metadataValue}>
+                    {readChapters.length} de {sortedChapters.length} capítulos leídos
+                    {sortedChapters.length > 0 && (
+                      <span className={styles.progressBar}>
+                        <span
+                          className={styles.progressFill}
+                          style={{ width: `${(readChapters.length / sortedChapters.length) * 100}%` }}
+                        />
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
 
             {manga.genres?.length > 0 && (
