@@ -144,6 +144,14 @@ export function Home() {
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
+
+    // Sync search query from URL on mount
+    useEffect(() => {
+        const urlSearch = searchParams.get("search") || "";
+        if (urlSearch) {
+            setSearchQuery(urlSearch);
+        }
+    }, []);
     const [genreExpanded, setGenreExpanded] = useState(false);
     const [filtersVisible, setFiltersVisible] = useState(false);
     const [showFavorites, setShowFavorites] = useState(false);
@@ -237,6 +245,24 @@ export function Home() {
             fetchCatalog(page);
         }
     }, [debouncedSearchQuery, fetchSearch, fetchCatalog, page, isSearching]);
+
+    // Sync search query to URL when user searches
+    useEffect(() => {
+        if (debouncedSearchQuery.length >= 2) {
+            setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.set("search", debouncedSearchQuery);
+                newParams.set("page", "1");
+                return newParams;
+            });
+        } else if (debouncedSearchQuery.length === 0) {
+            setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.delete("search");
+                return newParams;
+            });
+        }
+    }, [debouncedSearchQuery, setSearchParams]);
 
     // Initial and filter change fetch
     useEffect(() => {
