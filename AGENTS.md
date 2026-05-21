@@ -894,7 +894,7 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | 15 | ✅ **COMPLETADO** — Error Boundaries - Agregar al menos uno en el nivel de App y uno por dominio. | 8 | 4 | 2 | 64 | Arquitectura |
 | 16 | ✅ **COMPLETADO** — ID únicos para inputs/selects - Usar `useId()` de React 18 o `crypto.randomUUID()`. | 5 | 2 | 1 | 10 | Arquitectura/Accesibilidad |
 | 17 | ✅ **COMPLETADO** — Historial de episodios recientes - Widget en Home con "Continuar viendo". | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
-| 18 | Lista de "Seguir leyendo" - Similar para manga, basado en capítulos leídos. | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
+| 18 | ✅ **COMPLETADO** — Lista de "Seguir leyendo" - Similar para manga, basado en capítulos leídos. | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
 | 19 | Notificaciones de nuevos episodios/capítulos - Polling o push. | 8 | 8 | 4 | 256 | Nueva Funcionalidad |
 | 20 | PWA / Service Worker - Offline browsing de catálogo cacheado. | 6 | 8 | 3 | 144 | Nueva Funcionalidad |
 | 21 | Comentarios/reviews - Integrar con backend si existe. | 5 | 8 | 3 | 120 | Nueva Funcionalidad |
