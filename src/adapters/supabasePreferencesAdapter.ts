@@ -55,7 +55,8 @@ export function createSupabasePreferencesAdapter(
             }
           },
           'user_preferences',
-          item as unknown as Record<string, unknown>
+          item as unknown as Record<string, unknown>,
+          getToken.toString()
         );
       });
     },

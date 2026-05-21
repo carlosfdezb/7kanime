@@ -4,6 +4,7 @@ import styles from './MangaCard.module.css';
 import { cn } from '../../utils/cn';
 import { useMangaFavorites } from '../../hooks/useMangaFavorites';
 import type { MangaItem, MangaFavorite } from '../../types/manga';
+import { Focusable } from './Focusable';
 
 interface MangaCardProps {
   manga: MangaItem | MangaFavorite;
@@ -38,10 +39,7 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
   };
 
   return (
-    <Link
-      to={`/manga/${manga.publicId}`}
-      className={cn(styles.card, className)}
-    >
+    <Focusable as={Link} id={`mangacard-${manga.publicId}`} className={cn(styles.card, className)} to={`/manga/${manga.publicId}`}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />
@@ -68,6 +66,6 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
       <div className={styles.info}>
         <h3 className={styles.title}>{manga.title}</h3>
       </div>
-    </Link>
+    </Focusable>
   );
 }

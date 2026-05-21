@@ -77,7 +77,8 @@ export function createSupabaseEpisodeAdapter(
             return null;
           },
           'episode_history',
-          rows as unknown as Record<string, unknown>
+          rows as unknown as Record<string, unknown>,
+          getToken.toString()
         );
       });
     },

@@ -5,7 +5,7 @@ interface CascadeViewProps {
   pages: string[];
   imageErrors: Set<number>;
   onImageError: (pageIndex: number) => void;
-  onImageLoad: (pageIndex: number) => void;
+  onImageLoad?: (pageIndex: number) => void;
   onMidpointReached?: () => void;
 }
 
@@ -56,7 +56,7 @@ export function CascadeView({
 
   const handleImageLoad = (pageNum: number) => {
     setLoadedPages(prev => new Set(prev).add(pageNum));
-    onImageLoad(pageNum);
+    onImageLoad?.(pageNum);
   };
 
   if (pages.length === 0) {

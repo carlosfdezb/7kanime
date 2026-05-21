@@ -6,7 +6,7 @@
  *
  * Risk 4 mitigation:
  *   - Listens for `visibilitychange` → flush immediately when tab hidden/closed
- *   - Listens for `beforeunload` → best-effort synchronous flush before page unload
+ *   - Listens for `beforeunload` → synchronous flush via sendBeacon before page unload
  */
 
 import { getSupabase } from './supabase';
@@ -59,6 +59,27 @@ async function flush(): Promise<void> {
   }
 }
 
+/**
+ * Synchronous flush for beforeunload scenarios.
+ * Replaces the async flush() with a synchronous sendBeacon approach.
+ */
+function flushSync(): void {
+  if (_queue.length === 0) return;
+
+  // Capture current queue
+  const writes = [..._queue];
+  _queue = [];
+
+  if (_timer !== null) {
+    clearTimeout(_timer);
+    _timer = null;
+  }
+
+  // Serialize writes for sendBeacon
+  const payload = new Blob([JSON.stringify({ writes })], { type: 'application/json' });
+  navigator.sendBeacon('/api/batch', payload);
+}
+
 // ── Listeners ────────────────────────────────────────────────────────────────
 
 function attachVisibilityListener(): void {
@@ -72,8 +93,8 @@ function attachVisibilityListener(): void {
   });
 
   window.addEventListener('beforeunload', () => {
-    // Best-effort: fire and forget since this is synchronous
-    flush();
+    // Use sendBeacon for synchronous flush before page unloads
+    flushSync();
   });
 }
 

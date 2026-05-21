@@ -75,7 +75,8 @@ export function createSupabaseChapterAdapter(
             return null;
           },
           'chapter_history',
-          rows as unknown as Record<string, unknown>
+          rows as unknown as Record<string, unknown>,
+          getToken.toString()
         );
       });
     },

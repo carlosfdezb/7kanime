@@ -854,45 +854,45 @@ import { useFavoritesStore } from '../store/favoritesStore';
 
 | # | Bug/Problema | Impacto (1-10) | Esfuerzo (1-10) | Costo (1-10) | Score (I×E×C) | Archivo(s) Afectado(s) |
 |---|--------------|----------------|-----------------|--------------|----------------|------------------------|
-| 1 | Duplicación de tipo `AnimeDetail` - dos interfaces en `src/types/api.ts` (líneas 25-44 y 67-85). La segunda tiene `relations: Relation[]` que la primera no. TypeScript mergea o toma la segunda, causando inconsistencias. | 8 | 2 | 1 | 16 | `src/types/api.ts` |
-| 2 | Guest mode sin persistencia - Los stores de Zustand no usan `persist` middleware. Un usuario guest pierde favoritos, episodios vistos y capítulos leídos al recargar la página. | 9 | 5 | 2 | 90 | `src/store/*` |
-| 3 | `offlineQueue.ts` flushea sin token de Clerk - Usa `getSupabase()` que retorna cliente anónimo SIN JWT. Las operaciones offline se reintentan sin autenticación, fallan con RLS 100% de las veces. | 8 | 4 | 2 | 64 | `src/lib/offlineQueue.ts` |
-| 4 | `batchQueue.ts` - `beforeunload` con async `flush()` - El navegador no espera la promesa, se pierden writes pendientes al cerrar la pestaña. | 6 | 2 | 1 | 12 | `src/lib/batchQueue.ts` |
-| 5 | `hasHydrated.current` nunca se resetea en logout - En `App.tsx`, una vez que `hasHydrated.current = true`, nunca vuelve a `false`. Si el usuario hace logout y login con otra cuenta, NO se re-hidratan los stores. | 6 | 2 | 1 | 12 | `src/App.tsx` |
-| 6 | `useFetchRetry` rompe URLs con query params - Si `retryUrl` ya tiene `?`, la URL queda inválida (`?foo=bar?retry=1`). Ignora el parámetro `_retries`. | 5 | 2 | 1 | 10 | `src/hooks/useFetchRetry.ts` |
-| 7 | Global state pollution en TV Navigation - `useTVNavigation` y `Focusable` usan `(window as any).__tvFocusedId` y eventos globales en `window`. Solución arcaica que rompe encapsulamiento. | 5 | 5 | 2 | 50 | `src/hooks/useTVNavigation.ts`, `src/components/ui/Focusable.tsx` |
-| 8 | Inconsistencia en fetching patterns - `AnimeDetail` y `Episode` usan `useFetch`, pero `MangaDetail` usa `useState + useEffect + llamada directa`. `MangaLibrary` usa `useMangaLibrary` que también usa `useState + useEffect`. | 6 | 4 | 1 | 24 | `src/pages/MangaDetail.tsx`, `src/hooks/useMangaLibrary.ts` |
-| 9 | `useInfiniteScroll.ts` - código muerto - Existe pero no se usa en ninguna página. Tanto Home como MangaLibrary usan paginación tradicional. | 2 | 1 | 1 | 2 | `src/hooks/useInfiniteScroll.ts` |
-| 10 | `PlayerControls.tsx` - componente huérfano - Existe pero `VideoPlayer.tsx` tiene controles inline. Nunca se importa. | 2 | 1 | 1 | 2 | `src/components/ui/PlayerControls.tsx` |
-| 11 | HTML ID collisions - `Select.tsx` y `Input.tsx` usan fallback `'select'` e `'input'` como IDs. Si hay múltiples instancias en la misma página, se viola la unicidad de IDs en HTML. | 5 | 2 | 1 | 10 | `src/components/ui/Select.tsx`, `src/components/ui/Input.tsx` |
-| 12 | No hay Error Boundaries - Cualquier throw en un componente hijo rompe TODA la app. No hay `componentDidCatch` ni `react-error-boundary`. | 8 | 4 | 2 | 64 | `src/App.tsx` |
+| 1 | ✅ **COMPLETADO** — Duplicación de tipo `AnimeDetail` - dos interfaces en `src/types/api.ts` (líneas 25-44 y 67-85). La segunda tiene `relations: Relation[]` que la primera no. TypeScript mergea o toma la segunda, causando inconsistencias. | 8 | 2 | 1 | 16 | `src/types/api.ts` |
+| 2 | ✅ **COMPLETADO** — Guest mode sin persistencia - Los stores de Zustand no usan `persist` middleware. Un usuario guest pierde favoritos, episodios vistos y capítulos leídos al recargar la página. | 9 | 5 | 2 | 90 | `src/store/*` |
+| 3 | ✅ **COMPLETADO** — `offlineQueue.ts` flushea sin token de Clerk - Usa `getSupabase()` que retorna cliente anónimo SIN JWT. Las operaciones offline se reintentan sin autenticación, fallan con RLS 100% de las veces. | 8 | 4 | 2 | 64 | `src/lib/offlineQueue.ts` |
+| 4 | ✅ **COMPLETADO** — `batchQueue.ts` - `beforeunload` con async `flush()` - El navegador no espera la promesa, se pierden writes pendientes al cerrar la pestaña. | 6 | 2 | 1 | 12 | `src/lib/batchQueue.ts` |
+| 5 | ✅ **COMPLETADO** — `hasHydrated.current` nunca se resetea en logout - En `App.tsx`, una vez que `hasHydrated.current = true`, nunca vuelve a `false`. Si el usuario hace logout y login con otra cuenta, NO se re-hidratan los stores. | 6 | 2 | 1 | 12 | `src/App.tsx` |
+| 6 | ✅ **COMPLETADO** — `useFetchRetry` rompe URLs con query params - Si `retryUrl` ya tiene `?`, la URL queda inválida (`?foo=bar?retry=1`). Ignora el parámetro `_retries`. | 5 | 2 | 1 | 10 | `src/hooks/useFetchRetry.ts` |
+| 7 | ✅ **COMPLETADO** — Global state pollution en TV Navigation - `useTVNavigation` y `Focusable` usan `(window as any).__tvFocusedId` y eventos globales en `window`. Solución arcaica que rompe encapsulamiento. | 5 | 5 | 2 | 50 | `src/hooks/useTVNavigation.ts`, `src/components/ui/Focusable.tsx` |
+| 8 | ✅ **COMPLETADO** — Inconsistencia en fetching patterns - `AnimeDetail` y `Episode` usan `useFetch`, pero `MangaDetail` usa `useState + useEffect + llamada directa`. `MangaLibrary` usa `useMangaLibrary` que también usa `useState + useEffect`. | 6 | 4 | 1 | 24 | `src/pages/MangaDetail.tsx`, `src/hooks/useMangaLibrary.ts` |
+| 9 | ✅ **COMPLETADO** — `useInfiniteScroll.ts` - código muerto - Existe pero no se usa en ninguna página. Tanto Home como MangaLibrary usan paginación tradicional. | 2 | 1 | 1 | 2 | `src/hooks/useInfiniteScroll.ts` |
+| 10 | ✅ **COMPLETADO** — `PlayerControls.tsx` - componente huérfano - Existe pero `VideoPlayer.tsx` tiene controles inline. Nunca se importa. | 2 | 1 | 1 | 2 | `src/components/ui/PlayerControls.tsx` |
+| 11 | ✅ **COMPLETADO** — HTML ID collisions - `Select.tsx` y `Input.tsx` usan fallback `'select'` e `'input'` como IDs. Si hay múltiples instancias en la misma página, se viola la unicidad de IDs en HTML. | 5 | 2 | 1 | 10 | `src/components/ui/Select.tsx`, `src/components/ui/Input.tsx` |
+| 12 | ✅ **COMPLETADO** — No hay Error Boundaries - Cualquier throw en un componente hijo rompe TODA la app. No hay `componentDidCatch` ni `react-error-boundary`. | 8 | 4 | 2 | 64 | `src/App.tsx` |
 | 13 | CERO tests - No hay archivos `.test.ts` ni `.spec.ts`. Nada de unit tests, integration tests ni e2e. | 9 | 7 | 3 | 189 | Todo el proyecto |
-| 14 | `AGENTS.md` desactualizado - El documento de arquitectura describe tipos que no coinciden con el código real. | 5 | 2 | 1 | 10 | `AGENTS.md` |
-| 15 | Supabase migrations duplicadas - `20250521_create_user_preferences.sql` y `20250521_user_preferences.sql` hacen lo mismo. | 3 | 1 | 1 | 3 | `supabase/migrations/` |
-| 16 | `MangaCard.tsx` no usa `Focusable` - `Card.tsx` sí usa `Focusable` para TV nav, pero `MangaCard.tsx` usa `Link` directo. Inconsistente. | 3 | 2 | 1 | 6 | `src/components/ui/MangaCard.tsx` |
+| 14 | ✅ **COMPLETADO** — ~~`AGENTS.md` desactualizado - El documento de arquitectura describe tipos que no coinciden con el código real~~. | 5 | 2 | 1 | 10 | `AGENTS.md` |
+| 15 | ✅ **COMPLETADO** — Supabase migrations duplicadas - `20250521_create_user_preferences.sql` y `20250521_user_preferences.sql` hacen lo mismo. | 3 | 1 | 1 | 3 | `supabase/migrations/` |
+| 16 | ✅ **COMPLETADO** — `MangaCard.tsx` no usa `Focusable` - `Card.tsx` sí usa `Focusable` para TV nav, pero `MangaCard.tsx` usa `Link` directo. Inconsistente. | 3 | 2 | 1 | 6 | `src/components/ui/MangaCard.tsx` |
 | 17 | `EasterEgg.tsx` - dependencia vacía en useEffect - El linter con `strict: true` debería quejarse del ref pattern. | 2 | 1 | 1 | 2 | `src/components/ui/EasterEgg.tsx` |
-| 18 | `handleImageLoad` no-op en `ChapterReader.tsx` - La función está definida pero solo tiene un comentario. No hace nada. | 2 | 1 | 1 | 2 | `src/pages/ChapterReader.tsx` |
+| 18 | ✅ **COMPLETADO** — `handleImageLoad` no-op en `ChapterReader.tsx` - La función está definida pero solo tiene un comentario. No hace nada. | 2 | 1 | 1 | 2 | `src/pages/ChapterReader.tsx` |
 
 ### TABLA B: MEJORAS Y NUEVAS FUNCIONALIDADES
 
 | # | Mejora/Funcionalidad | Impacto (1-10) | Esfuerzo (1-10) | Costo (1-10) | Score (I×E×C) | Categoría |
 |---|----------------------|----------------|-----------------|--------------|----------------|-----------|
-| 1 | Persistencia local para guests - Implementar localStorage adapters para favoritos, watched y read chapters, o usar `zustand/persist` como fallback. | 9 | 5 | 2 | 90 | UX/Arquitectura |
+| 1 | ✅ **COMPLETADO** — Persistencia local para guests - Implementar localStorage adapters para favoritos, watched y read chapters, o usar `zustand/persist` como fallback. | 9 | 5 | 2 | 90 | UX/Arquitectura |
 | 2 | Scroll restoration - Guardar y restaurar scroll position entre navegación de páginas. | 5 | 2 | 1 | 10 | UX |
 | 3 | Skeleton loaders consistentes - Algunas pages usan skeletons custom, otras no. Unificar. | 5 | 2 | 1 | 10 | UX |
 | 4 | Indicador de progreso de lectura - Mostrar "Cap. 5 de 120" o progress bar en MangaDetail. | 6 | 2 | 1 | 12 | UX |
 | 5 | Autoplay preference - Respetar `prefers-reduced-motion` o guardar preferencia de autoplay. | 3 | 2 | 1 | 6 | UX/Accesibilidad |
 | 6 | Search params sincronizados - Home debería leer `?search=` del URL para que la búsqueda sobreviva a F5. | 5 | 2 | 1 | 10 | UX |
-| 7 | Unificar fetching pattern - Todo debe usar `useFetch` o un hook consistente. MangaDetail y MangaLibrary deben migrar. | 7 | 4 | 1 | 28 | Arquitectura |
-| 8 | Eliminar global state de TV nav - Reemplazar `window.__tvFocusedId` con un store de Zustand o React Context dedicado. | 5 | 5 | 2 | 50 | Arquitectura |
-| 9 | Fix offlineQueue - Pasar el token de Clerk o el `mutationFn` completo a la cola, no usar `getSupabase()` anónimo. | 8 | 4 | 2 | 64 | Arquitectura/Bugfix |
-| 10 | Fix batchQueue beforeunload - Usar `navigator.sendBeacon` o `Blob`+`sendBeacon` para flush síncrono. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
+| 7 | ✅ **COMPLETADO** — Unificar fetching pattern - Todo debe usar `useFetch` o un hook consistente. MangaDetail y MangaLibrary deben migrar. | 7 | 4 | 1 | 28 | Arquitectura |
+| 8 | ✅ **COMPLETADO** — Eliminar global state de TV nav - Reemplazar `window.__tvFocusedId` con un store de Zustand o React Context dedicado. | 5 | 5 | 2 | 50 | Arquitectura |
+| 9 | ✅ **COMPLETADO** — Fix offlineQueue - Pasar el token de Clerk o el `mutationFn` completo a la cola, no usar `getSupabase()` anónimo. | 8 | 4 | 2 | 64 | Arquitectura/Bugfix |
+| 10 | ✅ **COMPLETADO** — Fix batchQueue beforeunload - Usar `navigator.sendBeacon` o `Blob`+`sendBeacon` para flush síncrono. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
 | 11 | Barrel exports (`index.ts`) - Agregar en `components/`, `hooks/`, `utils/` para limpiar imports. | 3 | 2 | 1 | 6 | Arquitectura |
-| 12 | Eliminar dead code - `useInfiniteScroll.ts`, `PlayerControls.tsx` si no se usan. | 2 | 1 | 1 | 2 | Arquitectura |
-| 13 | Deduplicar `AnimeDetail` type - Unificar las dos interfaces en uno solo. | 8 | 2 | 1 | 16 | Arquitectura/Bugfix |
-| 14 | Reset `hasHydrated` en logout - Escuchar cambios de auth y resetear el ref. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
-| 15 | Error Boundaries - Agregar al menos uno en el nivel de App y uno por dominio. | 8 | 4 | 2 | 64 | Arquitectura |
-| 16 | ID únicos para inputs/selects - Usar `useId()` de React 18 o `crypto.randomUUID()`. | 5 | 2 | 1 | 10 | Arquitectura/Accesibilidad |
+| 12 | ✅ **COMPLETADO** — Eliminar dead code - `useInfiniteScroll.ts`, `PlayerControls.tsx` si no se usan. | 2 | 1 | 1 | 2 | Arquitectura |
+| 13 | ✅ **COMPLETADO** — Deduplicar `AnimeDetail` type - Unificar las dos interfaces en uno solo. | 8 | 2 | 1 | 16 | Arquitectura/Bugfix |
+| 14 | ✅ **COMPLETADO** — Reset `hasHydrated` en logout - Escuchar cambios de auth y resetear el ref. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
+| 15 | ✅ **COMPLETADO** — Error Boundaries - Agregar al menos uno en el nivel de App y uno por dominio. | 8 | 4 | 2 | 64 | Arquitectura |
+| 16 | ✅ **COMPLETADO** — ID únicos para inputs/selects - Usar `useId()` de React 18 o `crypto.randomUUID()`. | 5 | 2 | 1 | 10 | Arquitectura/Accesibilidad |
 | 17 | Historial de episodios recientes - Widget en Home con "Continuar viendo". | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
 | 18 | Lista de "Seguir leyendo" - Similar para manga, basado en capítulos leídos. | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
 | 19 | Notificaciones de nuevos episodios/capítulos - Polling o push. | 8 | 8 | 4 | 256 | Nueva Funcionalidad |
