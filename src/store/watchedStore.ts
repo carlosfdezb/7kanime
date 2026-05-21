@@ -35,16 +35,18 @@ export const useWatchedStore = create<WatchedStore>()(
 
       markWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => {
         set(state => {
-          const existing = state.watchedEpisodes[slug] || { episodes: [], anime_title: '', poster_url: '' };
+          const existing = state.watchedEpisodes[slug] || { episodes: [], anime_title: '', poster_url: '', lastWatchedAt: undefined };
           const episodesArr = Array.isArray(existing.episodes) ? existing.episodes : [];
           if (!episodesArr.includes(episode)) {
             const newState = {
               watchedEpisodes: {
                 ...state.watchedEpisodes,
                 [slug]: {
+                  ...existing,
                   episodes: [...episodesArr, episode].sort((a, b) => a - b),
                   anime_title: animeTitle ?? existing.anime_title,
                   poster_url: posterUrl ?? existing.poster_url,
+                  lastWatchedAt: new Date().toISOString(),
                 },
               },
             };

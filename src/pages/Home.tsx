@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import styles from "./Home.module.css";
 import { Container } from "../components/layout/Container";
 import { Grid } from "../components/layout/Grid";
@@ -15,7 +15,9 @@ import { getCatalog } from "../api/catalog";
 import { search } from "../api/search";
 import { useAnimeFavorites } from "../hooks/useAnimeFavorites";
 import { useTVNavigation } from "../hooks/useTVNavigation";
+import { useWatchedStore } from "../store/watchedStore";
 import type { CatalogItem } from "../types/api";
+import type { WatchedAnime } from "../adapters/supabaseEpisodeAdapter";
 
 const LETTERS = [
     "A",
@@ -157,6 +159,25 @@ export function Home() {
     const [showFavorites, setShowFavorites] = useState(false);
 
     const { favorites } = useAnimeFavorites();
+    const { watchedEpisodes } = useWatchedStore();
+
+    // Get recent episodes for "Continue Watching" widget
+    const recentEpisodes = (() => {
+      const entries = Object.entries(watchedEpisodes) as [string, WatchedAnime][];
+      if (entries.length === 0) return [];
+
+      return entries
+        .map(([slug, data]) => ({
+          slug,
+          ...data,
+        }))
+        .sort((a, b) => {
+          const aTime = a.lastWatchedAt ? new Date(a.lastWatchedAt).getTime() : 0;
+          const bTime = b.lastWatchedAt ? new Date(b.lastWatchedAt).getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, 10);
+    })();
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
@@ -326,6 +347,37 @@ export function Home() {
             />
 
             <Container className={styles.content} ref={contentRef}>
+                {/* Continue Watching Widget */}
+                {recentEpisodes.length > 0 && (
+                  <section className={styles.continueWatching} aria-label="Continuar viendo">
+                    <h2 className={styles.continueWatchingTitle}>Continuar viendo</h2>
+                    <div className={styles.continueWatchingGrid}>
+                      {recentEpisodes.map((item) => {
+                        const lastEpisode = item.episodes[item.episodes.length - 1];
+                        return (
+                          <Link
+                            key={item.slug}
+                            to={`/episode/${item.slug}/${lastEpisode}`}
+                            className={styles.continueWatchingCard}
+                          >
+                            <div className={styles.continueWatchingPoster}>
+                              <img
+                                src={item.poster_url}
+                                alt={item.anime_title}
+                                loading="lazy"
+                              />
+                              <span className={styles.continueWatchingBadge}>Ep. {lastEpisode}</span>
+                            </div>
+                            <div className={styles.continueWatchingInfo}>
+                              <h4>{item.anime_title}</h4>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+
                 {/* Filters */}
                 <div className={styles.filters}>
                     <button
