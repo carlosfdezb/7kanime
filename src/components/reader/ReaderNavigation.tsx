@@ -5,6 +5,7 @@ import styles from './ReaderNavigation.module.css';
 interface ReaderNavigationProps {
   prevChapter: MangaChapter | null;
   nextChapter: MangaChapter | null;
+  currentChapter: MangaChapter | null;
   mangaId: string;
   currentPage?: number;
   totalPages?: number;
@@ -13,6 +14,7 @@ interface ReaderNavigationProps {
 export function ReaderNavigation({
   prevChapter,
   nextChapter,
+  currentChapter,
   mangaId,
   currentPage,
   totalPages,
@@ -43,8 +45,7 @@ export function ReaderNavigation({
         </span>
       ) : (
         <span className={styles.pageIndicator}>
-          {prevChapter ? `Cap. ${prevChapter.numeroCapitulo}` : ''}
-          {nextChapter ? `Cap. ${nextChapter.numeroCapitulo}` : ''}
+          {currentChapter ? `Cap. ${currentChapter.numeroCapitulo}` : ''}
         </span>
       )}
 

@@ -162,18 +162,6 @@
   background-color: var(--color-surface);
 }
 
-.pageNumber {
-  position: absolute;
-  bottom: var(--space-sm);
-  right: var(--space-sm);
-  padding: var(--space-xs) var(--space-sm);
-  background-color: rgba(0, 0, 0, 0.75);
-  color: var(--color-text);
-  font-size: 0.75rem;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-}
-
 .imageError {
   display: flex;
   flex-direction: column;
@@ -313,6 +301,13 @@
   position: fixed;
   top: 0;
   left: 0;
+}
+
+/* Paginated mode in fullscreen - center content vertically and horizontally */
+/* MUST come after .fullscreenWrapper:fullscreen to override overflow-y */
+.fullscreenWrapper.fullscreenPaginated:fullscreen {
+  justify-content: center;
+  overflow-y: hidden;
 }
 
 .fullscreenWrapper:fullscreen .imageStack {

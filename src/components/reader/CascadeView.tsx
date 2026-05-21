@@ -102,7 +102,6 @@ export function CascadeView({
                 />
               </>
             )}
-            <span className={styles.pageNumber}>{pageNum}</span>
           </div>
         );
       })}

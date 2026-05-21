@@ -2,6 +2,7 @@
  * Supabase Preferences Adapter
  *
  * Persists user preferences to Supabase for authenticated users.
+ * Falls back to localStorage if Supabase fails (e.g., table doesn't exist).
  * Uses Clerk JWT for RLS.
  */
 
@@ -11,7 +12,15 @@ import { withOfflineQueue } from '../lib/offlineQueue';
 import type { SyncAdapter } from './types';
 import type { UserPreferences } from '../types/preferences';
 
-// Row shape for user_preferences table (documented for reference)
+const LOCAL_STORAGE_KEY = '7kanime-preferences';
+
+function saveToLocalFallback(preferences: UserPreferences): void {
+  try {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(preferences));
+  } catch (e) {
+    console.warn('[SupabasePreferencesAdapter] localStorage fallback failed:', e);
+  }
+}
 
 /**
  * Creates a Supabase-based adapter for user preferences.
@@ -40,6 +49,9 @@ export function createSupabasePreferencesAdapter(
 
             if (error) {
               console.warn('[SupabasePreferencesAdapter] upsert failed:', error.message);
+              // Fallback to localStorage so user doesn't lose their preference
+              saveToLocalFallback(item);
+              throw error; // Re-throw so offlineQueue can retry later
             }
           },
           'user_preferences',
