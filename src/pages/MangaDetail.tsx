@@ -203,7 +203,7 @@ export const MangaDetail = function MangaDetail() {
                 <span className={styles.metadataLabel}>Estado</span>
                 <span className={styles.metadataValue}>{translateStatus(manga.status)}</span>
               </div>
-              {manga.demographics.length > 0 && (
+              {manga.demographics?.length > 0 && (
                 <div className={styles.metadataItem}>
                   <span className={styles.metadataLabel}>Demografía</span>
                   <span className={styles.metadataValue}>{manga.demographics.join(', ')}</span>
@@ -211,7 +211,7 @@ export const MangaDetail = function MangaDetail() {
               )}
             </div>
 
-            {manga.genres.length > 0 && (
+            {manga.genres?.length > 0 && (
               <div className={styles.genres}>
                 {manga.genres.map((genre) => (
                   <Chip key={genre} label={translateGenreDisplay(genre)} />
