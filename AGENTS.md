@@ -878,11 +878,11 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | # | Mejora/Funcionalidad | Impacto (1-10) | Esfuerzo (1-10) | Costo (1-10) | Score (I×E×C) | Categoría |
 |---|----------------------|----------------|-----------------|--------------|----------------|-----------|
 | 1 | ✅ **COMPLETADO** — Persistencia local para guests - Implementar localStorage adapters para favoritos, watched y read chapters, o usar `zustand/persist` como fallback. | 9 | 5 | 2 | 90 | UX/Arquitectura |
-| 2 | Scroll restoration - Guardar y restaurar scroll position entre navegación de páginas. | 5 | 2 | 1 | 10 | UX |
-| 3 | Skeleton loaders consistentes - Algunas pages usan skeletons custom, otras no. Unificar. | 5 | 2 | 1 | 10 | UX |
-| 4 | Indicador de progreso de lectura - Mostrar "Cap. 5 de 120" o progress bar en MangaDetail. | 6 | 2 | 1 | 12 | UX |
+| 2 | ✅ **COMPLETADO** — Scroll restoration - Guardar y restaurar scroll position entre navegación de páginas. | 5 | 2 | 1 | 10 | UX |
+| 3 | ✅ **COMPLETADO** — ~~Skeleton loaders consistentes - Algunas pages usan skeletons custom, otras no. Unificar.~~ | 5 | 2 | 1 | 10 | UX |
+| 4 | ✅ **COMPLETADO** — Indicador de progreso de lectura - Mostrar "Cap. 5 de 120" o progress bar en MangaDetail. | 6 | 2 | 1 | 12 | UX |
 | 5 | Autoplay preference - Respetar `prefers-reduced-motion` o guardar preferencia de autoplay. | 3 | 2 | 1 | 6 | UX/Accesibilidad |
-| 6 | Search params sincronizados - Home debería leer `?search=` del URL para que la búsqueda sobreviva a F5. | 5 | 2 | 1 | 10 | UX |
+| 6 | ✅ **COMPLETADO** — Search params sincronizados - Home debería leer `?search=` del URL para que la búsqueda sobreviva a F5. | 5 | 2 | 1 | 10 | UX |
 | 7 | ✅ **COMPLETADO** — Unificar fetching pattern - Todo debe usar `useFetch` o un hook consistente. MangaDetail y MangaLibrary deben migrar. | 7 | 4 | 1 | 28 | Arquitectura |
 | 8 | ✅ **COMPLETADO** — Eliminar global state de TV nav - Reemplazar `window.__tvFocusedId` con un store de Zustand o React Context dedicado. | 5 | 5 | 2 | 50 | Arquitectura |
 | 9 | ✅ **COMPLETADO** — Fix offlineQueue - Pasar el token de Clerk o el `mutationFn` completo a la cola, no usar `getSupabase()` anónimo. | 8 | 4 | 2 | 64 | Arquitectura/Bugfix |
@@ -899,7 +899,7 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | 20 | PWA / Service Worker - Offline browsing de catálogo cacheado. | 6 | 8 | 3 | 144 | Nueva Funcionalidad |
 | 21 | Comentarios/reviews - Integrar con backend si existe. | 5 | 8 | 3 | 120 | Nueva Funcionalidad |
 | 22 | Modo oscuro/claro toggle - Aunque ya es oscuro por defecto. | 3 | 2 | 1 | 6 | Nueva Funcionalidad |
-| 23 | React.memo en listados - `Card`, `MangaCard`, `ChapterList` deben memoizarse. | 5 | 2 | 1 | 10 | Performance |
+| 23 | ✅ **COMPLETADO** — React.memo en listados - `Card`, `MangaCard`, `ChapterList` deben memoizarse. | 5 | 2 | 1 | 10 | Performance |
 | 24 | Virtual scrolling para listas grandes - Si un manga tiene 500+ capítulos. | 7 | 5 | 2 | 70 | Performance |
 | 25 | Prefetch de rutas - Prefetch `anime/:slug` al hacer hover en cards. | 5 | 3 | 1 | 15 | Performance |
 | 26 | Lazy load de pages - `React.lazy()` para MangaLibrary, ChapterReader, etc. | 6 | 3 | 1 | 18 | Performance |
