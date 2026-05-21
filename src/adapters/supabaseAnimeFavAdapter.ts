@@ -50,7 +50,8 @@ export function createSupabaseAnimeFavoritesAdapter(
           }
         },
         'anime_favorites',
-        data as Record<string, unknown>
+        data as Record<string, unknown>,
+        getToken.toString()
       );
     },
 
@@ -71,7 +72,8 @@ export function createSupabaseAnimeFavoritesAdapter(
           }
         },
         'anime_favorites',
-        data as Record<string, unknown>
+        data as Record<string, unknown>,
+        getToken.toString()
       );
     },
 

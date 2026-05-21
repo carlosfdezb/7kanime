@@ -47,7 +47,8 @@ export function createSupabaseMangaFavoritesAdapter(
           }
         },
         'manga_favorites',
-        data as Record<string, unknown>
+        data as Record<string, unknown>,
+        getToken.toString()
       );
     },
 
@@ -70,7 +71,8 @@ export function createSupabaseMangaFavoritesAdapter(
           }
         },
         'manga_favorites',
-        data as Record<string, unknown>
+        data as Record<string, unknown>,
+        getToken.toString()
       );
     },
 
