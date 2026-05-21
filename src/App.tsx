@@ -12,7 +12,7 @@ import { MangaDetail } from "./pages/MangaDetail";
 import { ChapterReader } from "./pages/ChapterReader";
 import { Login } from "./pages/Login";
 import { SyncProvider } from "./context/SyncContext";
-import { hydrateAllStores } from "./store/syncHydration";
+import { hydrateAllStores, hydratePreferencesFromLocal } from "./store/syncHydration";
 import { createClerkSupabaseClient } from "./lib/clerkSupabase";
 
 const KONAMI = "seryiprestaelculo";
@@ -24,6 +24,11 @@ function App() {
   const { toggleTVMode } = useTVFocus();
   const { isLoaded, isSignedIn, userId, getToken } = useAuth();
   const hasHydrated = useRef(false);
+
+  // Hydrate preferences from localStorage on app startup (for guests and pre-auth)
+  useEffect(() => {
+    hydratePreferencesFromLocal();
+  }, []);
 
   // Handle Clerk auth state changes — hydrate stores from Supabase on login / refresh
   useEffect(() => {

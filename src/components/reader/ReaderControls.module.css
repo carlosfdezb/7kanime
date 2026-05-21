@@ -1,0 +1,82 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.modeToggle {
+  display: flex;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 2px;
+  border: 1px solid var(--color-border);
+}
+
+.modeButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  font-size: 0.75rem;
+}
+
+.modeButton:hover {
+  color: var(--color-text);
+  background-color: var(--color-border);
+}
+
+.modeButton.active {
+  background-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.modeLabel {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .modeLabel {
+    display: inline;
+  }
+}
+
+.fullscreenButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.fullscreenButton:hover {
+  background-color: var(--color-border);
+  border-color: var(--color-primary);
+}
+
+/* Mobile responsive */
+@media (max-width: 639px) {
+  .controls {
+    gap: var(--space-sm);
+  }
+
+  .modeButton {
+    padding: var(--space-xs);
+  }
+
+  .fullscreenButton {
+    width: 36px;
+    height: 36px;
+  }
+}
