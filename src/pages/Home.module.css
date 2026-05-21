@@ -69,9 +69,21 @@
   position: relative;
   aspect-ratio: 2 / 3;
   background-color: var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.continueWatchingPoster::before {
+  content: '📺';
+  font-size: 2rem;
+  opacity: 0.3;
 }
 
 .continueWatchingPoster img {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;

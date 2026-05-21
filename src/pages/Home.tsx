@@ -354,6 +354,7 @@ export function Home() {
                     <div className={styles.continueWatchingGrid}>
                       {recentEpisodes.map((item) => {
                         const lastEpisode = item.episodes[item.episodes.length - 1];
+                        if (!item.poster_url || !item.anime_title) return null;
                         return (
                           <Link
                             key={item.slug}
@@ -365,6 +366,9 @@ export function Home() {
                                 src={item.poster_url}
                                 alt={item.anime_title}
                                 loading="lazy"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
                               />
                               <span className={styles.continueWatchingBadge}>Ep. {lastEpisode}</span>
                             </div>
