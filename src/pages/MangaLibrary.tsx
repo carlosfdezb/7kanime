@@ -9,8 +9,10 @@ import { Chip } from '../components/ui/Chip';
 import { SkeletonCard } from '../components/ui/Skeleton';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
+import { useContinueReading } from '../hooks/useContinueReading';
 import { getTags } from '../api/manga';
 import { translateGenreDisplay } from '../api/manga';
+import { Link } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 25;
 const TAGS_COLLAPSED_COUNT = 30;
@@ -34,6 +36,7 @@ export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, page, totalPages, totalItems, hasNextPage, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
   const { favorites } = useMangaFavorites();
+  const { recentMangas } = useContinueReading();
   const [showFavorites, setShowFavorites] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [tagsExpanded, setTagsExpanded] = useState(false);
@@ -135,6 +138,37 @@ export function MangaLibrary() {
         }}
       />
       <Container className={styles.content}>
+        {/* Continue Reading Widget */}
+        {!showFavorites && recentMangas.length > 0 && (
+          <section className={styles.continueReading} aria-label="Continuar leyendo">
+            <h2 className={styles.continueReadingTitle}>Continuar leyendo</h2>
+            <div className={styles.continueReadingGrid}>
+              {recentMangas.map((item) => (
+                <Link
+                  key={item.mangaId}
+                  to={`/manga/${item.mangaId}/chapter/${item.lastReadChapterId}`}
+                  className={styles.continueReadingCard}
+                >
+                  <div className={styles.continueReadingPoster}>
+                    <img
+                      src={item.coverUrl}
+                      alt={item.mangaTitle}
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                    <span className={styles.continueReadingBadge}>Cap. {item.lastReadChapterNum}</span>
+                  </div>
+                  <div className={styles.continueReadingInfo}>
+                    <h4>{item.mangaTitle}</h4>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className={styles.header}>
           <h1 className={styles.title}>
             {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : selectedTag ? `Género: ${translateGenreDisplay(selectedTag)}` : 'Biblioteca de Manga')}
