@@ -1,20 +1,24 @@
 import { Routes, Route } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { Home } from "./pages/Home";
 import { AnimeDetail } from "./pages/AnimeDetail";
-import { Episode } from "./pages/Episode";
 import { NotFound } from "./pages/NotFound";
 import { EasterEgg } from "./components/layout/EasterEgg";
 import { useTVFocus } from "./context/TVFocusContext";
-import { MangaLibrary } from "./pages/MangaLibrary";
-import { MangaDetail } from "./pages/MangaDetail";
-import { ChapterReader } from "./pages/ChapterReader";
 import { Login } from "./pages/Login";
 import { SyncProvider } from "./context/SyncContext";
 import { hydrateAllStores, hydratePreferencesFromLocal } from "./store/syncHydration";
 import { createClerkSupabaseClient } from "./lib/clerkSupabase";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { Skeleton } from "./components/ui/Skeleton";
+import { SkipLink } from "./components/layout/SkipLink";
+
+// Lazy load heavy pages
+const Episode = lazy(() => import("./pages/Episode") as any);
+const MangaLibrary = lazy(() => import("./pages/MangaLibrary") as any);
+const MangaDetail = lazy(() => import("./pages/MangaDetail") as any);
+const ChapterReader = lazy(() => import("./pages/ChapterReader") as any);
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
@@ -102,17 +106,20 @@ function App() {
       {showEasterEgg && (
         <EasterEgg onClose={() => setShowEasterEgg(false)} />
       )}
+      <SkipLink />
       <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/anime/:slug" element={<AnimeDetail />} />
-          <Route path="/episode/:slug/:number" element={<Episode />} />
-          <Route path="/manga" element={<MangaLibrary />} />
-          <Route path="/manga/:id" element={<MangaDetail />} />
-          <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<div className="loading-page"><Skeleton width="100%" height="100vh" /></div>}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/anime/:slug" element={<AnimeDetail />} />
+            <Route path="/episode/:slug/:number" element={<Episode />} />
+            <Route path="/manga" element={<MangaLibrary />} />
+            <Route path="/manga/:id" element={<MangaDetail />} />
+            <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </ErrorBoundary>
     </SyncProvider>
   );
