@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import { useState, useEffect, useRef, Suspense, lazy } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { Home } from "./pages/Home";
 import { AnimeDetail } from "./pages/AnimeDetail";
@@ -11,14 +11,12 @@ import { SyncProvider } from "./context/SyncContext";
 import { hydrateAllStores, hydratePreferencesFromLocal } from "./store/syncHydration";
 import { createClerkSupabaseClient } from "./lib/clerkSupabase";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { Skeleton } from "./components/ui/Skeleton";
 import { SkipLink } from "./components/layout/SkipLink";
 
-// Lazy load heavy pages (named exports require wrapper)
-const Episode = lazy(() => import("./pages/Episode").then(m => ({ default: m.Episode })));
-const MangaLibrary = lazy(() => import("./pages/MangaLibrary").then(m => ({ default: m.MangaLibrary })));
-const MangaDetail = lazy(() => import("./pages/MangaDetail").then(m => ({ default: m.MangaDetail })));
-const ChapterReader = lazy(() => import("./pages/ChapterReader").then(m => ({ default: m.ChapterReader })));
+import { Episode } from "./pages/Episode";
+import { MangaLibrary } from "./pages/MangaLibrary";
+import { MangaDetail } from "./pages/MangaDetail";
+import { ChapterReader } from "./pages/ChapterReader";
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
@@ -108,8 +106,7 @@ function App() {
       )}
       <SkipLink />
       <ErrorBoundary>
-        <Suspense fallback={<div className="loading-page"><Skeleton width="100%" height="100vh" /></div>}>
-          <Routes>
+        <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/anime/:slug" element={<AnimeDetail />} />
             <Route path="/episode/:slug/:number" element={<Episode />} />
@@ -118,8 +115,7 @@ function App() {
             <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        </Routes>
       </ErrorBoundary>
     </SyncProvider>
   );
