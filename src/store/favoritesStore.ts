@@ -7,9 +7,12 @@
  *
  * Public API is IDENTICAL — components see no change.
  * Components must use SyncContext and pass adapter to store actions.
+ *
+ * Phase 4: Added zustand/persist as fallback for guests when no adapter provided.
  */
 
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { CatalogItem } from '../types/api';
 import { SyncAdapter } from '../adapters/types';
 
@@ -22,45 +25,53 @@ interface FavoritesStore {
   hydrate: (items: CatalogItem[]) => void;
 }
 
-export const useFavoritesStore = create<FavoritesStore>((set, get) => ({
-  favorites: [] as CatalogItem[],
+export const useFavoritesStore = create<FavoritesStore>()(
+  persist(
+    (set, get) => ({
+      favorites: [] as CatalogItem[],
 
-  addFavorite: (anime: CatalogItem, adapter?: SyncAdapter<CatalogItem>) => {
-    const { favorites } = get();
-    if (!favorites.some(f => f.id === anime.id)) {
-      const newFavorites = [...favorites, anime];
-      set({ favorites: newFavorites });
+      addFavorite: (anime: CatalogItem, adapter?: SyncAdapter<CatalogItem>) => {
+        const { favorites } = get();
+        if (!favorites.some(f => f.id === anime.id)) {
+          const newFavorites = [...favorites, anime];
+          set({ favorites: newFavorites });
 
-      if (adapter) {
-        adapter.upsert(anime);
-      }
+          if (adapter) {
+            adapter.upsert(anime);
+          }
+        }
+      },
+
+      removeFavorite: (id: number, adapter?: SyncAdapter<CatalogItem>) => {
+        const { favorites } = get();
+        const newFavorites = favorites.filter(f => f.id !== id);
+        set({ favorites: newFavorites });
+
+        if (adapter) {
+          adapter.remove(id);
+        }
+      },
+
+      isFavorite: (id: number) => {
+        return get().favorites.some(f => f.id === id);
+      },
+
+      toggleFavorite: (anime: CatalogItem, adapter?: SyncAdapter<CatalogItem>) => {
+        const { favorites, addFavorite, removeFavorite } = get();
+        if (favorites.some(f => f.id === anime.id)) {
+          removeFavorite(anime.id, adapter);
+        } else {
+          addFavorite(anime, adapter);
+        }
+      },
+
+      hydrate: (items: CatalogItem[]) => {
+        set({ favorites: items });
+      },
+    }),
+    {
+      name: 'animeav1-guest-favorites',
+      partialize: (state) => ({ favorites: state.favorites }),
     }
-  },
-
-  removeFavorite: (id: number, adapter?: SyncAdapter<CatalogItem>) => {
-    const { favorites } = get();
-    const newFavorites = favorites.filter(f => f.id !== id);
-    set({ favorites: newFavorites });
-
-    if (adapter) {
-      adapter.remove(id);
-    }
-  },
-
-  isFavorite: (id: number) => {
-    return get().favorites.some(f => f.id === id);
-  },
-
-  toggleFavorite: (anime: CatalogItem, adapter?: SyncAdapter<CatalogItem>) => {
-    const { favorites, addFavorite, removeFavorite } = get();
-    if (favorites.some(f => f.id === anime.id)) {
-      removeFavorite(anime.id, adapter);
-    } else {
-      addFavorite(anime, adapter);
-    }
-  },
-
-  hydrate: (items: CatalogItem[]) => {
-    set({ favorites: items });
-  },
-}));
+  )
+);
