@@ -30,6 +30,14 @@ function App() {
     hydratePreferencesFromLocal();
   }, []);
 
+  // Reset hasHydrated when user signs out, so stores re-hydrate on next login
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) {
+      hasHydrated.current = false;
+    }
+  }, [isLoaded, isSignedIn]);
+
   // Handle Clerk auth state changes — hydrate stores from Supabase on login / refresh
   useEffect(() => {
     // Wait for Clerk to finish loading before checking auth state
