@@ -5,8 +5,6 @@
  * Each store fetches its remote data and replaces local state.
  *
  * This module is isolated to avoid circular imports between stores and adapters.
- *
- * @param supabase - Supabase client (can be Clerk-backed or legacy getSupabase())
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -14,6 +12,8 @@ import { useFavoritesStore } from './favoritesStore';
 import { useMangaFavoritesStore } from './mangaFavoritesStore';
 import { useWatchedStore } from './watchedStore';
 import { useReadChaptersStore } from './readChaptersStore';
+import { usePreferencesStore } from './preferencesStore';
+import type { UserPreferences } from '../types/preferences';
 
 /**
  * Hydrates all 4 stores from Supabase in parallel.
@@ -27,6 +27,7 @@ export async function hydrateAllStores(supabase: SupabaseClient | null): Promise
     hydrateMangaFavorites(supabase),
     hydrateWatched(supabase),
     hydrateReadChapters(supabase),
+    hydratePreferences(supabase),
   ]);
 }
 
@@ -160,5 +161,42 @@ async function hydrateReadChapters(supabase: SupabaseClient): Promise<void> {
     useReadChaptersStore.getState().hydrate(grouped);
   } catch (e) {
     console.warn('[hydrateReadChapters] error:', e);
+  }
+}
+
+async function hydratePreferences(supabase: SupabaseClient): Promise<void> {
+  try {
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('preferences');
+
+    if (error) {
+      console.warn('[hydratePreferences] failed:', error.message);
+      return;
+    }
+
+    if (!data || data.length === 0) return;
+
+    const row = data[0];
+    const preferences = row.preferences as UserPreferences;
+    usePreferencesStore.getState().hydrate(preferences);
+  } catch (e) {
+    console.warn('[hydratePreferences] error:', e);
+  }
+}
+
+/**
+ * Hydrate preferences store from localStorage (for guests or pre-auth).
+ * Called during app initialization to restore preferences from localStorage.
+ */
+export function hydratePreferencesFromLocal(): void {
+  try {
+    const raw = localStorage.getItem('7kanime-preferences');
+    if (!raw) return;
+
+    const preferences = JSON.parse(raw) as UserPreferences;
+    usePreferencesStore.getState().hydrate(preferences);
+  } catch (e) {
+    console.warn('[hydratePreferencesFromLocal] failed:', e);
   }
 }
