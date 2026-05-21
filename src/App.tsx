@@ -14,6 +14,7 @@ import { Login } from "./pages/Login";
 import { SyncProvider } from "./context/SyncContext";
 import { hydrateAllStores, hydratePreferencesFromLocal } from "./store/syncHydration";
 import { createClerkSupabaseClient } from "./lib/clerkSupabase";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
@@ -101,16 +102,18 @@ function App() {
       {showEasterEgg && (
         <EasterEgg onClose={() => setShowEasterEgg(false)} />
       )}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/anime/:slug" element={<AnimeDetail />} />
-        <Route path="/episode/:slug/:number" element={<Episode />} />
-        <Route path="/manga" element={<MangaLibrary />} />
-        <Route path="/manga/:id" element={<MangaDetail />} />
-        <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/anime/:slug" element={<AnimeDetail />} />
+          <Route path="/episode/:slug/:number" element={<Episode />} />
+          <Route path="/manga" element={<MangaLibrary />} />
+          <Route path="/manga/:id" element={<MangaDetail />} />
+          <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </SyncProvider>
   );
 }
