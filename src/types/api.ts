@@ -58,6 +58,8 @@ export interface AnimeDetail {
   score: number;
   votes: number;
   slug: string;
+  type: string;
+  typeSlug: string;
   category: Category;
   episodes: { id: number; number: number }[];
   relations: Relation[];
