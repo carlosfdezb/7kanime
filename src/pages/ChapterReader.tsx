@@ -208,10 +208,7 @@ export function ChapterReader() {
     setImageErrors(prev => new Set(prev).add(pageNumber));
   };
 
-  // Image load tracking - kept for potential future use, currently handled by sub-components
-  const handleImageLoad = (_pageNumber: number) => {
-    // No-op: image loading state is tracked by CascadeView/PaginatedView if needed
-  };
+  // Image load tracking - handled by CascadeView/PaginatedView via onLoad prop
 
   const handleToggleRead = () => {
     if (!capituloId || !mangaId) return;
@@ -318,7 +315,6 @@ export function ChapterReader() {
             pages={chapterData.paginas}
             imageErrors={imageErrors}
             onImageError={handleImageError}
-            onImageLoad={handleImageLoad}
             onMidpointReached={() => {
               if (capituloId && currentChapter && mangaData) {
                 markAsRead(capituloId, currentChapter.numeroCapitulo, mangaData.title, mangaData.coverUrl);
@@ -337,7 +333,6 @@ export function ChapterReader() {
             }}
             imageErrors={imageErrors}
             onImageError={handleImageError}
-            onImageLoad={handleImageLoad}
           />
         )}
 

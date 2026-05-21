@@ -8,7 +8,7 @@ interface PaginatedViewProps {
   onLastPageReached?: () => void;
   imageErrors: Set<number>;
   onImageError: (pageIndex: number) => void;
-  onImageLoad: (pageIndex: number) => void;
+  onImageLoad?: (pageIndex: number) => void;
 }
 
 export function PaginatedView({
@@ -175,7 +175,7 @@ export function PaginatedView({
             src={pages[currentPage]}
             alt={`Página ${currentPage + 1}`}
             className={styles.pageImage}
-            onLoad={() => onImageLoad(currentPage + 1)}
+            onLoad={() => onImageLoad?.(currentPage + 1)}
             onError={() => onImageError(currentPage + 1)}
           />
         )}
