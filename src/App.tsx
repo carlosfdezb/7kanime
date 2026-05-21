@@ -14,11 +14,11 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Skeleton } from "./components/ui/Skeleton";
 import { SkipLink } from "./components/layout/SkipLink";
 
-// Lazy load heavy pages
-const Episode = lazy(() => import("./pages/Episode") as any);
-const MangaLibrary = lazy(() => import("./pages/MangaLibrary") as any);
-const MangaDetail = lazy(() => import("./pages/MangaDetail") as any);
-const ChapterReader = lazy(() => import("./pages/ChapterReader") as any);
+// Lazy load heavy pages (named exports require wrapper)
+const Episode = lazy(() => import("./pages/Episode").then(m => ({ default: m.Episode })));
+const MangaLibrary = lazy(() => import("./pages/MangaLibrary").then(m => ({ default: m.MangaLibrary })));
+const MangaDetail = lazy(() => import("./pages/MangaDetail").then(m => ({ default: m.MangaDetail })));
+const ChapterReader = lazy(() => import("./pages/ChapterReader").then(m => ({ default: m.ChapterReader })));
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
