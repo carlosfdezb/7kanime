@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTVFocus } from '../context/TVFocusContext';
+import { useTVNavigationStore } from '../store/tvNavigationStore';
 import { isTVBrowser } from '../utils/tvDetection';
 
 interface TVNavigationOptions {
@@ -21,6 +22,7 @@ export function useTVNavigation({
   containerRef,
 }: TVNavigationOptions): TVNavigationResult {
   const { isTVMode, enableTVMode, disableTVMode } = useTVFocus();
+  const { setFocusedId } = useTVNavigationStore();
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const gamepadRef = useRef<GamepadState>({
@@ -215,12 +217,11 @@ export function useTVNavigation({
   useEffect(() => {
     if (!isTVMode) {
       setFocusedIndex(-1);
-      (window as any).__tvFocusedId = undefined;
-      window.dispatchEvent(new CustomEvent('tv-focus-change'));
+      setFocusedId(null);
     }
-  }, [isTVMode]);
+  }, [isTVMode, setFocusedId]);
 
-  // Dispatch focus change event when focusedIndex changes
+  // Update store when focusedIndex changes
   useEffect(() => {
     if (isTVMode && focusedIndex >= 0) {
       const elements = getFocusableElements();
@@ -228,12 +229,11 @@ export function useTVNavigation({
         const el = elements[focusedIndex];
         const id = el.getAttribute('data-tv-focus-id');
         if (id) {
-          (window as any).__tvFocusedId = id;
-          window.dispatchEvent(new CustomEvent('tv-focus-change'));
+          setFocusedId(id);
         }
       }
     }
-  }, [focusedIndex, isTVMode, getFocusableElements]);
+  }, [focusedIndex, isTVMode, getFocusableElements, setFocusedId]);
 
   // Keyboard handler
   useEffect(() => {

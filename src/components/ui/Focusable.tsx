@@ -1,6 +1,7 @@
 import { useEffect, useRef, type ReactNode, type ComponentType, type ElementType } from 'react';
 import { Link } from 'react-router-dom';
 import { useTVFocus } from '../../context/TVFocusContext';
+import { useTVNavigationStore } from '../../store/tvNavigationStore';
 import tvFocusStyles from '../../styles/tv-focus.module.css';
 import { cn } from '../../utils/cn';
 
@@ -31,6 +32,7 @@ export function Focusable({
   ...props
 }: FocusableProps) {
   const { isTVMode } = useTVFocus();
+  const { focusedId, setFocusedId } = useTVNavigationStore();
   const divRef = useRef<HTMLDivElement>(null);
   const focusableId = useRef(id ?? `focusable-${focusableIdCounter++}`);
 
@@ -48,41 +50,22 @@ export function Focusable({
     };
   }, []);
 
-  // Update focused class based on global TV focus state
+  // Update focused class based on store state
   useEffect(() => {
     const el = divRef.current;
     if (!el) return;
 
-    if (isTVMode && (window as any).__tvFocusedId === focusableId.current) {
+    if (isTVMode && focusedId === focusableId.current) {
       el.classList.add(tvFocusStyles.focused);
     } else {
       el.classList.remove(tvFocusStyles.focused);
     }
-  }, [isTVMode]);
+  }, [isTVMode, focusedId]);
 
-  // Listen for focus changes from useTVNavigation
-  useEffect(() => {
-    if (!isTVMode) return;
-
-    const handleFocusChange = () => {
-      if (!divRef.current) return;
-      
-      if ((window as any).__tvFocusedId === focusableId.current) {
-        divRef.current.classList.add(tvFocusStyles.focused);
-      } else {
-        divRef.current.classList.remove(tvFocusStyles.focused);
-      }
-    };
-
-    window.addEventListener('tv-focus-change', handleFocusChange);
-    return () => window.removeEventListener('tv-focus-change', handleFocusChange);
-  }, [isTVMode]);
-
-  // Handle click - update global focus state
+  // Handle click - update store focus state
   const handleClick = () => {
     if (isTVMode && divRef.current) {
-      (window as any).__tvFocusedId = focusableId.current;
-      window.dispatchEvent(new CustomEvent('tv-focus-change'));
+      setFocusedId(String(focusableId.current));
     }
     onClick?.();
   };
