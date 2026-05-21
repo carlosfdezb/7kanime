@@ -162,6 +162,7 @@ export function Home() {
     const { watchedEpisodes } = useWatchedStore();
 
     // Get recent episodes for "Continue Watching" widget
+    // Shows next episode (last watched + 1) if available
     const recentEpisodes = (() => {
       const entries = Object.entries(watchedEpisodes) as [string, WatchedAnime][];
       if (entries.length === 0) return [];
@@ -171,6 +172,16 @@ export function Home() {
           slug,
           ...data,
         }))
+        .map((item) => {
+          const lastEpisode = Math.max(...item.episodes);
+          const nextEpisode = lastEpisode + 1;
+          return {
+            ...item,
+            nextEpisode,
+            hasMoreEpisodes: item.episodesCount ? nextEpisode <= item.episodesCount : true,
+          };
+        })
+        .filter((item) => item.hasMoreEpisodes)
         .sort((a, b) => {
           const aTime = a.lastWatchedAt ? new Date(a.lastWatchedAt).getTime() : 0;
           const bTime = b.lastWatchedAt ? new Date(b.lastWatchedAt).getTime() : 0;
@@ -353,12 +364,11 @@ export function Home() {
                     <h2 className={styles.continueWatchingTitle}>Continuar viendo</h2>
                     <div className={styles.continueWatchingGrid}>
                       {recentEpisodes.map((item) => {
-                        const lastEpisode = item.episodes[item.episodes.length - 1];
                         if (!item.poster_url || !item.anime_title) return null;
                         return (
                           <Link
                             key={item.slug}
-                            to={`/episode/${item.slug}/${lastEpisode}`}
+                            to={`/episode/${item.slug}/${item.nextEpisode}`}
                             className={styles.continueWatchingCard}
                           >
                             <div className={styles.continueWatchingPoster}>
@@ -370,7 +380,7 @@ export function Home() {
                                   (e.target as HTMLImageElement).style.display = 'none';
                                 }}
                               />
-                              <span className={styles.continueWatchingBadge}>Ep. {lastEpisode}</span>
+                              <span className={styles.continueWatchingBadge}>Ep. {item.nextEpisode}</span>
                             </div>
                             <div className={styles.continueWatchingInfo}>
                               <h4>{item.anime_title}</h4>

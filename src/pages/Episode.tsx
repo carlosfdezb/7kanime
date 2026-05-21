@@ -68,7 +68,7 @@ export function Episode() {
     }
     if (slug && !isWatched(slug, episodeNumber)) {
       timerRef.current = setTimeout(() => {
-        markWatched(slug, episodeNumber, animeTitle, animeData?.poster);
+        markWatched(slug, episodeNumber, animeTitle, animeData?.poster, animeData?.episodesCount);
       }, WATCHED_TIMER_MS);
     }
   }, [slug, episodeNumber, isWatched, markWatched]);
@@ -175,7 +175,7 @@ export function Episode() {
             as={Button}
             id="watched-btn"
             variant={watched ? 'primary' : 'ghost'}
-            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster)}
+            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster, animeData?.episodesCount)}
             className={styles.watchedBtn}
           >
             {watched ? '✓ Visto' : 'Marcar como visto'}
