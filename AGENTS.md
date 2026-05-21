@@ -893,7 +893,7 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | 14 | ✅ **COMPLETADO** — Reset `hasHydrated` en logout - Escuchar cambios de auth y resetear el ref. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
 | 15 | ✅ **COMPLETADO** — Error Boundaries - Agregar al menos uno en el nivel de App y uno por dominio. | 8 | 4 | 2 | 64 | Arquitectura |
 | 16 | ✅ **COMPLETADO** — ID únicos para inputs/selects - Usar `useId()` de React 18 o `crypto.randomUUID()`. | 5 | 2 | 1 | 10 | Arquitectura/Accesibilidad |
-| 17 | Historial de episodios recientes - Widget en Home con "Continuar viendo". | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
+| 17 | ✅ **COMPLETADO** — Historial de episodios recientes - Widget en Home con "Continuar viendo". | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
 | 18 | Lista de "Seguir leyendo" - Similar para manga, basado en capítulos leídos. | 8 | 5 | 2 | 80 | Nueva Funcionalidad |
 | 19 | Notificaciones de nuevos episodios/capítulos - Polling o push. | 8 | 8 | 4 | 256 | Nueva Funcionalidad |
 | 20 | PWA / Service Worker - Offline browsing de catálogo cacheado. | 6 | 8 | 3 | 144 | Nueva Funcionalidad |
@@ -901,15 +901,15 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | 22 | Modo oscuro/claro toggle - Aunque ya es oscuro por defecto. | 3 | 2 | 1 | 6 | Nueva Funcionalidad |
 | 23 | ✅ **COMPLETADO** — React.memo en listados - `Card`, `MangaCard`, `ChapterList` deben memoizarse. | 5 | 2 | 1 | 10 | Performance |
 | 24 | Virtual scrolling para listas grandes - Si un manga tiene 500+ capítulos. | 7 | 5 | 2 | 70 | Performance |
-| 25 | Prefetch de rutas - Prefetch `anime/:slug` al hacer hover en cards. | 5 | 3 | 1 | 15 | Performance |
-| 26 | Lazy load de pages - `React.lazy()` para MangaLibrary, ChapterReader, etc. | 6 | 3 | 1 | 18 | Performance |
+| 25 | ✅ **COMPLETADO** — Prefetch de rutas - Prefetch `anime/:slug` al hacer hover en cards. | 5 | 3 | 1 | 15 | Performance |
+| 26 | ✅ **COMPLETADO** — Lazy load de pages - `React.lazy()` para MangaLibrary, ChapterReader, etc. | 6 | 3 | 1 | 18 | Performance |
 | 27 | Optimización de imágenes - Usar `srcset` o un proxy de thumbnails. | 5 | 4 | 2 | 40 | Performance |
 | 28 | Debounce en búsqueda de manga vía URL - Evitar navigate en cada keystroke. | 4 | 2 | 1 | 8 | Performance |
-| 29 | Skip links - "Saltar al contenido" para screen readers. | 7 | 2 | 1 | 14 | Accesibilidad |
+| 29 | ✅ **COMPLETADO** — Skip links - "Saltar al contenido" para screen readers. | 7 | 2 | 1 | 14 | Accesibilidad |
 | 30 | ARIA live regions - Anunciar cambios de filtros y resultados. | 5 | 3 | 1 | 15 | Accesibilidad |
 | 31 | Focus trap en modales - EasterEgg no tiene focus trap. | 5 | 3 | 1 | 15 | Accesibilidad |
 | 32 | Color contrast audit - Verificar ratios WCAG AA en badges y chips. | 5 | 3 | 1 | 15 | Accesibilidad |
-| 33 | Lang attribute - `<html lang="es">` está probablemente ausente. | 3 | 1 | 1 | 3 | Accesibilidad |
+| 33 | ✅ **COMPLETADO** — ~~Lang attribute - `<html lang="es">` estaba configurado~~. | 3 | 1 | 1 | 3 | Accesibilidad |
 | 34 | Unit tests para stores - Zustand es fácil de testear sin React. | 8 | 5 | 2 | 80 | Testing |
 | 35 | Tests para adapters - Mock de localStorage y Supabase. | 7 | 5 | 2 | 70 | Testing |
 | 36 | Tests para hooks - `useFetch`, `useDebounce`, `useInfiniteScroll`. | 6 | 4 | 2 | 48 | Testing |
