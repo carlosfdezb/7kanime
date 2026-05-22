@@ -21,7 +21,7 @@ export function useContinueReading() {
     return entries
       .map(([mangaId, data]) => {
         const lastHash = data.hashes[data.hashes.length - 1];
-        const lastChapterNum = data.chapter_nums?.[lastHash] ?? '';
+        const lastChapterNum = data.chapter_nums?.[lastHash] || lastHash.slice(0, 8);
         
         return {
           mangaId,
