@@ -1,12 +1,10 @@
 import { useMemo } from 'react';
 import { useReadChaptersStore } from '../store/readChaptersStore';
 
-export interface ContinueReadingManga {
+export interface RecentManga {
   mangaId: string;
   mangaTitle: string;
   coverUrl: string;
-  lastReadChapterId: string;
-  lastReadChapterNum: string;
   readCount: number;
   lastReadAt: string;
 }
@@ -19,20 +17,13 @@ export function useContinueReading() {
     if (entries.length === 0) return [];
 
     return entries
-      .map(([mangaId, data]) => {
-        const lastHash = data.hashes[data.hashes.length - 1];
-        const lastChapterNum = data.chapter_nums?.[lastHash] || lastHash.slice(0, 8);
-        
-        return {
-          mangaId,
-          mangaTitle: data.manga_title,
-          coverUrl: data.cover_url,
-          lastReadChapterId: lastHash,
-          lastReadChapterNum: lastChapterNum,
-          readCount: data.hashes.length,
-          lastReadAt: data.lastReadAt ?? '',
-        };
-      })
+      .map(([mangaId, data]) => ({
+        mangaId,
+        mangaTitle: data.manga_title,
+        coverUrl: data.cover_url,
+        readCount: data.hashes.length,
+        lastReadAt: data.lastReadAt ?? '',
+      }))
       .filter((item) => item.mangaTitle && item.coverUrl)
       .sort((a, b) => {
         const aTime = a.lastReadAt ? new Date(a.lastReadAt).getTime() : 0;

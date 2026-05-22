@@ -140,13 +140,13 @@ export function MangaLibrary() {
       <Container className={styles.content}>
         {/* Continue Reading Widget */}
         {!showFavorites && recentMangas.length > 0 && (
-          <section className={styles.continueReading} aria-label="Último leído">
-            <h2 className={styles.continueReadingTitle}>Último leído</h2>
+          <section className={styles.continueReading} aria-label="Seguir leyendo">
+            <h2 className={styles.continueReadingTitle}>Seguir leyendo</h2>
             <div className={styles.continueReadingGrid}>
               {recentMangas.map((item) => (
                 <Link
                   key={item.mangaId}
-                  to={`/manga/${item.mangaId}/chapter/${item.lastReadChapterId}`}
+                  to={`/manga/${item.mangaId}`}
                   className={styles.continueReadingCard}
                 >
                   <div className={styles.continueReadingPoster}>
@@ -159,7 +159,7 @@ export function MangaLibrary() {
                       }}
                     />
                     <span className={styles.continueReadingBadge}>
-                      {item.lastReadChapterNum.match(/^\d/) ? `Cap. ${item.lastReadChapterNum}` : 'Cap. leído'}
+                      {item.readCount} leído{item.readCount !== 1 ? 's' : ''}
                     </span>
                   </div>
                   <div className={styles.continueReadingInfo}>
