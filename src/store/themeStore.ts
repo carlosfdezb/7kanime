@@ -27,6 +27,11 @@ export const useThemeStore = create<ThemeStore>()(
     }),
     {
       name: 'animeav1-theme',
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          applyTheme(state.theme);
+        }
+      },
     }
   )
 );

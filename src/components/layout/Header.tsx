@@ -121,6 +121,17 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
           />
         </form>
 
+        <button
+          type="button"
+          className={styles.themeToggle}
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+          data-tv-focus="true"
+          data-tv-focus-id="theme-toggle-btn"
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+
         {isAuthenticated && (
           <Button
             variant="ghost"
@@ -157,15 +168,6 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
                 <div className={styles.userEmail}>
                   {user?.primaryEmailAddress?.emailAddress}
                 </div>
-                <button
-                  type="button"
-                  className={styles.logoutBtn}
-                  onClick={toggleTheme}
-                  data-tv-focus="true"
-                  data-tv-focus-id="theme-toggle-btn"
-                >
-                  {theme === 'dark' ? '☀️ Modo claro' : '🌙 Modo oscuro'}
-                </button>
                 <button
                   type="button"
                   className={styles.logoutBtn}

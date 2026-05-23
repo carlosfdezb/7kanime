@@ -15,8 +15,12 @@
 }
 
 .success {
-  background-color: rgba(34, 197, 94, 0.15);
+  background-color: color-mix(in srgb, var(--color-success) 15%, transparent);
   color: var(--color-success);
+}
+
+[data-theme="light"] .success {
+  color: #15803d;
 }
 
 .warning {
@@ -29,13 +33,21 @@
 }
 
 .primary {
-  background-color: rgba(99, 102, 241, 0.15);
+  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
   color: var(--color-primary);
 }
 
+[data-theme="light"] .primary {
+  color: #4338ca;
+}
+
 .secondary {
-  background-color: rgba(161, 161, 161, 0.15);
+  background-color: color-mix(in srgb, var(--color-text-muted) 15%, transparent);
   color: var(--color-text-muted);
+}
+
+[data-theme="light"] .secondary {
+  color: #525252;
 }
 
 .accent {

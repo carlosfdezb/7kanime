@@ -49,7 +49,7 @@
   right: var(--space-sm);
   padding: var(--space-xs) var(--space-sm);
   background-color: rgba(0, 0, 0, 0.75);
-  color: var(--color-text);
+  color: #ffffff;
   font-size: 0.75rem;
   border-radius: var(--radius-sm);
   font-weight: 500;
@@ -66,7 +66,7 @@
   border: none;
   cursor: pointer;
   font-size: 1rem;
-  color: var(--color-text);
+  color: #ffffff;
   opacity: 0;
   transition: opacity var(--transition-fast), background-color var(--transition-fast);
   display: flex;
