@@ -117,6 +117,22 @@
   overflow: hidden;
 }
 
+.header {
+  margin-bottom: var(--space-lg);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+.stats {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
 .filters {
   display: flex;
   flex-direction: column;

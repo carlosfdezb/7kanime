@@ -155,7 +155,7 @@ export function Home() {
         }
     }, []);
     const [genreExpanded, setGenreExpanded] = useState(false);
-    const [filtersVisible, setFiltersVisible] = useState(false);
+
     const [showFavorites, setShowFavorites] = useState(false);
 
     const { favorites } = useAnimeFavorites();
@@ -200,7 +200,7 @@ export function Home() {
     const status = searchParams.get("status") || "";
     const order = searchParams.get("order") || "";
 
-    const activeFilterCount = [letter, genres.length > 0, category, minYear, maxYear, status, order].filter(Boolean).length;
+
 
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -392,28 +392,21 @@ export function Home() {
                   </section>
                 )}
 
-                {/* Filters */}
-                <div className={styles.filters}>
-                    <button
-                        className={styles.filterToggle}
-                        onClick={() => setFiltersVisible((v) => !v)}
-                        data-tv-focus="true"
-                        data-tv-focus-id="toggle-filters-btn"
-                    >
-                        <span>Filtros</span>
-                        <span className={styles.filterChevron}>
-                            {filtersVisible ? "▼" : "▶"}
-                        </span>
-                        {!filtersVisible && activeFilterCount > 0 && (
-                            <span className={styles.filterCount}>
-                                {activeFilterCount}
-                            </span>
-                        )}
-                    </button>
+                {/* Title and Count */}
+                <div className={styles.header}>
+                    <h1 className={styles.title}>
+                        {showFavorites ? 'Mis Anime Favoritos' : (debouncedSearchQuery ? `Resultados para "${debouncedSearchQuery}"` : 'Catálogo de Anime')}
+                    </h1>
+                    {!showFavorites && total > 0 && (
+                        <p className={styles.stats}>
+                            {total} anime{total !== 1 ? 's' : ''} encontrado{total !== 1 ? 's' : ''}
+                        </p>
+                    )}
+                </div>
 
-                    {filtersVisible && (
-                    <>
-                        <div className={styles.filterSection}>
+                {/* Filters - Always visible */}
+                <div className={styles.filters}>
+                    <div className={styles.filterSection}>
                         <span className={styles.filterLabel}>Géneros</span>
                         <div className={styles.genreChips}>
                             {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
@@ -544,8 +537,6 @@ export function Home() {
                         <Button variant="ghost" onClick={handleClearFilters} data-tv-focus="true" data-tv-focus-id="clear-filters-btn">
                             Limpiar filtros
                         </Button>
-                    )}
-                    </>
                     )}
                 </div>
 
