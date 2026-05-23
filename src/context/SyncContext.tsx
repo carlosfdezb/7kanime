@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, type ReactNode } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
+import { setFlushAuth } from '../lib/offlineQueue';
 import type { SyncAdapter } from '../adapters/types';
 import type { CatalogItem } from '../types/api';
 import type { MangaFavorite } from '../types/manga';
@@ -38,6 +39,13 @@ interface SyncProviderProps {
 export function SyncProvider({ children }: SyncProviderProps) {
   const { isSignedIn, getToken } = useAuth();
   const { user } = useUser();
+
+  // Sync offline queue auth when user signs in/out
+  useEffect(() => {
+    if (isSignedIn && getToken) {
+      setFlushAuth(getToken);
+    }
+  }, [isSignedIn, getToken]);
 
   // Memoize adapters to avoid recreating on every render
   const value = useMemo<SyncContextValue>(() => {

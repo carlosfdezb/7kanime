@@ -5,9 +5,13 @@
  * Also catches network errors from Supabase calls and queues writes instead of failing.
  *
  * Queue is persisted to localStorage so it survives page reloads.
+ *
+ * Auth note: When operations are queued via withOfflineQueue(), the mutationFn
+ * carries Clerk auth (createClerkSupabaseClient). When flushQueue() replays,
+ * it creates an authenticated client using the stored getToken callback.
  */
 
-import { getSupabase } from './supabase';
+import { createClerkSupabaseClient } from './clerkSupabase';
 
 const QUEUE_KEY = 'animeav1-offline-queue';
 
@@ -16,6 +20,12 @@ export type OfflineOperation = {
   operation: 'upsert' | 'delete';
   data: Record<string, unknown>;
   timestamp: number;
+  /**
+   * Serialized getToken function to re-authenticate during flush.
+   * Stored as the string from useAuth().getToken.toString() reference.
+   * null means the operation was queued without auth context (fallback to anonymous).
+   */
+  getTokenSource: string | null;
 };
 
 // ── Queue state (initialized once) ──────────────────────────────────────────
@@ -49,14 +59,31 @@ function attachOnlineListener(): void {
   });
 }
 
+// Store getToken at module level for use in flushQueue
+let _getToken: (() => Promise<string | null>) | null = null;
+
+/**
+ * Sets the getToken function to use for authenticated flush.
+ * Call this when user authenticates (e.g., in SyncContext or auth provider).
+ */
+export function setFlushAuth(getToken: () => Promise<string | null>): void {
+  _getToken = getToken;
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 /**
  * Adds an operation to the offline queue and persists it to localStorage.
  * Attaches the online listener automatically on first call.
+ *
+ * @param item - operation to queue (without timestamp)
+ * @param getTokenSource - serialized getToken function string for authenticated replay (optional)
  */
-export function addToQueue(item: Omit<OfflineOperation, 'timestamp'>): void {
-  _queue.push({ ...item, timestamp: Date.now() });
+export function addToQueue(
+  item: { table: string; operation: 'upsert' | 'delete'; data: Record<string, unknown> },
+  getTokenSource: string | null = null
+): void {
+  _queue.push({ ...item, timestamp: Date.now(), getTokenSource });
   saveQueue();
   attachOnlineListener();
 }
@@ -64,12 +91,31 @@ export function addToQueue(item: Omit<OfflineOperation, 'timestamp'>): void {
 /**
  * Reads the queue, replays all operations to Supabase in chronological order,
  * then clears the queue on success.
+ *
+ * Uses authenticated Supabase client when getToken is available (user signed in),
+ * otherwise falls back to anonymous client (guest mode — limited RLS permissions).
  */
 export async function flushQueue(): Promise<void> {
   if (_queue.length === 0) return;
 
-  const supabase = getSupabase();
-  if (!supabase) return;
+  // Try to get authenticated client first; fall back to anonymous
+  let supabase = null;
+  if (_getToken) {
+    try {
+      const token = await _getToken();
+      if (token) {
+        supabase = createClerkSupabaseClient(() => Promise.resolve(token));
+      }
+    } catch {
+      // Auth failed — will use anonymous
+    }
+  }
+
+  if (!supabase) {
+    // No auth available — cannot flush authenticated operations
+    console.warn('[offlineQueue] no auth token available, skipping authenticated ops');
+    return;
+  }
 
   // Sort by timestamp ascending (oldest first)
   const sorted = [..._queue].sort((a, b) => a.timestamp - b.timestamp);
@@ -129,7 +175,8 @@ export function clearQueue(): void {
 export async function withOfflineQueue<T>(
   mutationFn: () => Promise<T>,
   table: string,
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
+  getTokenSource: string | null = null
 ): Promise<T | null> {
   try {
     return await mutationFn() as T;
@@ -144,7 +191,7 @@ export async function withOfflineQueue<T>(
       message.includes('net::');
 
     if (isNetworkError) {
-      addToQueue({ table, operation: 'upsert', data });
+      addToQueue({ table, operation: 'upsert', data }, getTokenSource);
       return null;
     }
 

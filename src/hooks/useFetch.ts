@@ -74,7 +74,14 @@ export function useFetchRetry<T>(url: string | null, _retries = 3): FetchState<T
     setRetryUrl(url);
   }, [url]);
 
-  const currentUrl = retryCount > 0 ? `${retryUrl}?retry=${retryCount}` : retryUrl;
+  const currentUrl = (() => {
+    if (!retryUrl) return null;
+    if (retryCount === 0) return retryUrl;
+    const url = new URL(retryUrl, window.location.origin);
+    url.searchParams.set('retry', String(retryCount));
+    return url.toString();
+  })();
+
   const result = useFetch<T>(currentUrl);
 
   return {

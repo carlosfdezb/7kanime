@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef, useEffect, useRef } from 'react';
+import { InputHTMLAttributes, forwardRef, useEffect, useRef, useId } from 'react';
 import styles from './Input.module.css';
 import { cn } from '../../utils/cn';
 import { useTVFocus } from '../../context/TVFocusContext';
@@ -9,7 +9,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ error, className, id, ...props }, ref) => {
-    const inputId = id || 'input';
+    const generatedId = useId();
+    const inputId = id || generatedId;
     const { isTVMode } = useTVFocus();
     const wrapperRef = useRef<HTMLDivElement>(null);
 

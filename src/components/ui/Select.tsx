@@ -1,4 +1,4 @@
-import { SelectHTMLAttributes, forwardRef, useEffect, useRef } from 'react';
+import { SelectHTMLAttributes, forwardRef, useEffect, useRef, useId } from 'react';
 import styles from './Select.module.css';
 import { cn } from '../../utils/cn';
 import { useTVFocus } from '../../context/TVFocusContext';
@@ -16,7 +16,8 @@ interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, 'chi
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ options, placeholder, error, className, id, disabled, ...props }, ref) => {
-    const selectId = id || 'select';
+    const generatedId = useId();
+    const selectId = id || generatedId;
     const { isTVMode } = useTVFocus();
     const wrapperRef = useRef<HTMLDivElement>(null);
 
