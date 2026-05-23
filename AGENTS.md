@@ -881,13 +881,13 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | 2 | ✅ **COMPLETADO** — Scroll restoration - Guardar y restaurar scroll position entre navegación de páginas. | 5 | 2 | 1 | 10 | UX |
 | 3 | ✅ **COMPLETADO** — ~~Skeleton loaders consistentes - Algunas pages usan skeletons custom, otras no. Unificar.~~ | 5 | 2 | 1 | 10 | UX |
 | 4 | ✅ **COMPLETADO** — Indicador de progreso de lectura - Mostrar "Cap. 5 de 120" o progress bar en MangaDetail. | 6 | 2 | 1 | 12 | UX |
-| 5 | Autoplay preference - Respetar `prefers-reduced-motion` o guardar preferencia de autoplay. | 3 | 2 | 1 | 6 | UX/Accesibilidad |
+| 5 | ✅ **COMPLETADO** — Autoplay preference - Respetar `prefers-reduced-motion` o guardar preferencia de autoplay. | 3 | 2 | 1 | 6 | UX/Accesibilidad |
 | 6 | ✅ **COMPLETADO** — Search params sincronizados - Home debería leer `?search=` del URL para que la búsqueda sobreviva a F5. | 5 | 2 | 1 | 10 | UX |
 | 7 | ✅ **COMPLETADO** — Unificar fetching pattern - Todo debe usar `useFetch` o un hook consistente. MangaDetail y MangaLibrary deben migrar. | 7 | 4 | 1 | 28 | Arquitectura |
 | 8 | ✅ **COMPLETADO** — Eliminar global state de TV nav - Reemplazar `window.__tvFocusedId` con un store de Zustand o React Context dedicado. | 5 | 5 | 2 | 50 | Arquitectura |
 | 9 | ✅ **COMPLETADO** — Fix offlineQueue - Pasar el token de Clerk o el `mutationFn` completo a la cola, no usar `getSupabase()` anónimo. | 8 | 4 | 2 | 64 | Arquitectura/Bugfix |
 | 10 | ✅ **COMPLETADO** — Fix batchQueue beforeunload - Usar `navigator.sendBeacon` o `Blob`+`sendBeacon` para flush síncrono. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
-| 11 | Barrel exports (`index.ts`) - Agregar en `components/`, `hooks/`, `utils/` para limpiar imports. | 3 | 2 | 1 | 6 | Arquitectura |
+| 11 | ✅ **COMPLETADO** — Barrel exports (`index.ts`) - Agregar en `components/`, `hooks/`, `utils/` para limpiar imports. | 3 | 2 | 1 | 6 | Arquitectura |
 | 12 | ✅ **COMPLETADO** — Eliminar dead code - `useInfiniteScroll.ts`, `PlayerControls.tsx` si no se usan. | 2 | 1 | 1 | 2 | Arquitectura |
 | 13 | ✅ **COMPLETADO** — Deduplicar `AnimeDetail` type - Unificar las dos interfaces en uno solo. | 8 | 2 | 1 | 16 | Arquitectura/Bugfix |
 | 14 | ✅ **COMPLETADO** — Reset `hasHydrated` en logout - Escuchar cambios de auth y resetear el ref. | 6 | 2 | 1 | 12 | Arquitectura/Bugfix |
@@ -898,7 +898,7 @@ import { useFavoritesStore } from '../store/favoritesStore';
 | 19 | Notificaciones de nuevos episodios/capítulos - Polling o push. | 8 | 8 | 4 | 256 | Nueva Funcionalidad |
 | 20 | PWA / Service Worker - Offline browsing de catálogo cacheado. | 6 | 8 | 3 | 144 | Nueva Funcionalidad |
 | 21 | Comentarios/reviews - Integrar con backend si existe. | 5 | 8 | 3 | 120 | Nueva Funcionalidad |
-| 22 | Modo oscuro/claro toggle - Aunque ya es oscuro por defecto. | 3 | 2 | 1 | 6 | Nueva Funcionalidad |
+| 22 | ✅ **COMPLETADO** — Modo oscuro/claro toggle - Aunque ya es oscuro por defecto. | 3 | 2 | 1 | 6 | Nueva Funcionalidad |
 | 23 | ✅ **COMPLETADO** — React.memo en listados - `Card`, `MangaCard`, `ChapterList` deben memoizarse. | 5 | 2 | 1 | 10 | Performance |
 | 24 | Virtual scrolling para listas grandes - Si un manga tiene 500+ capítulos. | 7 | 5 | 2 | 70 | Performance |
 | 25 | ✅ **COMPLETADO** — Prefetch de rutas - Prefetch `anime/:slug` al hacer hover en cards. | 5 | 3 | 1 | 15 | Performance |
