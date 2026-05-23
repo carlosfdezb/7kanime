@@ -40,7 +40,10 @@ export function MangaLibrary() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [tagsExpanded, setTagsExpanded] = useState(false);
+  const [invalidCovers, setInvalidCovers] = useState<Set<string>>(new Set());
 
+  const validRecentMangas = recentMangas.filter(m => !invalidCovers.has(m.mangaId));
+  
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const searchQuery = searchParams.get('q') || '';
   const selectedTag = searchParams.get('tag') || '';
@@ -139,11 +142,11 @@ export function MangaLibrary() {
       />
       <Container className={styles.content}>
         {/* Continue Reading Widget */}
-        {!showFavorites && recentMangas.length > 0 && (
+        {!showFavorites && validRecentMangas.length > 0 && (
           <section className={styles.continueReading} aria-label="Seguir leyendo">
             <h2 className={styles.continueReadingTitle}>Seguir leyendo</h2>
             <div className={styles.continueReadingGrid}>
-              {recentMangas.map((item) => (
+              {validRecentMangas.map((item) => (
                 <Link
                   key={item.mangaId}
                   to={`/manga/${item.mangaId}`}
@@ -154,8 +157,8 @@ export function MangaLibrary() {
                       src={item.coverUrl}
                       alt={item.mangaTitle}
                       loading="lazy"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
+                      onError={() => {
+                        setInvalidCovers(prev => new Set(prev).add(item.mangaId));
                       }}
                     />
                     <span className={styles.continueReadingBadge}>
