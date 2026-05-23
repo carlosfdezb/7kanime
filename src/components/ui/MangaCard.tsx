@@ -1,10 +1,12 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import styles from './MangaCard.module.css';
 import { cn } from '../../utils/cn';
 import { useMangaFavorites } from '../../hooks/useMangaFavorites';
 import type { MangaItem, MangaFavorite } from '../../types/manga';
 import { Focusable } from './Focusable';
+import { usePrefetchManga } from '../../hooks/usePrefetch';
 
 interface MangaCardProps {
   manga: MangaItem | MangaFavorite;
@@ -14,18 +16,19 @@ interface MangaCardProps {
 
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300x450"%3E%3Crect fill="%23262626" width="300" height="450"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="system-ui" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 
-export function MangaCard({ manga, variant: _variant = 'default', className }: MangaCardProps) {
+function MangaCardInner({ manga, variant: _variant = 'default', className }: MangaCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { isMangaFavorite, toggleMangaFavorite, isAuthenticated } = useMangaFavorites();
+  const prefetchManga = usePrefetchManga();
 
-  const handleImageError = () => {
+  const handleImageError = useCallback(() => {
     setImageError(true);
-  };
+  }, []);
 
   const isFavorite = isMangaFavorite(manga.publicId);
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isAuthenticated) {
@@ -36,10 +39,10 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
         type: manga.type,
       });
     }
-  };
+  }, [manga, isAuthenticated, toggleMangaFavorite]);
 
   return (
-    <Focusable as={Link} id={`mangacard-${manga.publicId}`} className={cn(styles.card, className)} to={`/manga/${manga.publicId}`}>
+    <Focusable as={Link} id={`mangacard-${manga.publicId}`} className={cn(styles.card, className)} to={`/manga/${manga.publicId}`} onMouseEnter={() => prefetchManga(manga.publicId, manga.coverUrl)}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />
@@ -69,3 +72,5 @@ export function MangaCard({ manga, variant: _variant = 'default', className }: M
     </Focusable>
   );
 }
+
+export const MangaCard = React.memo(MangaCardInner);

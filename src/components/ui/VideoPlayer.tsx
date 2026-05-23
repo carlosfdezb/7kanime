@@ -28,6 +28,16 @@ export function VideoPlayer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
 
+  // Check if autoplay should be enabled based on system preference and user setting
+  const shouldAutoplay = (() => {
+    if (!autoPlay) return false;
+    // Respect prefers-reduced-motion: always disable autoplay if user prefers reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return false;
+    }
+    return true;
+  })();
+
   // Initialize HLS
   useEffect(() => {
     const video = videoRef.current;
@@ -49,7 +59,7 @@ export function VideoPlayer({
         hls.loadSource(src);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          if (autoPlay) {
+          if (shouldAutoplay) {
             video.play().catch(() => {});
           }
         });
@@ -62,14 +72,14 @@ export function VideoPlayer({
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         // Safari native HLS support
         video.src = src;
-        if (autoPlay) {
+        if (shouldAutoplay) {
           video.play().catch(() => {});
         }
       }
     } else {
       // Regular video source (MP4, WebM, etc.)
       video.src = src;
-      if (autoPlay) {
+      if (shouldAutoplay) {
         video.play().catch(() => {});
       }
     }
@@ -80,7 +90,7 @@ export function VideoPlayer({
         hlsRef.current = null;
       }
     };
-  }, [src, autoPlay]);
+  }, [src, shouldAutoplay]);
 
   // Video event handlers
   useEffect(() => {

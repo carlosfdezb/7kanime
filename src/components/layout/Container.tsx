@@ -9,7 +9,7 @@ interface ContainerProps {
 
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(function Container({ children, className }, ref) {
   return (
-    <div ref={ref} className={cn(styles.container, className)}>
+    <div ref={ref} id="main-content" className={cn(styles.container, className)}>
       {children}
     </div>
   );

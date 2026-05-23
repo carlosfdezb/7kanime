@@ -1,10 +1,12 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import styles from './Card.module.css';
 import { cn } from '../../utils/cn';
 import type { CatalogItem } from '../../types/api';
 import { Focusable } from './Focusable';
 import { useAnimeFavorites } from '../../hooks/useAnimeFavorites';
+import { usePrefetchAnime } from '../../hooks/usePrefetch';
 
 interface CardProps {
   anime: CatalogItem;
@@ -14,27 +16,28 @@ interface CardProps {
 
 const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300x450"%3E%3Crect fill="%23262626" width="300" height="450"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="system-ui" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
 
-export function Card({ anime, variant = 'default', className }: CardProps) {
+function CardInner({ anime, variant = 'default', className }: CardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
+  const prefetchAnime = usePrefetchAnime();
 
-  const handleImageError = () => {
+  const handleImageError = useCallback(() => {
     setImageError(true);
-  };
+  }, []);
 
   const favorite = isFavorite(anime.id);
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (isAuthenticated) {
       toggleFavorite(anime);
     }
-  };
+  }, [anime, isAuthenticated, toggleFavorite]);
 
   return (
-    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`}>
+    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`} onMouseEnter={() => prefetchAnime(anime.slug, anime.poster)}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />
@@ -67,3 +70,5 @@ export function Card({ anime, variant = 'default', className }: CardProps) {
     </Focusable>
   );
 }
+
+export const Card = React.memo(CardInner);

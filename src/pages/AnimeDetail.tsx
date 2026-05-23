@@ -102,7 +102,7 @@ export function AnimeDetail() {
       <Container className={`${styles.content} ${!hasBackdrop ? styles.contentNoBackdrop : ''}`} ref={contentRef}>
         <Breadcrumb
           items={[
-            { label: 'Inicio', href: '/' },
+            { label: 'Anime', href: '/' },
             { label: data.title },
           ]}
         />

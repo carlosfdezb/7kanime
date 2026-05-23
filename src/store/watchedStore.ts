@@ -21,10 +21,10 @@ import type { WatchedAnime } from '../adapters/supabaseEpisodeAdapter';
 
 interface WatchedStore {
   watchedEpisodes: Record<string, WatchedAnime>;
-  markWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => void;
+  markWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, episodesCount?: number, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => void;
   markUnwatched: (slug: string, episode: number, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => void;
   isWatched: (slug: string, episode: number) => boolean;
-  toggleWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => void;
+  toggleWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, episodesCount?: number, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => void;
   hydrate: (data: Record<string, WatchedAnime>) => void;
 }
 
@@ -33,18 +33,21 @@ export const useWatchedStore = create<WatchedStore>()(
     (set, get) => ({
       watchedEpisodes: {} as Record<string, WatchedAnime>,
 
-      markWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => {
+      markWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, episodesCount?: number, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => {
         set(state => {
-          const existing = state.watchedEpisodes[slug] || { episodes: [], anime_title: '', poster_url: '' };
+          const existing = state.watchedEpisodes[slug] || { episodes: [], anime_title: '', poster_url: '', lastWatchedAt: undefined };
           const episodesArr = Array.isArray(existing.episodes) ? existing.episodes : [];
           if (!episodesArr.includes(episode)) {
             const newState = {
               watchedEpisodes: {
                 ...state.watchedEpisodes,
                 [slug]: {
+                  ...existing,
                   episodes: [...episodesArr, episode].sort((a, b) => a - b),
                   anime_title: animeTitle ?? existing.anime_title,
                   poster_url: posterUrl ?? existing.poster_url,
+                  episodesCount: episodesCount ?? existing.episodesCount,
+                  lastWatchedAt: new Date().toISOString(),
                 },
               },
             };
@@ -86,12 +89,12 @@ export const useWatchedStore = create<WatchedStore>()(
         return data?.episodes?.includes(episode) ?? false;
       },
 
-      toggleWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => {
+      toggleWatched: (slug: string, episode: number, animeTitle?: string, posterUrl?: string, episodesCount?: number, adapter?: SyncAdapter<Record<string, WatchedAnime>>) => {
         const isWatched = get().isWatched(slug, episode);
         if (isWatched) {
           get().markUnwatched(slug, episode, adapter);
         } else {
-          get().markWatched(slug, episode, animeTitle, posterUrl, adapter);
+          get().markWatched(slug, episode, animeTitle, posterUrl, episodesCount, adapter);
         }
       },
 
