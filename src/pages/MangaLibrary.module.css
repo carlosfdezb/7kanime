@@ -128,7 +128,6 @@
 
 /* Continue Reading Widget */
 .continueReading {
-  margin-top: var(--space-lg);
   margin-bottom: var(--space-xl);
 }
 
