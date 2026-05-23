@@ -2,11 +2,9 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useRef, FormEvent, useEffect } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import styles from './Header.module.css';
-import { Input } from '../ui/Input';
-import { Button } from '../ui/Button';
-import { useDebounce } from '../../hooks/useDebounce';
-import { useAnimeFavorites } from '../../hooks/useAnimeFavorites';
-import { useMangaFavorites } from '../../hooks/useMangaFavorites';
+import { Input, Button } from '../';
+import { useDebounce, useAnimeFavorites, useMangaFavorites } from '../../hooks';
+import { useThemeStore } from '../../store/themeStore';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
@@ -26,6 +24,7 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
   const { user } = useUser();
   const { favorites, isAuthenticated: isAnimeAuth } = useAnimeFavorites();
   const { favorites: mangaFavorites, isAuthenticated: isMangaAuth } = useMangaFavorites();
+  const { theme, toggleTheme } = useThemeStore();
 
   const isMangaContext = location.pathname.startsWith('/manga');
   const currentFavorites = isMangaContext ? mangaFavorites : favorites;
@@ -158,6 +157,15 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
                 <div className={styles.userEmail}>
                   {user?.primaryEmailAddress?.emailAddress}
                 </div>
+                <button
+                  type="button"
+                  className={styles.logoutBtn}
+                  onClick={toggleTheme}
+                  data-tv-focus="true"
+                  data-tv-focus-id="theme-toggle-btn"
+                >
+                  {theme === 'dark' ? '☀️ Modo claro' : '🌙 Modo oscuro'}
+                </button>
                 <button
                   type="button"
                   className={styles.logoutBtn}
