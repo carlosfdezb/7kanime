@@ -439,7 +439,7 @@ export function Home() {
                         data-tv-focus="true"
                         data-tv-focus-id="toggle-filters-btn"
                     >
-                        <span>Filtros</span>
+                        <span>Más filtros</span>
                         <span className={styles.filterChevron}>
                             {filtersVisible ? "▼" : "▶"}
                         </span>
