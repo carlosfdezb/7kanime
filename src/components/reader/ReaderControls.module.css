@@ -33,7 +33,7 @@
 
 .modeButton.active {
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
 }
 
 .modeLabel {

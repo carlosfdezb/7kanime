@@ -71,7 +71,7 @@
   min-width: 48px;
   height: 32px;
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
   font-weight: 700;
   font-size: 0.875rem;
   border-radius: var(--radius-sm);

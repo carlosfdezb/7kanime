@@ -187,14 +187,13 @@
 .filterCount {
   font-size: 0.75rem;
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
   border-radius: 50%;
   min-width: 20px;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
 }
 
 .filterLabel {
@@ -448,7 +447,7 @@
 .letterActive {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
 }
 
 .letterActive:hover {

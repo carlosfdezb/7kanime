@@ -204,7 +204,7 @@
   justify-content: center;
   padding: var(--space-sm) var(--space-lg);
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
   font-weight: 600;
   font-size: 1rem;
   border-radius: var(--radius-md);
@@ -317,7 +317,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
   border: none;
   border-radius: 50%;
   font-size: 1.5rem;
