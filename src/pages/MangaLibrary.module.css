@@ -33,14 +33,14 @@
   padding: var(--space-xs) var(--space-sm);
   background: none;
   border: none;
-  color: var(--color-text-muted);
+  color: var(--color-primary);
   font-size: 0.875rem;
   cursor: pointer;
   transition: color var(--transition-fast);
 }
 
 .expandButton:hover {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 .title {

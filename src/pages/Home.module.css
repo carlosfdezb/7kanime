@@ -209,13 +209,17 @@
 }
 
 .expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   margin-top: var(--space-xs);
   background: none;
   border: none;
   color: var(--color-primary);
   font-size: 0.875rem;
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-xs) 0;
   transition: color var(--transition-fast);
 }
 
