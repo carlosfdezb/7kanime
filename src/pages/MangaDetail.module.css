@@ -113,7 +113,7 @@
 }
 
 .scoreStar {
-  color: #fbbf24;
+  color: var(--color-warning, #fbbf24);
 }
 
 .votes {
