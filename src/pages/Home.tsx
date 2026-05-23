@@ -196,8 +196,6 @@ export function Home() {
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
 
     const fetchCatalog = useCallback(
         async (pageNum: number) => {

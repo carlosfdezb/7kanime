@@ -35,7 +35,7 @@ const POPULAR_TAGS = [
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { items, page, totalPages, totalItems, hasNextPage, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
+  const { items, page, totalPages, totalItems, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
   const { favorites } = useMangaFavorites();
   const { recentMangas } = useContinueReading();
   const [showFavorites, setShowFavorites] = useState(false);
@@ -120,8 +120,6 @@ export function MangaLibrary() {
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  const hasPrevPage = page > 1;
 
   return (
     <div className={styles.page}>
