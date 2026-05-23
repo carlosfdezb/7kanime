@@ -1,16 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './Episode.module.css';
-import { Container } from '../components/layout/Container';
-import { Breadcrumb } from '../components/layout/Breadcrumb';
-import { Button } from '../components/ui/Button';
-import { Chip } from '../components/ui/Chip';
-import { Skeleton } from '../components/ui/Skeleton';
-import { Focusable } from '../components/ui/Focusable';
-import { VideoPlayer } from '../components/ui/VideoPlayer';
-import { useFetch } from '../hooks/useFetch';
-import { useWatchedEpisodes } from '../hooks/useWatchedEpisodes';
-import { useTVNavigation } from '../hooks/useTVNavigation';
+import { Container, Breadcrumb, Button, Chip, Skeleton, Focusable, VideoPlayer } from '../components';
+import { useFetch } from '../hooks';
+import { useWatchedEpisodes, useTVNavigation } from '../hooks';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
 
 type Variant = 'DUB' | 'SUB';
