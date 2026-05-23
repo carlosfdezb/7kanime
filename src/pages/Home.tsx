@@ -155,6 +155,7 @@ export function Home() {
         }
     }, []);
     const [genreExpanded, setGenreExpanded] = useState(false);
+    const [filtersVisible, setFiltersVisible] = useState(false);
 
     const [showFavorites, setShowFavorites] = useState(false);
 
@@ -200,7 +201,7 @@ export function Home() {
     const status = searchParams.get("status") || "";
     const order = searchParams.get("order") || "";
 
-
+    const activeFilterCount = [letter, genres.length > 0, category, minYear, maxYear, status, order].filter(Boolean).length;
 
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -404,34 +405,53 @@ export function Home() {
                     )}
                 </div>
 
-                {/* Filters - Always visible */}
-                <div className={styles.filters}>
-                    <div className={styles.filterSection}>
-                        <span className={styles.filterLabel}>Géneros</span>
-                        <div className={styles.genreChips}>
-                            {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
-                                <Chip
-                                    key={g.slug}
-                                    label={g.label}
-                                    selected={genres.includes(g.slug)}
-                                    onClick={() => handleGenreToggle(g.slug)}
-                                />
-                            ))}
-                        </div>
-                        {GENRES.length > GENRES_INITIAL_SHOW && (
-                            <button
-                                className={styles.expandButton}
-                                onClick={() => setGenreExpanded((e) => !e)}
-                                data-tv-focus="true"
-                                data-tv-focus-id="expand-genres-btn"
-                            >
-                                {genreExpanded
-                                    ? `Ver menos`
-                                    : `Ver más (${GENRES.length - GENRES_INITIAL_SHOW} más)`}
-                            </button>
-                        )}
+                {/* Quick Genre Filters - Always visible */}
+                <div className={styles.quickFilters}>
+                    <div className={styles.genreChips}>
+                        {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
+                            <Chip
+                                key={g.slug}
+                                label={g.label}
+                                selected={genres.includes(g.slug)}
+                                onClick={() => handleGenreToggle(g.slug)}
+                            />
+                        ))}
                     </div>
+                    {GENRES.length > GENRES_INITIAL_SHOW && (
+                        <button
+                            className={styles.expandButton}
+                            onClick={() => setGenreExpanded((e) => !e)}
+                            data-tv-focus="true"
+                            data-tv-focus-id="expand-genres-btn"
+                        >
+                            {genreExpanded
+                                ? `Ver menos`
+                                : `Ver más (${GENRES.length - GENRES_INITIAL_SHOW} más)`}
+                        </button>
+                    )}
+                </div>
 
+                {/* Filters Toggle + Advanced Filters */}
+                <div className={styles.filters}>
+                    <button
+                        className={styles.filterToggle}
+                        onClick={() => setFiltersVisible((v) => !v)}
+                        data-tv-focus="true"
+                        data-tv-focus-id="toggle-filters-btn"
+                    >
+                        <span>Filtros</span>
+                        <span className={styles.filterChevron}>
+                            {filtersVisible ? "▼" : "▶"}
+                        </span>
+                        {!filtersVisible && activeFilterCount > 0 && (
+                            <span className={styles.filterCount}>
+                                {activeFilterCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {filtersVisible && (
+                    <>
                     <div className={styles.filterRow}>
                         <Select
                             options={TYPE_OPTIONS}
@@ -537,6 +557,8 @@ export function Home() {
                         <Button variant="ghost" onClick={handleClearFilters} data-tv-focus="true" data-tv-focus-id="clear-filters-btn">
                             Limpiar filtros
                         </Button>
+                    )}
+                    </>
                     )}
                 </div>
 

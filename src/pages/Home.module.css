@@ -133,6 +133,16 @@
   color: var(--color-text-muted);
 }
 
+.quickFilters {
+  margin-bottom: var(--space-md);
+}
+
+.quickFilters .genreChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
 .filters {
   display: flex;
   flex-direction: column;
