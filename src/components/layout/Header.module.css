@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(10, 10, 10, 0.95);
+  background-color: color-mix(in srgb, var(--color-bg) 95%, transparent);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
   height: var(--header-height);
@@ -45,7 +45,7 @@
 .favoritesBtnActive.favoritesBtnActive:hover:not(:disabled) {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
 }
 
 .logo {
@@ -192,7 +192,7 @@
   height: 36px;
   border-radius: 50%;
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
   font-size: 0.875rem;
   font-weight: 600;
   display: flex;
@@ -227,6 +227,67 @@
   text-overflow: ellipsis;
   border-bottom: 1px solid var(--color-border);
   margin-bottom: var(--space-xs);
+}
+
+/* Theme toggle switch in user menu */
+.themeSwitch {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--space-sm);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+  position: relative;
+}
+
+.themeSwitch:hover {
+  background-color: var(--color-border);
+}
+
+.themeSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.themeSwitchSlider {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background-color: #e5e5e5;
+  border-radius: 24px;
+  transition: background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.themeSwitchKnob {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  color: #737373;
+  transform: translateX(0);
+  transition: transform var(--transition-fast), background-color var(--transition-fast);
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.themeSwitch input:checked + .themeSwitchSlider {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+.themeSwitch input:checked + .themeSwitchSlider .themeSwitchKnob {
+  transform: translateX(20px);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 50%, transparent);
 }
 
 .logoutBtn {

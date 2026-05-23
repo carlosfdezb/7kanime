@@ -7,10 +7,13 @@ import { MangaCard } from '../components/ui/MangaCard';
 import { Button } from '../components/ui/Button';
 import { Chip } from '../components/ui/Chip';
 import { SkeletonCard } from '../components/ui/Skeleton';
+import { PageInput } from '../components/ui/PageInput';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
+import { useContinueReading } from '../hooks/useContinueReading';
 import { getTags } from '../api/manga';
 import { translateGenreDisplay } from '../api/manga';
+import { Link } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 25;
 const TAGS_COLLAPSED_COUNT = 30;
@@ -32,12 +35,16 @@ const POPULAR_TAGS = [
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { items, page, totalPages, totalItems, hasNextPage, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
+  const { items, page, totalPages, totalItems, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
   const { favorites } = useMangaFavorites();
+  const { recentMangas } = useContinueReading();
   const [showFavorites, setShowFavorites] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [tagsExpanded, setTagsExpanded] = useState(false);
+  const [invalidCovers, setInvalidCovers] = useState<Set<string>>(new Set());
 
+  const validRecentMangas = recentMangas.filter(m => !invalidCovers.has(m.mangaId));
+  
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const searchQuery = searchParams.get('q') || '';
   const selectedTag = searchParams.get('tag') || '';
@@ -114,8 +121,6 @@ export function MangaLibrary() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const hasPrevPage = page > 1;
-
   return (
     <div className={styles.page}>
       <Header
@@ -135,6 +140,39 @@ export function MangaLibrary() {
         }}
       />
       <Container className={styles.content}>
+        {/* Continue Reading Widget */}
+        {!showFavorites && validRecentMangas.length > 0 && (
+          <section className={styles.continueReading} aria-label="Seguir leyendo">
+            <h2 className={styles.continueReadingTitle}>Seguir leyendo</h2>
+            <div className={styles.continueReadingGrid}>
+              {validRecentMangas.map((item) => (
+                <Link
+                  key={item.mangaId}
+                  to={`/manga/${item.mangaId}`}
+                  className={styles.continueReadingCard}
+                >
+                  <div className={styles.continueReadingPoster}>
+                    <img
+                      src={item.coverUrl}
+                      alt={item.mangaTitle}
+                      loading="lazy"
+                      onError={() => {
+                        setInvalidCovers(prev => new Set(prev).add(item.mangaId));
+                      }}
+                    />
+                    <span className={styles.continueReadingBadge}>
+                      {item.readCount} leído{item.readCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className={styles.continueReadingInfo}>
+                    <h4>{item.mangaTitle}</h4>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         <div className={styles.header}>
           <h1 className={styles.title}>
             {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : selectedTag ? `Género: ${translateGenreDisplay(selectedTag)}` : 'Biblioteca de Manga')}
@@ -228,23 +266,11 @@ export function MangaLibrary() {
 
             {totalPages > 1 && (
               <div className={styles.pagination}>
-                <Button
-                  variant="ghost"
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={!hasPrevPage}
-                >
-                  ← Anterior
-                </Button>
-                <span className={styles.pageInfo}>
-                  Página {page} de {totalPages}
-                </span>
-                <Button
-                  variant="ghost"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={!hasNextPage}
-                >
-                  Siguiente →
-                </Button>
+                <PageInput
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </div>
             )}
           </>

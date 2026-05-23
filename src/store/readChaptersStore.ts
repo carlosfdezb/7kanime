@@ -44,6 +44,7 @@ export const useReadChaptersStore = create<ReadChaptersStore>()(
                   manga_title: mangaTitle ?? existing.manga_title,
                   cover_url: coverUrl ?? existing.cover_url,
                   chapter_nums: newChapterNums,
+                  lastReadAt: new Date().toISOString(),
                 },
               },
             };

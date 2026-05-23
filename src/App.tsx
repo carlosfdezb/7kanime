@@ -3,18 +3,20 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import { Home } from "./pages/Home";
 import { AnimeDetail } from "./pages/AnimeDetail";
-import { Episode } from "./pages/Episode";
 import { NotFound } from "./pages/NotFound";
 import { EasterEgg } from "./components/layout/EasterEgg";
 import { useTVFocus } from "./context/TVFocusContext";
-import { MangaLibrary } from "./pages/MangaLibrary";
-import { MangaDetail } from "./pages/MangaDetail";
-import { ChapterReader } from "./pages/ChapterReader";
 import { Login } from "./pages/Login";
 import { SyncProvider } from "./context/SyncContext";
 import { hydrateAllStores, hydratePreferencesFromLocal } from "./store/syncHydration";
 import { createClerkSupabaseClient } from "./lib/clerkSupabase";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { SkipLink } from "./components/layout/SkipLink";
+
+import { Episode } from "./pages/Episode";
+import { MangaLibrary } from "./pages/MangaLibrary";
+import { MangaDetail } from "./pages/MangaDetail";
+import { ChapterReader } from "./pages/ChapterReader";
 
 const KONAMI = "seryiprestaelculo";
 const KONAMI_LEN = 17;
@@ -102,16 +104,17 @@ function App() {
       {showEasterEgg && (
         <EasterEgg onClose={() => setShowEasterEgg(false)} />
       )}
+      <SkipLink />
       <ErrorBoundary>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/anime/:slug" element={<AnimeDetail />} />
-          <Route path="/episode/:slug/:number" element={<Episode />} />
-          <Route path="/manga" element={<MangaLibrary />} />
-          <Route path="/manga/:id" element={<MangaDetail />} />
-          <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<NotFound />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/anime/:slug" element={<AnimeDetail />} />
+            <Route path="/episode/:slug/:number" element={<Episode />} />
+            <Route path="/manga" element={<MangaLibrary />} />
+            <Route path="/manga/:id" element={<MangaDetail />} />
+            <Route path="/manga/:serieId/chapter/:capituloId" element={<ChapterReader />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>
     </SyncProvider>

@@ -1,21 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import styles from "./Home.module.css";
-import { Container } from "../components/layout/Container";
-import { Grid } from "../components/layout/Grid";
-import { Header } from "../components/layout/Header";
-import { Card } from "../components/ui/Card";
-import { Chip } from "../components/ui/Chip";
-import { Select } from "../components/ui/Select";
-import { SkeletonCard } from "../components/ui/Skeleton";
-import { Button } from "../components/ui/Button";
-import { Focusable } from "../components/ui/Focusable";
-import { useDebounce } from "../hooks/useDebounce";
+import { Container, Grid, Header, Card, Chip, Select, SkeletonCard, Button, Focusable, PageInput } from "../components";
+import { useDebounce, useAnimeFavorites, useTVNavigation } from "../hooks";
 import { getCatalog } from "../api/catalog";
 import { search } from "../api/search";
-import { useAnimeFavorites } from "../hooks/useAnimeFavorites";
-import { useTVNavigation } from "../hooks/useTVNavigation";
+import { useWatchedStore } from "../store/watchedStore";
 import type { CatalogItem } from "../types/api";
+import type { WatchedAnime } from "../adapters/supabaseEpisodeAdapter";
 
 const LETTERS = [
     "A",
@@ -144,11 +136,50 @@ export function Home() {
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearching, setIsSearching] = useState(false);
+
+    // Sync search query from URL on mount
+    useEffect(() => {
+        const urlSearch = searchParams.get("search") || "";
+        if (urlSearch) {
+            setSearchQuery(urlSearch);
+        }
+    }, []);
     const [genreExpanded, setGenreExpanded] = useState(false);
     const [filtersVisible, setFiltersVisible] = useState(false);
+
     const [showFavorites, setShowFavorites] = useState(false);
 
     const { favorites } = useAnimeFavorites();
+    const { watchedEpisodes } = useWatchedStore();
+
+    // Get recent episodes for "Continue Watching" widget
+    // Shows next episode (last watched + 1) if available
+    const recentEpisodes = (() => {
+      const entries = Object.entries(watchedEpisodes) as [string, WatchedAnime][];
+      if (entries.length === 0) return [];
+
+      return entries
+        .map(([slug, data]) => ({
+          slug,
+          ...data,
+        }))
+        .map((item) => {
+          const lastEpisode = Math.max(...item.episodes);
+          const nextEpisode = lastEpisode + 1;
+          return {
+            ...item,
+            nextEpisode,
+            hasMoreEpisodes: item.episodesCount ? nextEpisode <= item.episodesCount : true,
+          };
+        })
+        .filter((item) => item.hasMoreEpisodes)
+        .sort((a, b) => {
+          const aTime = a.lastWatchedAt ? new Date(a.lastWatchedAt).getTime() : 0;
+          const bTime = b.lastWatchedAt ? new Date(b.lastWatchedAt).getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, 10);
+    })();
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const letter = searchParams.get("letter") || "";
@@ -165,8 +196,6 @@ export function Home() {
     const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
     const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
 
     const fetchCatalog = useCallback(
         async (pageNum: number) => {
@@ -238,6 +267,24 @@ export function Home() {
         }
     }, [debouncedSearchQuery, fetchSearch, fetchCatalog, page, isSearching]);
 
+    // Sync search query to URL when user searches
+    useEffect(() => {
+        if (debouncedSearchQuery.length >= 2) {
+            setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.set("search", debouncedSearchQuery);
+                newParams.set("page", "1");
+                return newParams;
+            });
+        } else if (debouncedSearchQuery.length === 0) {
+            setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.delete("search");
+                return newParams;
+            });
+        }
+    }, [debouncedSearchQuery, setSearchParams]);
+
     // Initial and filter change fetch
     useEffect(() => {
         if (debouncedSearchQuery.length < 2) {
@@ -300,7 +347,79 @@ export function Home() {
             />
 
             <Container className={styles.content} ref={contentRef}>
-                {/* Filters */}
+                {/* Continue Watching Widget */}
+                {recentEpisodes.length > 0 && (
+                  <section className={styles.continueWatching} aria-label="Continuar viendo">
+                    <h2 className={styles.continueWatchingTitle}>Continuar viendo</h2>
+                    <div className={styles.continueWatchingGrid}>
+                      {recentEpisodes.map((item) => {
+                        if (!item.poster_url || !item.anime_title) return null;
+                        return (
+                          <Link
+                            key={item.slug}
+                            to={`/episode/${item.slug}/${item.nextEpisode}`}
+                            className={styles.continueWatchingCard}
+                          >
+                            <div className={styles.continueWatchingPoster}>
+                              <img
+                                src={item.poster_url}
+                                alt={item.anime_title}
+                                loading="lazy"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                              />
+                              <span className={styles.continueWatchingBadge}>Ep. {item.nextEpisode}</span>
+                            </div>
+                            <div className={styles.continueWatchingInfo}>
+                              <h4>{item.anime_title}</h4>
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+
+                {/* Title and Count */}
+                <div className={styles.header}>
+                    <h1 className={styles.title}>
+                        {showFavorites ? 'Mis Anime Favoritos' : (debouncedSearchQuery ? `Resultados para "${debouncedSearchQuery}"` : 'Catálogo de Anime')}
+                    </h1>
+                    {!showFavorites && total > 0 && (
+                        <p className={styles.stats}>
+                            {total} anime{total !== 1 ? 's' : ''} encontrado{total !== 1 ? 's' : ''}
+                        </p>
+                    )}
+                </div>
+
+                {/* Quick Genre Filters - Always visible */}
+                <div className={styles.quickFilters}>
+                    <div className={styles.genreChips}>
+                        {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
+                            <Chip
+                                key={g.slug}
+                                label={g.label}
+                                selected={genres.includes(g.slug)}
+                                onClick={() => handleGenreToggle(g.slug)}
+                            />
+                        ))}
+                    </div>
+                    {GENRES.length > GENRES_INITIAL_SHOW && (
+                        <button
+                            className={styles.expandButton}
+                            onClick={() => setGenreExpanded((e) => !e)}
+                            data-tv-focus="true"
+                            data-tv-focus-id="expand-genres-btn"
+                        >
+                            {genreExpanded
+                                ? `Ver menos`
+                                : `Ver más (${GENRES.length - GENRES_INITIAL_SHOW} más)`}
+                        </button>
+                    )}
+                </div>
+
+                {/* Filters Toggle + Advanced Filters */}
                 <div className={styles.filters}>
                     <button
                         className={styles.filterToggle}
@@ -308,7 +427,7 @@ export function Home() {
                         data-tv-focus="true"
                         data-tv-focus-id="toggle-filters-btn"
                     >
-                        <span>Filtros</span>
+                        <span>Más filtros</span>
                         <span className={styles.filterChevron}>
                             {filtersVisible ? "▼" : "▶"}
                         </span>
@@ -321,32 +440,6 @@ export function Home() {
 
                     {filtersVisible && (
                     <>
-                        <div className={styles.filterSection}>
-                        <span className={styles.filterLabel}>Géneros</span>
-                        <div className={styles.genreChips}>
-                            {GENRES.slice(0, genreExpanded ? GENRES.length : GENRES_INITIAL_SHOW).map((g) => (
-                                <Chip
-                                    key={g.slug}
-                                    label={g.label}
-                                    selected={genres.includes(g.slug)}
-                                    onClick={() => handleGenreToggle(g.slug)}
-                                />
-                            ))}
-                        </div>
-                        {GENRES.length > GENRES_INITIAL_SHOW && (
-                            <button
-                                className={styles.expandButton}
-                                onClick={() => setGenreExpanded((e) => !e)}
-                                data-tv-focus="true"
-                                data-tv-focus-id="expand-genres-btn"
-                            >
-                                {genreExpanded
-                                    ? `Ver menos`
-                                    : `Ver más (${GENRES.length - GENRES_INITIAL_SHOW} más)`}
-                            </button>
-                        )}
-                    </div>
-
                     <div className={styles.filterRow}>
                         <Select
                             options={TYPE_OPTIONS}
@@ -511,27 +604,11 @@ export function Home() {
                         {/* Pagination */}
                         {!isSearching && totalPages > 1 && (
                             <div className={styles.pagination}>
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => handlePageChange(page - 1)}
-                                    disabled={!hasPrevPage}
-                                    data-tv-focus="true"
-                                    data-tv-focus-id="pagination-prev"
-                                >
-                                    ← Anterior
-                                </Button>
-                                <span className={styles.pageInfo}>
-                                    Página {page} de {totalPages}
-                                </span>
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => handlePageChange(page + 1)}
-                                    disabled={!hasNextPage}
-                                    data-tv-focus="true"
-                                    data-tv-focus-id="pagination-next"
-                                >
-                                    Siguiente →
-                                </Button>
+                                <PageInput
+                                    currentPage={page}
+                                    totalPages={totalPages}
+                                    onPageChange={handlePageChange}
+                                />
                             </div>
                         )}
                     </>

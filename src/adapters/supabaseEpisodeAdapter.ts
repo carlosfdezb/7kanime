@@ -24,6 +24,8 @@ export interface WatchedAnime {
   episodes: number[];
   anime_title: string;
   poster_url: string;
+  episodesCount?: number;
+  lastWatchedAt?: string;
 }
 
 export type WatchedState = Record<string, WatchedAnime>;

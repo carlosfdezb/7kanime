@@ -11,7 +11,7 @@ import { ChapterList } from '../components/ui/ChapterList';
 import { translateGenreDisplay } from '../api/manga';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useReadChapters } from '../hooks/useReadChapters';
-import { useFetch } from '../hooks/useFetch';
+import { getMangaDetail } from '../api/manga';
 import { sortChaptersByOrden } from '../utils/manga';
 import type { MangaDetail as MangaDetailType } from '../types/manga';
 
@@ -76,9 +76,9 @@ function ReadingCTA({ chapters, readChapters, mangaId }: ReadingCTAProps) {
 export const MangaDetail = function MangaDetail() {
   const { id } = useParams<{ id: string }>();
   const mangaId = id || null;
-  const { data, loading, error } = useFetch<MangaDetailType>(
-    mangaId ? `/manga/${mangaId}` : null
-  );
+  const [manga, setManga] = useState<MangaDetailType | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { isMangaFavorite, toggleMangaFavorite } = useMangaFavorites();
   const { readChapters } = useReadChapters(mangaId ?? '');
   const [posterError, setPosterError] = useState(false);
@@ -86,8 +86,32 @@ export const MangaDetail = function MangaDetail() {
   const [chapterOrder, setChapterOrder] = useState<'asc' | 'desc'>('asc');
 
   const sortedChapters = chapterOrder === 'asc'
-    ? sortChaptersByOrden(data?.chapters || [])
-    : sortChaptersByOrden(data?.chapters || []).reverse();
+    ? sortChaptersByOrden(manga?.chapters || [])
+    : sortChaptersByOrden(manga?.chapters || []).reverse();
+
+  useEffect(() => {
+    if (!mangaId) return;
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    getMangaDetail(mangaId)
+      .then(data => {
+        if (!cancelled) {
+          setManga(data);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Error al cargar el manga');
+          setLoading(false);
+        }
+      });
+
+    return () => { cancelled = true; };
+  }, [mangaId]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,15 +125,15 @@ export const MangaDetail = function MangaDetail() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const favorite = data ? isMangaFavorite(data.publicId) : false;
+  const favorite = manga ? isMangaFavorite(manga.publicId) : false;
 
   const handleFavoriteClick = () => {
-    if (data) {
+    if (manga) {
       toggleMangaFavorite({
-        publicId: data.publicId,
-        title: data.title,
-        coverUrl: data.coverUrl,
-        type: data.type,
+        publicId: manga.publicId,
+        title: manga.title,
+        coverUrl: manga.coverUrl,
+        type: manga.type,
       });
     }
   };
@@ -131,7 +155,7 @@ export const MangaDetail = function MangaDetail() {
     );
   }
 
-  if (error || !data) {
+  if (error || !manga) {
     return (
       <div className={styles.page}>
         <Container>
@@ -145,8 +169,6 @@ export const MangaDetail = function MangaDetail() {
       </div>
     );
   }
-
-  const manga = data;
 
   return (
     <div className={styles.page}>
@@ -203,15 +225,31 @@ export const MangaDetail = function MangaDetail() {
                 <span className={styles.metadataLabel}>Estado</span>
                 <span className={styles.metadataValue}>{translateStatus(manga.status)}</span>
               </div>
-              {manga.demographics.length > 0 && (
+              {manga.demographics?.length > 0 && (
                 <div className={styles.metadataItem}>
                   <span className={styles.metadataLabel}>Demografía</span>
                   <span className={styles.metadataValue}>{manga.demographics.join(', ')}</span>
                 </div>
               )}
+              {sortedChapters.length > 0 && (
+                <div className={styles.metadataItem}>
+                  <span className={styles.metadataLabel}>Progreso</span>
+                  <span className={styles.metadataValue}>
+                    {readChapters.length} de {sortedChapters.length} capítulos leídos
+                    {sortedChapters.length > 0 && (
+                      <span className={styles.progressBar}>
+                        <span
+                          className={styles.progressFill}
+                          style={{ width: `${(readChapters.length / sortedChapters.length) * 100}%` }}
+                        />
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {manga.genres.length > 0 && (
+            {manga.genres?.length > 0 && (
               <div className={styles.genres}>
                 {manga.genres.map((genre) => (
                   <Chip key={genre} label={translateGenreDisplay(genre)} />

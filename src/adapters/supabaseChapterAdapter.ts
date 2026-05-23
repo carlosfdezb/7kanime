@@ -21,6 +21,7 @@ export interface ReadMangaData {
   manga_title: string;
   cover_url: string;
   chapter_nums?: Record<string, string>;
+  lastReadAt?: string;
 }
 
 export type ReadChaptersState = Record<string, ReadMangaData>;

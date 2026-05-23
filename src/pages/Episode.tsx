@@ -1,16 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './Episode.module.css';
-import { Container } from '../components/layout/Container';
-import { Breadcrumb } from '../components/layout/Breadcrumb';
-import { Button } from '../components/ui/Button';
-import { Chip } from '../components/ui/Chip';
-import { Skeleton } from '../components/ui/Skeleton';
-import { Focusable } from '../components/ui/Focusable';
-import { VideoPlayer } from '../components/ui/VideoPlayer';
-import { useFetch } from '../hooks/useFetch';
-import { useWatchedEpisodes } from '../hooks/useWatchedEpisodes';
-import { useTVNavigation } from '../hooks/useTVNavigation';
+import { Container, Breadcrumb, Button, Chip, Skeleton, Focusable, VideoPlayer } from '../components';
+import { useFetch } from '../hooks';
+import { useWatchedEpisodes, useTVNavigation } from '../hooks';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
 
 type Variant = 'DUB' | 'SUB';
@@ -68,7 +61,7 @@ export function Episode() {
     }
     if (slug && !isWatched(slug, episodeNumber)) {
       timerRef.current = setTimeout(() => {
-        markWatched(slug, episodeNumber, animeTitle, animeData?.poster);
+        markWatched(slug, episodeNumber, animeTitle, animeData?.poster, animeData?.episodesCount);
       }, WATCHED_TIMER_MS);
     }
   }, [slug, episodeNumber, isWatched, markWatched]);
@@ -163,7 +156,7 @@ export function Episode() {
       <Container ref={contentRef}>
         <Breadcrumb
           items={[
-            { label: 'Inicio', href: '/' },
+            { label: 'Anime', href: '/' },
             { label: animeTitle, href: `/anime/${slug}` },
             { label: `Episodio ${episode.number}` },
           ]}
@@ -175,7 +168,7 @@ export function Episode() {
             as={Button}
             id="watched-btn"
             variant={watched ? 'primary' : 'ghost'}
-            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster)}
+            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster, animeData?.episodesCount)}
             className={styles.watchedBtn}
           >
             {watched ? '✓ Visto' : 'Marcar como visto'}

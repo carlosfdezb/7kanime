@@ -164,12 +164,12 @@
 
 .episodeButton:hover {
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
 }
 
 .episodeWatched {
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
 }
 
 .episodeWatched:hover {
@@ -203,7 +203,7 @@
 
 .relationLink:hover {
   background-color: var(--color-primary);
-  color: var(--color-text);
+  color: #ffffff;
 }
 
 .loading {
