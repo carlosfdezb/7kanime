@@ -157,17 +157,17 @@ export function Header({ onSearch, showFavorites = false, onToggleFavorites }: H
                 <div className={styles.userEmail}>
                   {user?.primaryEmailAddress?.emailAddress}
                 </div>
-                <label className={styles.themeSwitch}>
-                  <span className={styles.themeSwitchLabel}>
-                    {theme === 'dark' ? '🌙' : '☀️'} {theme === 'dark' ? 'Modo oscuro' : 'Modo claro'}
-                  </span>
+                <label className={styles.themeSwitch} aria-label="Cambiar tema">
                   <input
                     type="checkbox"
                     checked={theme === 'light'}
                     onChange={() => toggleTheme()}
-                    aria-label="Cambiar tema"
                   />
-                  <span className={styles.themeSwitchSlider}></span>
+                  <span className={styles.themeSwitchSlider}>
+                    <span className={styles.themeSwitchKnob}>
+                      {theme === 'dark' ? '🌙' : '☀️'}
+                    </span>
+                  </span>
                 </label>
                 <button
                   type="button"
