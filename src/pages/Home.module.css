@@ -118,6 +118,7 @@
 }
 
 .header {
+  margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
 }
 
