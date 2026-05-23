@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import styles from "./Home.module.css";
-import { Container, Grid, Header, Card, Chip, Select, SkeletonCard, Button, Focusable } from "../components";
+import { Container, Grid, Header, Card, Chip, Select, SkeletonCard, Button, Focusable, PageInput } from "../components";
 import { useDebounce, useAnimeFavorites, useTVNavigation } from "../hooks";
 import { getCatalog } from "../api/catalog";
 import { search } from "../api/search";
@@ -606,27 +606,11 @@ export function Home() {
                         {/* Pagination */}
                         {!isSearching && totalPages > 1 && (
                             <div className={styles.pagination}>
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => handlePageChange(page - 1)}
-                                    disabled={!hasPrevPage}
-                                    data-tv-focus="true"
-                                    data-tv-focus-id="pagination-prev"
-                                >
-                                    ← Anterior
-                                </Button>
-                                <span className={styles.pageInfo}>
-                                    Página {page} de {totalPages}
-                                </span>
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => handlePageChange(page + 1)}
-                                    disabled={!hasNextPage}
-                                    data-tv-focus="true"
-                                    data-tv-focus-id="pagination-next"
-                                >
-                                    Siguiente →
-                                </Button>
+                                <PageInput
+                                    currentPage={page}
+                                    totalPages={totalPages}
+                                    onPageChange={handlePageChange}
+                                />
                             </div>
                         )}
                     </>

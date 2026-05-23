@@ -10,6 +10,7 @@ export { MangaCard } from './ui/MangaCard';
 export { Focusable } from './ui/Focusable';
 export { VideoPlayer } from './ui/VideoPlayer';
 export { OTPInput } from './ui/OTPInput';
+export { PageInput } from './ui/PageInput';
 
 export { Header } from './layout/Header';
 export { Container } from './layout/Container';

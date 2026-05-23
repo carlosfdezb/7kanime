@@ -7,6 +7,7 @@ import { MangaCard } from '../components/ui/MangaCard';
 import { Button } from '../components/ui/Button';
 import { Chip } from '../components/ui/Chip';
 import { SkeletonCard } from '../components/ui/Skeleton';
+import { PageInput } from '../components/ui/PageInput';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useContinueReading } from '../hooks/useContinueReading';
@@ -267,23 +268,11 @@ export function MangaLibrary() {
 
             {totalPages > 1 && (
               <div className={styles.pagination}>
-                <Button
-                  variant="ghost"
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={!hasPrevPage}
-                >
-                  ← Anterior
-                </Button>
-                <span className={styles.pageInfo}>
-                  Página {page} de {totalPages}
-                </span>
-                <Button
-                  variant="ghost"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={!hasNextPage}
-                >
-                  Siguiente →
-                </Button>
+                <PageInput
+                  currentPage={page}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </div>
             )}
           </>
