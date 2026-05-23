@@ -163,7 +163,7 @@ export function Episode() {
       <Container ref={contentRef}>
         <Breadcrumb
           items={[
-            { label: 'Inicio', href: '/' },
+            { label: 'Anime', href: '/' },
             { label: animeTitle, href: `/anime/${slug}` },
             { label: `Episodio ${episode.number}` },
           ]}
