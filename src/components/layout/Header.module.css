@@ -280,13 +280,14 @@
 }
 
 .themeSwitch input:checked + .themeSwitchSlider {
-  background-color: #2a2a2a;
+  background-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
 .themeSwitch input:checked + .themeSwitchSlider .themeSwitchKnob {
   transform: translateX(20px);
-  background-color: #1a1a1a;
-  color: #a1a1aa;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--color-primary) 50%, transparent);
 }
 
 .logoutBtn {
