@@ -324,14 +324,6 @@
   padding: 0;
 }
 
-.fullscreenWrapper:fullscreen .pageImage {
-  width: 100vw;
-  max-width: 100vw;
-  border-radius: 0;
-  margin: 0;
-  display: block;
-}
-
 .fullscreenButton {
   position: fixed;
   bottom: var(--space-lg);

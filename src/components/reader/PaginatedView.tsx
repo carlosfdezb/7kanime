@@ -6,9 +6,11 @@ interface PaginatedViewProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   onLastPageReached?: () => void;
+  onEndOfChapterReached?: () => void;
   imageErrors: Set<number>;
   onImageError: (pageIndex: number) => void;
   onImageLoad?: (pageIndex: number) => void;
+  isFullscreen?: boolean;
 }
 
 export function PaginatedView({
@@ -16,9 +18,11 @@ export function PaginatedView({
   currentPage,
   onPageChange,
   onLastPageReached,
+  onEndOfChapterReached,
   imageErrors,
   onImageError,
   onImageLoad,
+  isFullscreen,
 }: PaginatedViewProps) {
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const lastPageReachedFired = useRef(false);
@@ -72,7 +76,11 @@ export function PaginatedView({
       case 'D':
         e.preventDefault();
         // Left arrow / D = next page (advance forward in manga)
-        onPageChange(Math.min(totalPages - 1, currentPage + 1));
+        if (currentPage >= totalPages - 1) {
+          onEndOfChapterReached?.();
+        } else {
+          onPageChange(currentPage + 1);
+        }
         break;
       case 'ArrowRight':
       case 'a':
@@ -82,7 +90,7 @@ export function PaginatedView({
         onPageChange(Math.max(0, currentPage - 1));
         break;
     }
-  }, [currentPage, totalPages, onPageChange]);
+  }, [currentPage, totalPages, onPageChange, onEndOfChapterReached]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -107,7 +115,11 @@ export function PaginatedView({
     if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
       if (deltaX > 0) {
         // Swipe right → next page (advance forward in manga)
-        onPageChange(Math.min(totalPages - 1, currentPage + 1));
+        if (currentPage >= totalPages - 1) {
+          onEndOfChapterReached?.();
+        } else {
+          onPageChange(currentPage + 1);
+        }
       } else {
         // Swipe left → prev page (go back in manga)
         onPageChange(Math.max(0, currentPage - 1));
@@ -145,7 +157,11 @@ export function PaginatedView({
       onPageChange(Math.max(0, currentPage - 1));
     } else {
       // Left half → next page (advance forward in manga)
-      onPageChange(Math.min(totalPages - 1, currentPage + 1));
+      if (currentPage >= totalPages - 1) {
+        onEndOfChapterReached?.();
+      } else {
+        onPageChange(currentPage + 1);
+      }
     }
   };
 
@@ -159,7 +175,7 @@ export function PaginatedView({
 
   return (
     <div
-      className={styles.container}
+      className={`${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
