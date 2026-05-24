@@ -32,7 +32,7 @@
 .pageIndicator {
   margin-top: var(--space-md);
   padding: var(--space-xs) var(--space-md);
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(0, 0, 0, 0.45);
   color: #ffffff;
   font-size: 0.875rem;
   border-radius: var(--radius-md);

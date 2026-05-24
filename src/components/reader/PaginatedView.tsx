@@ -74,8 +74,9 @@ export function PaginatedView({
       case 'ArrowLeft':
       case 'd':
       case 'D':
+      case 'PageDown':
         e.preventDefault();
-        // Left arrow / D = next page (advance forward in manga)
+        // Left arrow / D / PageDown = next page (advance forward in manga)
         if (currentPage >= totalPages - 1) {
           onEndOfChapterReached?.();
         } else {
@@ -85,8 +86,9 @@ export function PaginatedView({
       case 'ArrowRight':
       case 'a':
       case 'A':
+      case 'PageUp':
         e.preventDefault();
-        // Right arrow / A = previous page (go back in manga)
+        // Right arrow / A / PageUp = previous page (go back in manga)
         onPageChange(Math.max(0, currentPage - 1));
         break;
     }
