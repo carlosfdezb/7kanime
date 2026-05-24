@@ -8,6 +8,7 @@ import { CascadeView } from '../components/reader/CascadeView';
 import { PaginatedView } from '../components/reader/PaginatedView';
 import { ReaderControls } from '../components/reader/ReaderControls';
 import { ReaderNavigation } from '../components/reader/ReaderNavigation';
+import { EndOfChapterOverlay } from '../components/reader/EndOfChapterOverlay';
 import { useReadChapters } from '../hooks/useReadChapters';
 import { useSyncContext } from '../context/SyncContext';
 import { usePreferencesStore } from '../store/preferencesStore';
@@ -58,6 +59,7 @@ export function ChapterReader() {
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showEndOfChapterNav, setShowEndOfChapterNav] = useState(false);
 
   // Paginated mode state
   const [currentPage, setCurrentPage] = useState(0);
@@ -199,9 +201,10 @@ export function ChapterReader() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [readingMode]);
 
-  // Reset current page when chapter changes
+  // Reset current page and overlay state when chapter changes
   useEffect(() => {
     setCurrentPage(0);
+    setShowEndOfChapterNav(false);
   }, [capituloId]);
 
   const handleImageError = (pageNumber: number) => {
@@ -331,21 +334,23 @@ export function ChapterReader() {
                 markAsRead(capituloId, currentChapter.numeroCapitulo, mangaData.title, mangaData.coverUrl);
               }
             }}
+            onEndOfChapterReached={() => setShowEndOfChapterNav(true)}
+            isFullscreen={isFullscreen}
             imageErrors={imageErrors}
             onImageError={handleImageError}
           />
         )}
 
-        {/* Bottom navigation inside fullscreen */}
-        {isFullscreen && (
-          <div className={styles.bottomNavFullscreen}>
-            <ReaderNavigation
-              prevChapter={prevChapter}
-              nextChapter={nextChapter}
-              currentChapter={currentChapter || null}
-              mangaId={serieId || ''}
-            />
-          </div>
+        {/* End of chapter overlay in fullscreen paginated mode */}
+        {isFullscreen && readingMode === 'paginated' && (
+          <EndOfChapterOverlay
+            prevChapter={prevChapter}
+            nextChapter={nextChapter}
+            currentChapter={currentChapter || null}
+            mangaId={serieId || ''}
+            isOpen={showEndOfChapterNav}
+            onClose={() => setShowEndOfChapterNav(false)}
+          />
         )}
 
         {/* Floating fullscreen button - always visible */}
@@ -364,6 +369,11 @@ export function ChapterReader() {
             </svg>
           )}
         </button>
+
+        {/* Aria live region for screen readers */}
+        <div aria-live="polite" className="sr-only">
+          {showEndOfChapterNav ? 'Fin del capítulo alcanzado. Navegación de capítulo disponible.' : ''}
+        </div>
 
         {/* Back-to-top button - cascade only */}
         {readingMode === 'cascade' && (
