@@ -11,18 +11,18 @@
 .title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-primary);
   margin-bottom: var(--space-xs);
 }
 
 .subtitle {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
 .subtitle strong {
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .otpWrapper {
@@ -31,12 +31,12 @@
 
 .alert {
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   font-size: 0.875rem;
   text-align: center;
   background-color: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: var(--color-error);
+  color: var(--status-error);
 }
 
 .verifyBtn {
@@ -55,35 +55,35 @@
 .resendBtn {
   background: none;
   border: none;
-  color: var(--color-primary);
+  color: var(--accent-primary);
   font-size: 0.875rem;
   cursor: pointer;
   padding: var(--space-xs) var(--space-sm);
-  transition: color var(--transition-fast);
+  transition: color var(--duration-fast) ease;
 }
 
 .resendBtn:hover:not(:disabled) {
-  color: var(--color-primary-hover);
+  color: var(--accent-liquid);
   text-decoration: underline;
 }
 
 .resendBtn:disabled {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   cursor: not-allowed;
 }
 
 .changeEmailBtn {
   background: none;
   border: none;
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.8125rem;
   cursor: pointer;
   padding: var(--space-xs) var(--space-sm);
-  transition: color var(--transition-fast);
+  transition: color var(--duration-fast) ease;
 }
 
 .changeEmailBtn:hover {
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .footer {
@@ -92,12 +92,12 @@
 }
 
 .backLink {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--duration-fast) ease;
 }
 
 .backLink:hover {
-  color: var(--color-primary);
+  color: var(--accent-primary);
 }

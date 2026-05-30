@@ -2,14 +2,14 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-lg);
+  background-color: var(--surface-1);
+  border-radius: 16px;
   overflow: hidden;
   outline: none;
 }
 
 .playerContainer:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
@@ -31,7 +31,7 @@
 }
 
 .clickOverlay:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--accent-primary);
   outline-offset: -2px;
 }
 
@@ -47,7 +47,7 @@
   padding: var(--space-md) var(--space-lg);
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
   opacity: 0;
-  transition: opacity var(--transition-normal);
+  transition: opacity var(--duration-normal) ease;
   pointer-events: none;
   z-index: 10;
 }
@@ -65,11 +65,11 @@
   height: 48px;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   color: #ffffff;
   font-size: 1.25rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--duration-fast) ease;
   backdrop-filter: blur(4px);
 }
 
@@ -81,10 +81,10 @@
 
 .controlBtn.focused,
 .controlBtn[data-tv-focused="true"] {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
   color: #ffffff;
-  box-shadow: 0 0 0 3px var(--color-primary), 0 0 20px 4px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 0 3px var(--accent-primary), 0 0 20px 4px rgba(99, 102, 241, 0.4);
   transform: scale(1.1);
 }
 

@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg);
+  background-color: var(--bg-primary);
 }
 
 .content {
@@ -17,18 +17,18 @@
 .title {
   font-size: 6rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--accent-primary);
   line-height: 1;
 }
 
 .message {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .description {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   max-width: 400px;
   line-height: 1.6;
 }

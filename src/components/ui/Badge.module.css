@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -10,13 +10,13 @@
 }
 
 .neutral {
-  background-color: var(--color-border);
-  color: var(--color-text-muted);
+  background-color: var(--border-subtle);
+  color: var(--text-secondary);
 }
 
 .success {
-  background-color: color-mix(in srgb, var(--color-success) 15%, transparent);
-  color: var(--color-success);
+  background-color: color-mix(in srgb, var(--status-success) 15%, transparent);
+  color: var(--status-success);
 }
 
 [data-theme="light"] .success {
@@ -33,8 +33,8 @@
 }
 
 .primary {
-  background-color: color-mix(in srgb, var(--color-primary) 15%, transparent);
-  color: var(--color-primary);
+  background-color: color-mix(in srgb, var(--accent-primary) 15%, transparent);
+  color: var(--accent-primary);
 }
 
 [data-theme="light"] .primary {
@@ -42,8 +42,8 @@
 }
 
 .secondary {
-  background-color: color-mix(in srgb, var(--color-text-muted) 15%, transparent);
-  color: var(--color-text-muted);
+  background-color: color-mix(in srgb, var(--text-secondary) 15%, transparent);
+  color: var(--text-secondary);
 }
 
 [data-theme="light"] .secondary {

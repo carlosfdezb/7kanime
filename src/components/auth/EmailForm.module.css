@@ -13,7 +13,7 @@
 .label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .submitBtn {
@@ -23,11 +23,11 @@
 
 .alert {
   padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   font-size: 0.875rem;
   background-color: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: var(--color-error);
+  color: var(--status-error);
 }
 
 .footer {
@@ -36,14 +36,14 @@
 }
 
 .backLink {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--duration-fast) ease;
 }
 
 .backLink:hover {
-  color: var(--color-primary);
+  color: var(--accent-primary);
 }
 
 /* Success state */
@@ -63,29 +63,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-primary);
+  color: var(--accent-primary);
   margin-bottom: var(--space-lg);
 }
 
 .successTitle {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-primary);
   margin-bottom: var(--space-sm);
 }
 
 .successText {
-  color: var(--color-text);
+  color: var(--text-primary);
   font-size: 0.9375rem;
   margin-bottom: var(--space-xs);
 }
 
 .successText strong {
-  color: var(--color-primary);
+  color: var(--accent-primary);
 }
 
 .successHint {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.875rem;
   margin-bottom: var(--space-xl);
 }

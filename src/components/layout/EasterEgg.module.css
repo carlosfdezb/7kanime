@@ -24,25 +24,25 @@
   right: 0;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  border-radius: 9999px;
+  background-color: var(--surface-1);
+  color: var(--text-primary);
   font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color var(--transition-fast);
-  border: 1px solid var(--color-border);
+  transition: background-color var(--duration-fast) ease;
+  border: 1px solid var(--border-subtle);
 }
 
 .closeBtn:hover {
-  background-color: var(--color-border);
+  background-color: var(--border-subtle);
 }
 
 .image {
   max-width: 100%;
   max-height: 85vh;
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   box-shadow: var(--shadow-lg);
   object-fit: contain;
 }

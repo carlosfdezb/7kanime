@@ -10,22 +10,22 @@
   text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  transition: all var(--transition-fast);
-  caret-color: var(--color-primary);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all var(--duration-fast) ease;
+  caret-color: var(--accent-primary);
 }
 
 .input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   opacity: 0.4;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
@@ -35,16 +35,16 @@
 }
 
 .input.filled {
-  background-color: var(--color-surface);
-  border-color: var(--color-text-muted);
+  background-color: var(--surface-1);
+  border-color: var(--text-secondary);
 }
 
 .input.error {
-  border-color: var(--color-error);
+  border-color: var(--status-error);
 }
 
 .input.error:focus {
-  border-color: var(--color-error);
+  border-color: var(--status-error);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
@@ -55,7 +55,7 @@
 
 .container[data-tv-focus='true'] .input:focus,
 .container[data-tv-focus='true'] .input.focused {
-  box-shadow: 0 0 0 3px var(--color-primary), 0 0 20px 4px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 0 3px var(--accent-primary), 0 0 20px 4px rgba(99, 102, 241, 0.3);
 }
 
 @media (max-width: 400px) {

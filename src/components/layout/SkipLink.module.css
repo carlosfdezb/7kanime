@@ -4,16 +4,16 @@
   top: 0;
   z-index: 9999;
   padding: var(--space-md) var(--space-lg);
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  background-color: var(--surface-1);
+  color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
-  border-radius: var(--radius-md);
-  transition: left var(--transition-fast);
+  border-radius: 12px;
+  transition: left var(--duration-fast) ease;
 }
 
 .skipLink:focus {
   left: 0;
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }

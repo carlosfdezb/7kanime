@@ -5,32 +5,32 @@
 }
 
 .wrapper.tv-focused {
-  box-shadow: 0 0 0 3px var(--color-primary), 0 0 20px 4px rgba(99, 102, 241, 0.3);
-  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 3px var(--accent-primary), 0 0 20px 4px rgba(96, 165, 250, 0.3);
+  border-radius: 12px;
 }
 
 .select {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  padding-right: var(--space-xl);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  font-size: 0.875rem;
+  padding: 10px 16px;
+  padding-right: 32px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--duration-fast) ease;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a1a1a1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right var(--space-sm) center;
+  background-position: right 8px center;
   min-height: 40px;
 }
 
 .select:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow);
 }
 
 .select:disabled {
@@ -39,20 +39,20 @@
 }
 
 .select option {
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .error {
-  border-color: var(--color-error);
+  border-color: var(--status-error);
 }
 
 .error:focus {
-  border-color: var(--color-error);
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  border-color: var(--status-error);
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
 }
 
 .errorText {
-  color: var(--color-error);
+  color: var(--status-error);
   font-size: 0.875rem;
 }

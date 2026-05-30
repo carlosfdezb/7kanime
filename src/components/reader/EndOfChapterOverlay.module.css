@@ -17,9 +17,9 @@
 
 .panel {
   position: relative;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
   padding: var(--space-xl);
   max-width: 480px;
   width: 100%;
@@ -41,13 +41,13 @@
 .title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-primary);
   margin-bottom: var(--space-sm);
 }
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   margin-bottom: var(--space-lg);
 }
 
@@ -64,22 +64,22 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-sm) var(--space-xl);
-  background-color: var(--color-primary);
+  background-color: var(--accent-primary);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--duration-fast) ease;
 }
 
 .closeButton:hover {
-  background-color: var(--color-primary-hover);
+  background-color: var(--accent-liquid);
 }
 
 .closeButton:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 

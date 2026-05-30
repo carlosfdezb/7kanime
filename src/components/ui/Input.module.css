@@ -5,29 +5,29 @@
 }
 
 .wrapper.tv-focused {
-  box-shadow: 0 0 0 3px var(--color-primary), 0 0 20px 4px rgba(99, 102, 241, 0.3);
-  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 3px var(--accent-primary), 0 0 20px 4px rgba(96, 165, 250, 0.3);
+  border-radius: 12px;
 }
 
 .input {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  transition: all var(--transition-fast);
+  padding: 10px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-primary);
+  transition: all var(--duration-fast) ease;
   min-height: 40px;
 }
 
 .input::placeholder {
-  color: var(--color-text-muted);
+  color: var(--text-tertiary);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow);
 }
 
 .input:disabled {
@@ -36,15 +36,15 @@
 }
 
 .error {
-  border-color: var(--color-error);
+  border-color: var(--status-error);
 }
 
 .error:focus {
-  border-color: var(--color-error);
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+  border-color: var(--status-error);
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
 }
 
 .errorText {
-  color: var(--color-error);
+  color: var(--status-error);
   font-size: 0.875rem;
 }

@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg);
+  background-color: var(--bg-primary);
   padding: var(--space-md);
 }
 
@@ -13,9 +13,9 @@
 }
 
 .card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
   padding: var(--space-xl);
 }
 
@@ -27,12 +27,12 @@
 .title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--text-primary);
   margin-bottom: var(--space-sm);
 }
 
 .subtitle {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.9375rem;
   line-height: 1.5;
 }
@@ -49,14 +49,14 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--accent-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 .loadingText {
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
   font-size: 0.9375rem;
 }
 

@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg, #0a0a0a);
+  background-color: var(--bg-primary);
   padding: 2rem;
 }
 
@@ -20,25 +20,25 @@
 .title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-text, #fafafa);
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
 .message {
-  color: var(--color-text-muted, #a1a1aa);
+  color: var(--text-secondary);
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
 
 .error {
-  background-color: var(--color-surface, #141414);
-  border: 1px solid var(--color-border, #262626);
-  border-radius: var(--radius-md, 8px);
+  background-color: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1.5rem;
   text-align: left;
   font-size: 0.75rem;
-  color: #ef4444;
+  color: var(--status-error);
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-word;
