@@ -205,15 +205,15 @@ export const MangaDetail = function MangaDetail() {
   return (
     <div className={styles.page}>
       <Header />
-      <Container>
-        <MangaBreadcrumb
-          items={[
-            { label: 'Manga', href: '/manga' },
-            { label: manga.title },
-          ]}
-        />
-      </Container>
       <DetailHero
+        breadcrumb={
+          <MangaBreadcrumb
+            items={[
+              { label: 'Manga', href: '/manga' },
+              { label: manga.title },
+            ]}
+          />
+        }
         posterSrc={manga.coverUrl}
         posterAlt={manga.title}
         backdropSrc={manga.coverUrl}

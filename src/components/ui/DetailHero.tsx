@@ -13,6 +13,7 @@ interface DetailHeroProps {
   countLabel?: string;
   score: number;
   genres: string[];
+  breadcrumb?: ReactNode;
   children?: ReactNode;
 }
 
@@ -28,6 +29,7 @@ export function DetailHero({
   countLabel,
   score,
   genres,
+  breadcrumb,
   children,
 }: DetailHeroProps) {
   const [backdropError, setBackdropError] = useState(false);
@@ -45,6 +47,12 @@ export function DetailHero({
             aria-hidden="true"
             onError={() => setBackdropError(true)}
           />
+        </div>
+      )}
+
+      {breadcrumb && (
+        <div className={`container ${styles.breadcrumbWrapper}`}>
+          {breadcrumb}
         </div>
       )}
 

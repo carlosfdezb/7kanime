@@ -106,15 +106,15 @@ export function AnimeDetail() {
   return (
     <div className={styles.page}>
       <Header />
-      <Container>
-        <Breadcrumb
-          items={[
-            { label: 'Anime', href: '/' },
-            { label: anime.title },
-          ]}
-        />
-      </Container>
       <DetailHero
+        breadcrumb={
+          <Breadcrumb
+            items={[
+              { label: 'Anime', href: '/' },
+              { label: anime.title },
+            ]}
+          />
+        }
         posterSrc={anime.poster}
         posterAlt={anime.title}
         backdropSrc={anime.backdrop}
