@@ -203,6 +203,14 @@ export const MangaDetail = function MangaDetail() {
 
   return (
     <div className={styles.page}>
+      <Container>
+        <MangaBreadcrumb
+          items={[
+            { label: 'Manga', href: '/manga' },
+            { label: manga.title },
+          ]}
+        />
+      </Container>
       <DetailHero
         posterSrc={manga.coverUrl}
         posterAlt={manga.title}
@@ -270,13 +278,6 @@ export const MangaDetail = function MangaDetail() {
       </DetailHero>
 
       <Container className={styles.content}>
-        <MangaBreadcrumb
-          items={[
-            { label: 'Manga', href: '/manga' },
-            { label: manga.title },
-          ]}
-        />
-
         {manga.description && (
           <section className={styles.synopsisSection}>
             <h2 className={styles.sectionTitle}>Sinopsis</h2>
@@ -344,6 +345,8 @@ export const MangaDetail = function MangaDetail() {
                 key={ch.publicId}
                 number={ch.numeroCapitulo}
                 title={ch.title}
+                scanlator={(ch as any).scanlator}
+                date={(ch as any).date}
                 read={readChapters.includes(ch.publicId)}
                 to={`/manga/${manga.publicId}/chapter/${ch.publicId}`}
               />

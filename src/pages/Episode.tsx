@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './Episode.module.css';
 import { Container, Breadcrumb, Skeleton, Focusable } from '../components';
+import { Header } from '../components/layout/Header';
 import { useFetch } from '../hooks';
 import { useWatchedEpisodes, useTVNavigation } from '../hooks';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
@@ -158,6 +159,7 @@ export function Episode() {
 
   return (
     <div className={styles.page}>
+      <Header />
       <Container ref={contentRef}>
         <Breadcrumb
           items={[
@@ -360,6 +362,31 @@ export function Episode() {
             </span>
           )}
         </nav>
+
+        {/* Episodes Grid */}
+        {episodesList.length > 0 && (
+          <section className={`${styles.episodesGridSection} animate-fade-in`}>
+            <h2 className={styles.episodesGridTitle}>Todos los episodios</h2>
+            <div className={styles.episodesGrid}>
+              {episodesList.map((ep) => {
+                const isCurrent = ep.number === episodeNumber;
+                const isWatchedEp = slug ? isWatched(slug, ep.number) : false;
+                return (
+                  <Link
+                    key={ep.id}
+                    to={`/episode/${slug}/${ep.number}`}
+                    className={`${styles.episodeButton} ${isCurrent ? styles.episodeButtonCurrent : ''} ${isWatchedEp ? styles.episodeButtonWatched : ''}`}
+                    aria-current={isCurrent ? 'page' : undefined}
+                    data-tv-focus="true"
+                    data-tv-focus-id={`episode-${ep.number}`}
+                  >
+                    {ep.number}
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
       </Container>
     </div>
   );

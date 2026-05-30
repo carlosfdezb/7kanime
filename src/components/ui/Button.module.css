@@ -55,6 +55,12 @@
   border-color: var(--border-medium);
 }
 
+.secondary.active {
+  background: rgba(251, 113, 133, 0.15);
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+}
+
 .loading {
   position: relative;
 }

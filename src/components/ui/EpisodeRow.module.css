@@ -31,7 +31,6 @@
   border-radius: 10px;
   color: var(--text-tertiary);
   transition: all var(--duration-fast) ease;
-  background: var(--bg-tertiary);
   flex-shrink: 0;
 }
 

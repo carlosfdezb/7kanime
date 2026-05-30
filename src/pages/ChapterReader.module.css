@@ -16,7 +16,7 @@
   position: relative;
   background: var(--bg-deep);
   border-radius: 20px;
-  min-height: 400px;
+  min-height: 60vh;
   overflow: hidden;
 }
 
@@ -409,6 +409,75 @@
   .chapterCounter {
     order: -1;
   }
+}
+
+.chaptersListSection {
+  margin-bottom: 48px;
+}
+
+.chaptersListTitle {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.chaptersListCompact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chapterButton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all var(--duration-fast) ease;
+}
+
+.chapterButton:hover {
+  background: var(--surface-2);
+  border-color: var(--border-glow);
+  transform: translateX(4px);
+  color: var(--text-primary);
+}
+
+.chapterButtonCurrent {
+  background: var(--accent-primary-glow);
+  border-color: var(--border-glow);
+  color: var(--accent-primary);
+}
+
+.chapterButtonRead {
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.chapterButtonRead:not(.chapterButtonCurrent):hover {
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.chapterButtonNum {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.chapterButtonLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-tertiary);
 }
 
 /* Safe area support for notched devices */

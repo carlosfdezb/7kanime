@@ -104,6 +104,14 @@ export function AnimeDetail() {
 
   return (
     <div className={styles.page}>
+      <Container>
+        <Breadcrumb
+          items={[
+            { label: 'Anime', href: '/' },
+            { label: anime.title },
+          ]}
+        />
+      </Container>
       <DetailHero
         posterSrc={anime.poster}
         posterAlt={anime.title}
@@ -170,13 +178,6 @@ export function AnimeDetail() {
       </DetailHero>
 
       <Container ref={contentRef} className={styles.content}>
-        <Breadcrumb
-          items={[
-            { label: 'Anime', href: '/' },
-            { label: anime.title },
-          ]}
-        />
-
         <section className={styles.synopsisSection}>
           <h2 className={styles.sectionTitle}>Sinopsis</h2>
           <p className={styles.synopsisText}>{anime.synopsis}</p>
@@ -196,6 +197,8 @@ export function AnimeDetail() {
               <EpisodeRow
                 key={ep.id}
                 number={ep.number}
+                title={(ep as any).title}
+                duration={(ep as any).duration}
                 watched={slug ? isWatched(slug, ep.number) : false}
                 to={`/episode/${slug}/${ep.number}`}
               />

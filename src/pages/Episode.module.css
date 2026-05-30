@@ -297,6 +297,61 @@
   box-shadow: 0 8px 24px rgba(96, 165, 250, 0.4);
 }
 
+.episodesGridSection {
+  margin-bottom: 48px;
+}
+
+.episodesGridTitle {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.episodesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 10px;
+}
+
+.episodeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all var(--duration-fast) ease;
+}
+
+.episodeButton:hover {
+  background: var(--surface-2);
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  color: var(--text-primary);
+}
+
+.episodeButtonCurrent {
+  background: var(--accent-primary-glow);
+  border-color: var(--border-glow);
+  color: var(--accent-primary);
+}
+
+.episodeButtonWatched {
+  border-color: rgba(52, 211, 153, 0.3);
+  color: var(--status-success);
+}
+
+.episodeButtonWatched:not(.episodeButtonCurrent):hover {
+  background: rgba(52, 211, 153, 0.1);
+}
+
 @media (max-width: 768px) {
   .playerWrapper {
     border-radius: 12px;

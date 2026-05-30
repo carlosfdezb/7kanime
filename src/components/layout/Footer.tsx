@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 
 export function Footer() {
@@ -26,16 +27,16 @@ export function Footer() {
 
           <div className={styles.section}>
             <h4 className={styles.title}>Legal</h4>
-            <span className={styles.link}>Términos de uso</span>
-            <span className={styles.link}>Privacidad</span>
-            <span className={styles.link}>DMCA</span>
+            <Link to="/terminos" className={styles.link}>Términos de uso</Link>
+            <Link to="/privacidad" className={styles.link}>Privacidad</Link>
+            <Link to="/contacto" className={styles.link}>DMCA</Link>
           </div>
 
           <div className={styles.section}>
             <h4 className={styles.title}>Comunidad</h4>
-            <span className={styles.link}>Discord</span>
-            <span className={styles.link}>Twitter</span>
-            <span className={styles.link}>GitHub</span>
+            <a href="#" className={styles.link}>Discord</a>
+            <a href="#" className={styles.link}>Twitter</a>
+            <a href="#" className={styles.link}>GitHub</a>
           </div>
         </div>
       </div>

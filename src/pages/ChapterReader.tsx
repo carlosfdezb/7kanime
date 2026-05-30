@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styles from './ChapterReader.module.css';
 import { Container } from '../components/layout/Container';
+import { Header } from '../components/layout/Header';
 import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { CascadeView } from '../components/reader/CascadeView';
 import { PaginatedView } from '../components/reader/PaginatedView';
@@ -269,6 +270,7 @@ export function ChapterReader() {
 
   return (
     <div className={styles.page}>
+      <Header />
       <Container className={`${styles.content} ${isFullscreen ? styles.hiddenInFullscreen : ''}`}>
         <MangaBreadcrumb
           items={[
@@ -502,6 +504,34 @@ export function ChapterReader() {
               </span>
             )}
           </nav>
+
+          {/* Chapters List */}
+          {sortedChapters.length > 0 && (
+            <section className={`${styles.chaptersListSection} animate-fade-in`}>
+              <h2 className={styles.chaptersListTitle}>Todos los capítulos</h2>
+              <div className={styles.chaptersListCompact}>
+                {sortedChapters.map((ch) => {
+                  const isCurrent = ch.publicId === capituloId;
+                  const isRead = readChapters.includes(ch.publicId);
+                  return (
+                    <Link
+                      key={ch.publicId}
+                      to={`/manga/${serieId}/chapter/${ch.publicId}`}
+                      className={`${styles.chapterButton} ${isCurrent ? styles.chapterButtonCurrent : ''} ${isRead ? styles.chapterButtonRead : ''}`}
+                      aria-current={isCurrent ? 'page' : undefined}
+                      data-tv-focus="true"
+                      data-tv-focus-id={`chapter-${ch.publicId}`}
+                    >
+                      <span className={styles.chapterButtonNum}>{ch.numeroCapitulo}</span>
+                      {ch.title && (
+                        <span className={styles.chapterButtonLabel}>{ch.title}</span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
         </Container>
       )}
     </div>
