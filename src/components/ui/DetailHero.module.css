@@ -6,7 +6,28 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  align-items: flex-start;
+}
+
+.breadcrumbWrapper {
+  position: relative;
+  z-index: 2;
+  padding-top: calc(var(--header-height) + 32px);
+  padding-bottom: 32px;
+  max-width: var(--container-max);
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+.detailHeroContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 48px;
+  align-items: start;
+  max-width: var(--container-max);
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
 }
 
 .breadcrumbWrapper {

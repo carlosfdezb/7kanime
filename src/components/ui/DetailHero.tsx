@@ -51,12 +51,12 @@ export function DetailHero({
       )}
 
       {breadcrumb && (
-        <div className={`container ${styles.breadcrumbWrapper}`}>
+        <div className={styles.breadcrumbWrapper}>
           {breadcrumb}
         </div>
       )}
 
-      <div className={`container ${styles.detailHeroContent}`}>
+      <div className={styles.detailHeroContent}>
         <div className={styles.detailPoster}>
           {!posterError ? (
             <img
