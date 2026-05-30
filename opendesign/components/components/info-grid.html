@@ -1,0 +1,92 @@
+<!-- 
+  COMPONENT: Info Grid
+  Used in: detalle.html, manga-detalle.html
+  
+  Required CSS classes from design system:
+  - .info-grid
+  - .info-item, .info-label, .info-value
+  
+  Features:
+  - Responsive grid: auto-fit, minmax(200px, 1fr)
+  - Each item: label (uppercase, muted) + value (primary)
+  - Card style with surface background and border
+  - 24px gap between items
+  
+  Variants:
+  - Anime: Status, Type, Episodes, Duration, Year, Studio, Rating, Score
+  - Manga: Status, Type, Chapters, Author, Year, Demographics, Magazine, Score
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<!-- ANIME INFO GRID -->
+<section class="info-grid">
+  <div class="info-item">
+    <div class="info-label">Estado</div>
+    <div class="info-value">En Emisión</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Tipo</div>
+    <div class="info-value">TV Anime</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Episodios</div>
+    <div class="info-value">24</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Duración</div>
+    <div class="info-value">24 min/ep</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Año</div>
+    <div class="info-value">2024</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Estudio</div>
+    <div class="info-value">ufotable</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Clasificación</div>
+    <div class="info-value">PG-13</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Puntuación</div>
+    <div class="info-value" style="color: var(--status-warning);">★ 8.7 / 10</div>
+  </div>
+</section>
+
+<!-- MANGA INFO GRID -->
+<section class="info-grid">
+  <div class="info-item">
+    <div class="info-label">Estado</div>
+    <div class="info-value">En Emisión</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Tipo</div>
+    <div class="info-value">Manga</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Capítulos</div>
+    <div class="info-value">245</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Autor</div>
+    <div class="info-value">Gege Akutami</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Año</div>
+    <div class="info-value">2018</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Demografía</div>
+    <div class="info-value">Shōnen</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Revista</div>
+    <div class="info-value">Weekly Shōnen Jump</div>
+  </div>
+  <div class="info-item">
+    <div class="info-label">Puntuación</div>
+    <div class="info-value" style="color: var(--status-warning);">★ 8.6 / 10</div>
+  </div>
+</section>

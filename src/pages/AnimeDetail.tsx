@@ -1,34 +1,29 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import styles from './AnimeDetail.module.css';
 import { Container } from '../components/layout/Container';
 import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { Button } from '../components/ui/Button';
-import { Chip } from '../components/ui/Chip';
-import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
-import { Focusable } from '../components/ui/Focusable';
 import { useFetch } from '../hooks/useFetch';
 import { useAnimeFavorites } from '../hooks/useAnimeFavorites';
 import { useWatchedEpisodes } from '../hooks/useWatchedEpisodes';
 import { useTVNavigation } from '../hooks/useTVNavigation';
+import { DetailHero } from '../components/ui/DetailHero';
+import { InfoGrid } from '../components/ui/InfoGrid';
+import { EpisodeRow } from '../components/ui/EpisodeRow';
 import type { AnimeDetail } from '../types/api';
 
 export function AnimeDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { data, loading, error } = useFetch<AnimeDetail>(slug ? `/anime/${slug}` : null);
+  const { data, loading, error } = useFetch<AnimeDetail>(
+    slug ? `/anime/${slug}` : null
+  );
   const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
   const { isWatched } = useWatchedEpisodes();
-  const [posterError, setPosterError] = useState(false);
-  const [backdropError, setBackdropError] = useState(false);
 
-  // Ref for the scrollable content area
   const contentRef = useRef<HTMLDivElement>(null);
-
-  // Setup TV navigation for episode buttons
-  useTVNavigation({
-    containerRef: contentRef,
-  });
+  useTVNavigation({ containerRef: contentRef });
 
   const favorite = data ? isFavorite(data.id) : false;
 
@@ -43,6 +38,24 @@ export function AnimeDetail() {
         typeSlug: data.category.slug,
         synopsis: data.synopsis,
       });
+    }
+  };
+
+  const handleShare = async () => {
+    if (!data) return;
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: data.title,
+          text: `Mira ${data.title} en 7Kanime`,
+          url,
+        });
+      } catch {
+        // ignore
+      }
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(url);
     }
   };
 
@@ -79,124 +92,139 @@ export function AnimeDetail() {
   }
 
   const anime = data;
-  const hasBackdrop = anime.backdrop && !backdropError;
+
+  const infoItems = [
+    { label: 'Estado', value: anime.statusText },
+    { label: 'Tipo', value: anime.type },
+    { label: 'Episodios', value: String(anime.episodesCount) },
+    ...(anime.score > 0
+      ? [{ label: 'Puntuación', value: `★ ${anime.score.toFixed(1)} / 10` }]
+      : []),
+  ];
 
   return (
     <div className={styles.page}>
-      {/* Backdrop */}
-      <div className={`${styles.backdropWrapper} ${!hasBackdrop ? styles.backdropHidden : ''}`}>
-        {hasBackdrop && (
-          <>
-            <img
-              src={anime.backdrop}
-              alt=""
-              className={styles.backdrop}
-              aria-hidden="true"
-              onError={() => setBackdropError(true)}
-            />
-            <div className={styles.backdropOverlay} />
-          </>
-        )}
-      </div>
+      <DetailHero
+        posterSrc={anime.poster}
+        posterAlt={anime.title}
+        backdropSrc={anime.backdrop}
+        title={anime.title}
+        aka={anime.aka?.['ja-jp'] || anime.aka?.['en-us']}
+        status={anime.statusText}
+        type={anime.type}
+        countLabel={`${anime.episodesCount} eps`}
+        score={anime.score}
+        genres={anime.genres.map((g) => g.name)}
+      >
+        <Link to={`/episode/${slug}/1`} className={styles.primaryAction}>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <polygon points="5,3 19,12 5,21" />
+          </svg>
+          Ver ahora
+        </Link>
 
-      <Container className={`${styles.content} ${!hasBackdrop ? styles.contentNoBackdrop : ''}`} ref={contentRef}>
+        {isAuthenticated && (
+          <Button
+            variant={favorite ? 'primary' : 'ghost'}
+            onClick={handleFavoriteClick}
+            aria-label={
+              favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'
+            }
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill={favorite ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            {favorite ? 'En favoritos' : 'Agregar a favoritos'}
+          </Button>
+        )}
+
+        <Button variant="secondary" onClick={handleShare}>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+          Compartir
+        </Button>
+      </DetailHero>
+
+      <Container ref={contentRef} className={styles.content}>
         <Breadcrumb
           items={[
             { label: 'Anime', href: '/' },
-            { label: data.title },
+            { label: anime.title },
           ]}
         />
 
-        <div className={styles.hero}>
-          <div className={styles.posterWrapper}>
-            {!posterError && (
-              <img
-                src={anime.poster}
-                alt={anime.title}
-                className={styles.poster}
-                onError={() => setPosterError(true)}
-              />
-            )}
-            {posterError && <div className={styles.posterPlaceholder} />}
+        <section className={styles.synopsisSection}>
+          <h2 className={styles.sectionTitle}>Sinopsis</h2>
+          <p className={styles.synopsisText}>{anime.synopsis}</p>
+        </section>
+
+        <InfoGrid items={infoItems} />
+
+        <section className={styles.episodesSection}>
+          <div className={styles.episodesHeader}>
+            <h2 className={styles.sectionTitle}>Episodios</h2>
+            <span className={styles.episodesCount}>
+              {anime.episodesCount} episodios
+            </span>
           </div>
-
-          <div className={styles.info}>
-            <div className={styles.header}>
-              <h1 className={styles.title}>{anime.title}</h1>
-              {(anime.aka?.['en-us'] || anime.aka?.['ja-jp']) && (
-                <p className={styles.aka}>
-                  {anime.aka?.['en-us'] || anime.aka?.['ja-jp']}
-                </p>
-              )}
-            </div>
-
-            <div className={styles.meta}>
-              <Badge variant="status">{anime.statusText}</Badge>
-              <Badge variant="type">{anime.type}</Badge>
-              {anime.score > 0 && (
-                <span className={styles.score}>
-                  ★ {anime.score.toFixed(1)}
-                  <span className={styles.votes}>({anime.votes.toLocaleString()} votos)</span>
-                </span>
-              )}
-            </div>
-
-            <div className={styles.genres}>
-              {anime.genres.map(genre => (
-                <Chip key={genre.id} label={genre.name} />
-              ))}
-            </div>
-
-            <div className={styles.actions}>
-              {isAuthenticated && (
-                <Focusable
-                  as={Button}
-                  id="favorite-btn"
-                  variant={favorite ? 'primary' : 'ghost'}
-                  onClick={handleFavoriteClick}
-                  aria-label={favorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
-                >
-                  {favorite ? '♥ Favorito' : '♡ Agregar a favoritos'}
-                </Focusable>
-              )}
-            </div>
-
-            <div className={styles.synopsis}>
-              <h2 className={styles.sectionTitle}>Sinopsis</h2>
-              <p>{anime.synopsis}</p>
-            </div>
-
-            {anime.relations && anime.relations.length > 0 && (
-              <div className={styles.relations}>
-                <span className={styles.relationsLabel}>Relacionado:</span>
-                {anime.relations.map((relation) => (
-                  <Link key={relation.id} to={`/anime/${relation.destination.slug}`} className={styles.relationLink}>
-                    {relation.destination.title}
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.episodesSection}>
-          <h2 className={styles.sectionTitle}>
-            Episodios ({anime.episodesCount})
-          </h2>
-          <div className={styles.episodesGrid}>
-            {anime.episodes.map(ep => (
-              <Focusable
+          <div className={styles.episodesList}>
+            {anime.episodes.map((ep) => (
+              <EpisodeRow
                 key={ep.id}
-                as={Link}
-                id={`episode-${ep.number}`}
+                number={ep.number}
+                watched={slug ? isWatched(slug, ep.number) : false}
                 to={`/episode/${slug}/${ep.number}`}
-                className={`${styles.episodeButton} ${slug && isWatched(slug, ep.number) ? styles.episodeWatched : ''}`}
-              >
-                {ep.number}
-              </Focusable>
+              />
             ))}
           </div>
-        </div>
+        </section>
+
+        {anime.relations && anime.relations.length > 0 && (
+          <section className={styles.relationsSection}>
+            <h2 className={styles.sectionTitle}>Relacionado</h2>
+            <div className={styles.relationsGrid}>
+              {anime.relations.map((relation) => (
+                <Link
+                  key={relation.id}
+                  to={`/anime/${relation.destination.slug}`}
+                  className={styles.relationCard}
+                >
+                  <div className={styles.relationPoster}>
+                    <div className={styles.relationPosterPlaceholder} />
+                  </div>
+                  <div className={styles.relationInfo}>
+                    <h4>{relation.destination.title}</h4>
+                    <p className={styles.relationType}>{relation.type}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </Container>
     </div>
   );

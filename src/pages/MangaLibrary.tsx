@@ -1,24 +1,27 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styles from './MangaLibrary.module.css';
-import { Container } from '../components/layout/Container';
-import { Header } from '../components/layout/Header';
-import { MangaCard } from '../components/ui/MangaCard';
-import { Button } from '../components/ui/Button';
-import { Chip } from '../components/ui/Chip';
-import { SkeletonCard } from '../components/ui/Skeleton';
-import { PageInput } from '../components/ui/PageInput';
+import {
+  Container,
+  Header,
+  MangaCard,
+  Button,
+  Chip,
+  SkeletonCard,
+  HeroSection,
+  ContinueCard,
+  Pagination,
+  Footer,
+} from '../components';
 import { useMangaLibrary } from '../hooks/useMangaLibrary';
 import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useContinueReading } from '../hooks/useContinueReading';
 import { getTags } from '../api/manga';
 import { translateGenreDisplay } from '../api/manga';
-import { Link } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 25;
 const TAGS_COLLAPSED_COUNT = 30;
 
-// Popular tags shown first when collapsed (in priority order)
 const POPULAR_TAGS = [
   'Acción', 'Adventure', 'Aventura', 'Comedia', 'Comedy', 'Drama',
   'Fantasía', 'Fantasy', 'Romance', 'Escolar', 'School', 'School Life',
@@ -33,6 +36,17 @@ const POPULAR_TAGS = [
   'Police', 'Musica', 'Music', 'Parodia', 'Parody',
 ];
 
+const FEATURED_MANGA = {
+  backdrop:
+    'https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=1920&q=80',
+  title: 'Jujutsu Kaisen',
+  synopsis:
+    'Yuji Itadori es un estudiante de secundaria con una capacidad atlética excepcional. Vive con su abuelo y, para evitar que sus compañeros del club de ocultismo se metan en problemas, consume un dedo maldito de Ryomen Sukuna, convirtiéndose en su recipiente.',
+  badge: 'Destacado',
+  meta: 'Manga • En emisión',
+  slug: 'jujutsu-kaisen',
+};
+
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { items, page, totalPages, totalItems, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
@@ -41,10 +55,8 @@ export function MangaLibrary() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [tagsExpanded, setTagsExpanded] = useState(false);
-  const [invalidCovers, setInvalidCovers] = useState<Set<string>>(new Set());
+  const validRecentMangas = recentMangas;
 
-  const validRecentMangas = recentMangas.filter(m => !invalidCovers.has(m.mangaId));
-  
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const searchQuery = searchParams.get('q') || '';
   const selectedTag = searchParams.get('tag') || '';
@@ -69,10 +81,7 @@ export function MangaLibrary() {
   const displayedTags = tagsExpanded
     ? [...availableTags].sort((a, b) => a.localeCompare(b))
     : (() => {
-        // When collapsed: show popular tags that exist in availableTags
         const popularSet = new Set<string>();
-        
-        // Add popular tags that exist in the API response
         for (const popular of POPULAR_TAGS) {
           const found = availableTags.find(
             (tag) => tag.toLowerCase() === popular.toLowerCase()
@@ -82,19 +91,15 @@ export function MangaLibrary() {
           }
           if (popularSet.size >= TAGS_COLLAPSED_COUNT) break;
         }
-        
-        // If we don't have enough popular tags, fill with remaining tags alphabetically
         if (popularSet.size < TAGS_COLLAPSED_COUNT) {
           const remaining = availableTags
             .filter((tag) => !popularSet.has(tag))
             .sort((a, b) => a.localeCompare(b));
-          
           for (const tag of remaining) {
             popularSet.add(tag);
             if (popularSet.size >= TAGS_COLLAPSED_COUNT) break;
           }
         }
-        
         return Array.from(popularSet);
       })();
 
@@ -121,6 +126,17 @@ export function MangaLibrary() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Featured hero: prefer first item if available
+  const featured =
+    items.length > 0 && !loading && !searchQuery && !selectedTag
+      ? {
+          backdrop: items[0].coverUrl,
+          title: items[0].title,
+          synopsis: '',
+          slug: items[0].publicId,
+        }
+      : FEATURED_MANGA;
+
   return (
     <div className={styles.page}>
       <Header
@@ -139,48 +155,68 @@ export function MangaLibrary() {
           });
         }}
       />
+
+      {/* Hero Section */}
+      <HeroSection
+        backdrop={featured.backdrop}
+        title={featured.title}
+        synopsis={featured.synopsis}
+        badge="Destacado"
+        meta="Manga • En emisión"
+        compact
+        primaryAction={{
+          label: 'Leer ahora',
+          to: `/manga/${featured.slug}`,
+          variant: 'primary',
+          icon: 'play',
+        }}
+        secondaryAction={{
+          label: 'Más info',
+          to: `/manga/${featured.slug}`,
+          variant: 'ghost',
+          icon: 'info',
+        }}
+      />
+
       <Container className={styles.content}>
-        {/* Continue Reading Widget */}
+        {/* Continue Reading */}
         {!showFavorites && validRecentMangas.length > 0 && (
-          <section className={styles.continueReading} aria-label="Seguir leyendo">
-            <h2 className={styles.continueReadingTitle}>Seguir leyendo</h2>
-            <div className={styles.continueReadingGrid}>
+          <section className={styles.continueSection} aria-label="Seguir leyendo">
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Seguir leyendo</h2>
+            </div>
+            <div className={styles.continueGrid}>
               {validRecentMangas.map((item) => (
-                <Link
+                <ContinueCard
                   key={item.mangaId}
-                  to={`/manga/${item.mangaId}`}
-                  className={styles.continueReadingCard}
-                >
-                  <div className={styles.continueReadingPoster}>
-                    <img
-                      src={item.coverUrl}
-                      alt={item.mangaTitle}
-                      loading="lazy"
-                      onError={() => {
-                        setInvalidCovers(prev => new Set(prev).add(item.mangaId));
-                      }}
-                    />
-                    <span className={styles.continueReadingBadge}>
-                      {item.readCount} leído{item.readCount !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div className={styles.continueReadingInfo}>
-                    <h4>{item.mangaTitle}</h4>
-                  </div>
-                </Link>
+                  slug={item.mangaId}
+                  title={item.mangaTitle}
+                  chapter={item.readCount}
+                  poster={item.coverUrl}
+                  progress={0}
+                  type="manga"
+                />
               ))}
             </div>
           </section>
         )}
 
-        <div className={styles.header}>
-          <h1 className={styles.title}>
-            {showFavorites ? 'Mis Manga Favoritos' : (searchQuery ? `Resultados para "${searchQuery}"` : selectedTag ? `Género: ${translateGenreDisplay(selectedTag)}` : 'Biblioteca de Manga')}
+        {/* Catalog Header */}
+        <div className={styles.catalogHeader}>
+          <h1 className={styles.sectionTitle}>
+            {showFavorites
+              ? 'Mis Manga Favoritos'
+              : searchQuery
+                ? `Resultados para "${searchQuery}"`
+                : selectedTag
+                  ? `Género: ${translateGenreDisplay(selectedTag)}`
+                  : 'Biblioteca de Manga'}
           </h1>
           {!showFavorites && totalItems > 0 && (
-            <p className={styles.stats}>
-              {totalItems} manga{totalItems !== 1 ? 's' : ''} encontrado{totalItems !== 1 ? 's' : ''}
-            </p>
+            <span className={styles.catalogCount}>
+              {totalItems} manga{totalItems !== 1 ? 's' : ''} encontrado
+              {totalItems !== 1 ? 's' : ''}
+            </span>
           )}
         </div>
 
@@ -241,7 +277,7 @@ export function MangaLibrary() {
               </Button>
             </div>
           ) : (
-            <div className={styles.grid}>
+            <div className={styles.catalogGrid}>
               {favorites.map((manga) => (
                 <MangaCard key={manga.publicId} manga={manga} />
               ))}
@@ -258,24 +294,24 @@ export function MangaLibrary() {
           </div>
         ) : (
           <>
-            <div className={styles.grid}>
+            <div className={styles.catalogGrid}>
               {items.map((manga) => (
                 <MangaCard key={manga.publicId} manga={manga} />
               ))}
             </div>
 
             {totalPages > 1 && (
-              <div className={styles.pagination}>
-                <PageInput
-                  currentPage={page}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              </div>
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             )}
           </>
         )}
       </Container>
+
+      <Footer />
     </div>
   );
 }

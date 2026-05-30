@@ -11,6 +11,9 @@ export { Focusable } from './ui/Focusable';
 export { VideoPlayer } from './ui/VideoPlayer';
 export { OTPInput } from './ui/OTPInput';
 export { PageInput } from './ui/PageInput';
+export { HeroSection } from './ui/HeroSection';
+export { ContinueCard } from './ui/ContinueCard';
+export { Pagination } from './ui/Pagination';
 
 export { Header } from './layout/Header';
 export { Container } from './layout/Container';
@@ -19,6 +22,7 @@ export { Breadcrumb } from './layout/Breadcrumb';
 export { MangaBreadcrumb } from './layout/MangaBreadcrumb';
 export { SkipLink } from './layout/SkipLink';
 export { EasterEgg } from './layout/EasterEgg';
+export { Footer } from './layout/Footer';
 
 export { ErrorBoundary } from './ErrorBoundary';
 export { ScrollToTop } from './ScrollToTop';

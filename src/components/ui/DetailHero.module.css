@@ -1,0 +1,174 @@
+.detailHero {
+  position: relative;
+  padding: 120px 0 48px;
+  margin-bottom: 48px;
+}
+
+.detailBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.detailBackdrop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+}
+
+.detailBackdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--bg-primary) 85%,
+    var(--bg-primary) 100%
+  );
+}
+
+.detailHeroContent {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.detailPoster {
+  aspect-ratio: 2 / 3;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.detailPoster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.posterPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--surface-1) 0%,
+    var(--bg-secondary) 100%
+  );
+}
+
+.detailInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailMetaTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badgeStatus {
+  background: rgba(52, 211, 153, 0.15);
+  color: var(--status-success);
+}
+
+.badgeType {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+.scoreBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(251, 191, 36, 0.15);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--status-warning);
+}
+
+.detailTitle {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.detailAka {
+  font-size: 1.125rem;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.detailGenres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genreChip {
+  padding: 6px 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--duration-fast) ease;
+  cursor: default;
+}
+
+.genreChip:hover {
+  background: var(--surface-2);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+.detailActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .detailHeroContent {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .detailPoster {
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .detailActions {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .detailHeroContent {
+    grid-template-columns: 220px 1fr;
+  }
+}

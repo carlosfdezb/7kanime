@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './Episode.module.css';
-import { Container, Breadcrumb, Button, Chip, Skeleton, Focusable, VideoPlayer } from '../components';
+import { Container, Breadcrumb, Skeleton, Focusable } from '../components';
 import { useFetch } from '../hooks';
 import { useWatchedEpisodes, useTVNavigation } from '../hooks';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
@@ -37,6 +37,7 @@ export function Episode() {
   const { isWatched, markWatched, toggleWatched } = useWatchedEpisodes();
   const [variant, setVariant] = useState<Variant>('SUB');
   const [currentEmbed, setCurrentEmbed] = useState<MediaLink | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -135,7 +136,7 @@ export function Episode() {
           <div className={styles.errorState}>
             <p>{episodeError || 'Episodio no encontrado'}</p>
             <Link to="/">
-              <Button>Volver al inicio</Button>
+              <button className={styles.backHomeBtn}>Volver al inicio</button>
             </Link>
           </div>
         </Container>
@@ -151,6 +152,10 @@ export function Episode() {
   const prevEpisode = currentEpIndex > 0 ? episodesList[currentEpIndex - 1] : null;
   const nextEpisode = currentEpIndex < episodesList.length - 1 ? episodesList[currentEpIndex + 1] : null;
 
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
+
   return (
     <div className={styles.page}>
       <Container ref={contentRef}>
@@ -162,120 +167,199 @@ export function Episode() {
           ]}
         />
 
-        <div className={styles.header}>
-          <h1 className={styles.title}>{animeTitle} — Episodio {episode.number}</h1>
-          <Focusable
-            as={Button}
-            id="watched-btn"
-            variant={watched ? 'primary' : 'ghost'}
-            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster, animeData?.episodesCount)}
-            className={styles.watchedBtn}
+        {/* Player */}
+        <div className={styles.playerSection}>
+          <div
+            className={styles.playerWrapper}
+            data-tv-focus="true"
+            data-tv-focus-id="video-player"
+            data-player-fullscreen="true"
           >
-            {watched ? '✓ Visto' : 'Marcar como visto'}
+            {isPlaying && currentEmbed ? (
+              currentEmbed.url.includes('.m3u8') ? (
+                <video
+                  src={currentEmbed.url}
+                  className={styles.player}
+                  autoPlay
+                  controls
+                />
+              ) : (
+                <iframe
+                  src={currentEmbed.url}
+                  className={styles.player}
+                  title="Video player"
+                  sandbox="allow-scripts allow-same-origin allow-presentation"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              )
+            ) : (
+              <div className={styles.playerPlaceholder}>
+                <button className={styles.playerPlayBtn} onClick={handlePlay} aria-label="Reproducir">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5,3 19,12 5,21" />
+                  </svg>
+                </button>
+                <p className={styles.playerPlaceholderText}>Haz clic para reproducir</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className={`${styles.controlsBar} animate-fade-in`}>
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Variante</span>
+            {hasSub && (
+              <button
+                className={`${styles.variantChip} ${variant === 'SUB' ? styles.active : ''}`}
+                onClick={() => setVariant('SUB')}
+                data-tv-focus="true"
+                data-tv-focus-id="variant-sub"
+              >
+                Subtitulado
+              </button>
+            )}
+            {hasDub && (
+              <button
+                className={`${styles.variantChip} ${variant === 'DUB' ? styles.active : ''}`}
+                onClick={() => setVariant('DUB')}
+                data-tv-focus="true"
+                data-tv-focus-id="variant-dub"
+              >
+                Doblado
+              </button>
+            )}
+          </div>
+
+          <div className={styles.controlGroup}>
+            <span className={styles.controlLabel}>Servidor</span>
+            {sortedEmbeds.map((embed, index) => (
+              <button
+                key={`${embed.server}-${index}`}
+                className={`${styles.serverChip} ${currentEmbed?.url === embed.url ? styles.active : ''}`}
+                onClick={() => setCurrentEmbed(embed)}
+                data-tv-focus="true"
+                data-tv-focus-id={`server-${embed.server}`}
+              >
+                {embed.server}
+              </button>
+            ))}
+          </div>
+
+          <Focusable
+            as="button"
+            id="watched-btn"
+            className={`${styles.watchedBtn} ${watched ? styles.watched : ''}`}
+            onClick={() => slug && toggleWatched(slug, episodeNumber, animeTitle, animeData?.poster, animeData?.episodesCount)}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="20,6 9,17 4,12" />
+            </svg>
+            {watched ? 'Visto' : 'Marcar como visto'}
           </Focusable>
         </div>
 
-        {/* Player */}
-        <div
-          className={styles.playerWrapper}
-          data-tv-focus="true"
-          data-tv-focus-id="video-player"
-          data-player-fullscreen="true"
-        >
-          {currentEmbed ? (
-            currentEmbed.url.includes('.m3u8') ? (
-              // Native HLS support when direct stream URL is available
-              <VideoPlayer
-                src={currentEmbed.url}
-                autoPlay
-              />
-            ) : (
-              // Fallback to iframe for embedded players
-              <iframe
-                src={currentEmbed.url}
-                className={styles.player}
-                title="Video player"
-                sandbox="allow-scripts allow-same-origin allow-presentation"
-                allowFullScreen
-                loading="lazy"
-              />
-            )
-          ) : (
-            <div className={styles.noPlayer}>
-              <p>No hay jugador disponible para esta variante</p>
-            </div>
+        {/* Episode Info */}
+        <section className={`${styles.episodeInfo} animate-fade-in`}>
+          <h1 className={styles.episodeTitle}>
+            {animeTitle} — Episodio {episode.number}
+          </h1>
+
+          <div className={styles.episodeMeta}>
+            <span className={styles.episodeMetaItem}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              Episodio {episode.number}
+            </span>
+            <span className={styles.episodeMetaItem}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12,6 12,12 16,14" />
+              </svg>
+              {animeData?.episodesCount || episodesList.length} eps
+            </span>
+            <span className={styles.episodeMetaItem}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" />
+              </svg>
+              {variant === 'DUB' ? 'Doblado' : 'Subtitulado'}
+            </span>
+          </div>
+
+          {animeData?.synopsis && (
+            <p className={styles.episodeSynopsis}>{animeData.synopsis}</p>
           )}
-        </div>
+        </section>
 
-        {/* Controls: Variant + Server */}
-        <div className={styles.controls}>
-          {/* Variant Toggle */}
-          <div className={styles.variantSelector}>
-            <span className={styles.variantLabel}>Variante:</span>
-            <div className={styles.variantButtons}>
-              {hasSub && (
-                <Chip
-                  label="Subtitulado"
-                  selected={variant === 'SUB'}
-                  onClick={() => setVariant('SUB')}
-                />
-              )}
-              {hasDub && (
-                <Chip
-                  label="Doblado"
-                  selected={variant === 'DUB'}
-                  onClick={() => setVariant('DUB')}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Server Selector */}
-          <div className={styles.serverSelector}>
-            <span className={styles.serverLabel}>Servidor:</span>
-            <div className={styles.serverButtons}>
-              {sortedEmbeds.map((embed, index) => (
-                <Chip
-                  key={`${embed.server}-${index}`}
-                  label={embed.server}
-                  selected={currentEmbed?.url === embed.url}
-                  onClick={() => setCurrentEmbed(embed)}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Previous / Next Navigation */}
-        <div className={styles.episodeNav}>
+        {/* Episode Navigation */}
+        <nav className={`${styles.episodeNav} animate-fade-in`} aria-label="Navegación de episodios">
           {prevEpisode ? (
             <Focusable
               as={Link}
               id="prev-episode"
               to={`/episode/${slug}/${prevEpisode.number}`}
-              className={styles.navButton}
+              className={`${styles.navButton} ${styles.navButtonPrev}`}
             >
-              ← Episodio {prevEpisode.number}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12,19 5,12 12,5" />
+              </svg>
+              <div className={styles.navButtonInfo}>
+                <span className={styles.navButtonLabel}>Anterior</span>
+                <span className={styles.navButtonTitle}>Episodio {prevEpisode.number}</span>
+              </div>
             </Focusable>
           ) : (
-            <span className={styles.navButtonDisabled}>← Sin episodio anterior</span>
+            <span className={`${styles.navButton} ${styles.navButtonPrev} ${styles.disabled}`}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12,19 5,12 12,5" />
+              </svg>
+              <div className={styles.navButtonInfo}>
+                <span className={styles.navButtonLabel}>Anterior</span>
+                <span className={styles.navButtonTitle}>—</span>
+              </div>
+            </span>
           )}
+
           <span className={styles.episodeCounter}>
-            {episode.number} / {animeData?.episodesCount || episodesList.length}
+            Episodio <span>{episode.number}</span> / {animeData?.episodesCount || episodesList.length}
           </span>
+
           {nextEpisode ? (
             <Focusable
               as={Link}
               id="next-episode"
               to={`/episode/${slug}/${nextEpisode.number}`}
-              className={styles.navButton}
+              className={`${styles.navButton} ${styles.navButtonNext}`}
             >
-              Episodio {nextEpisode.number} →
+              <div className={styles.navButtonInfo}>
+                <span className={styles.navButtonLabel}>Siguiente</span>
+                <span className={styles.navButtonTitle}>Episodio {nextEpisode.number}</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12,5 19,12 12,19" />
+              </svg>
             </Focusable>
           ) : (
-            <span className={styles.navButtonDisabled}>Sin siguiente episodio →</span>
+            <span className={`${styles.navButton} ${styles.navButtonNext} ${styles.disabled}`}>
+              <div className={styles.navButtonInfo}>
+                <span className={styles.navButtonLabel}>Siguiente</span>
+                <span className={styles.navButtonTitle}>—</span>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12,5 19,12 12,19" />
+              </svg>
+            </span>
           )}
-        </div>
+        </nav>
       </Container>
     </div>
   );

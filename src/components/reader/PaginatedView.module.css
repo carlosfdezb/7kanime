@@ -6,27 +6,28 @@
   justify-content: center;
   touch-action: pan-y pan-x pinch-zoom;
   user-select: none;
-  min-height: calc(100vh - 200px);
+  min-height: 400px;
   height: 100%;
+  padding: 24px;
 }
 
 .imageWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 900px;
-  width: 100%;
+  max-width: 100%;
+  width: auto;
   margin: 0 auto;
 }
 
 .pageImage {
   max-width: 100%;
-  max-height: calc(100vh - 120px);
+  max-height: 80vh;
   height: auto;
   display: block;
   margin: 0 auto;
-  background-color: var(--color-surface);
   object-fit: contain;
+  border-radius: 8px;
 }
 
 .pageIndicator {
@@ -35,7 +36,7 @@
   background-color: rgba(0, 0, 0, 0.45);
   color: #ffffff;
   font-size: 0.875rem;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   font-weight: 500;
 }
 
@@ -63,6 +64,7 @@
   max-width: none;
   max-height: none;
   object-fit: contain;
+  border-radius: 0;
 }
 
 .container.fullscreen .pageIndicator {
@@ -78,13 +80,12 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
-  color: var(--color-text-muted);
+  background: var(--surface-1);
+  border-radius: 12px;
+  color: var(--text-secondary);
   gap: var(--space-md);
   width: 100%;
   max-width: 900px;
-  min-height: calc(100vh - 200px);
 }
 
 .imageErrorIcon {
@@ -95,7 +96,7 @@
 .emptyState {
   text-align: center;
   padding: var(--space-2xl);
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
 }
 
 /* Mobile responsive */

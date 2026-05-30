@@ -1,0 +1,48 @@
+<!-- 
+  COMPONENT: Video Player
+  Used in: visualizador.html
+  
+  Required CSS classes from design system:
+  - .player-section
+  - .player-wrapper (16:9 aspect ratio)
+  - .player-placeholder (gradient background + play button)
+  - .player-play-btn (circular, gradient, glow)
+  
+  Features:
+  - 16:9 aspect ratio container
+  - Placeholder state with large play button
+  - Play button: 80px circle, gradient, glow effect
+  - Hover: scale(1.1), enhanced glow
+  - Ready for iframe embedding (streaming services)
+  - TV navigation: data-tv-focus="true"
+  
+  Usage:
+  Replace .player-placeholder with actual video iframe when source is available
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<section class="player-section">
+  <div class="player-wrapper" data-tv-focus="true" data-tv-focus-id="video-player">
+    <!-- Placeholder for actual video player -->
+    <div class="player-placeholder">
+      <button class="player-play-btn" onclick="alert('Reproduciendo video...')">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+      </button>
+      <p class="player-placeholder-text">Haz clic para reproducir</p>
+    </div>
+    
+    <!-- Actual video embed (hidden by default) -->
+    <!-- <iframe src="..." allowfullscreen></iframe> -->
+  </div>
+</section>
+
+<script>
+  // Example: Replace placeholder with actual player
+  function loadVideoPlayer(videoUrl) {
+    const wrapper = document.querySelector('.player-wrapper');
+    wrapper.innerHTML = `<iframe src="${videoUrl}" allowfullscreen style="width:100%;height:100%;border:none;"></iframe>`;
+  }
+</script>

@@ -1,0 +1,33 @@
+<!-- 
+  COMPONENT: Pagination
+  Used in: index.html, manga.html
+  
+  Required CSS classes from design system:
+  - .pagination
+  - .page-btn, .page-btn.active, .page-btn:disabled
+  
+  Features:
+  - Centered horizontal layout with gap
+  - Previous/Next arrows
+  - Numbered pages with ellipsis for gaps
+  - Active state: accent background and border
+  - Disabled state: reduced opacity, no pointer
+  - Hover: background lighten
+  
+  States:
+  - Default: clickable page number
+  - Active: current page (.active)
+  - Disabled: previous/next when at bounds (:disabled)
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<div class="pagination">
+  <button class="page-btn" disabled>←</button>
+  <button class="page-btn active">1</button>
+  <button class="page-btn">2</button>
+  <button class="page-btn">3</button>
+  <span style="color: var(--text-tertiary); padding: 0 8px;">...</span>
+  <button class="page-btn">63</button>
+  <button class="page-btn">→</button>
+</div>

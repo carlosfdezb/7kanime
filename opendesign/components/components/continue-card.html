@@ -1,0 +1,91 @@
+<!-- 
+  COMPONENT: Continue Watching / Continue Reading Card
+  Used in: index.html (continue watching), manga.html (continue reading)
+  
+  Required CSS classes from design system:
+  - .continue-section, .section-header, .section-title
+  - .continue-grid
+  - .continue-card, .continue-poster, .continue-badge
+  - .continue-info, .continue-progress, .continue-progress-bar
+  
+  Features:
+  - Horizontal card layout: poster + info + progress
+  - Shows episode/chapter number badge on poster
+  - Progress bar indicating watch/read progress
+  - Hover: background lighten, border glow, translateY
+  - Responsive: single column on mobile
+  
+  Data structure:
+  {
+    slug: string,
+    title: string,
+    episode?: number,    // for anime
+    chapter?: number,    // for manga
+    poster: string (URL),
+    progress: number (0-100)
+  }
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<!-- CONTINUE WATCHING (Anime) -->
+<section class="continue-section" id="continueWatching">
+  <div class="section-header">
+    <h2 class="section-title">Continuar viendo</h2>
+  </div>
+  <div class="continue-grid">
+    
+    <a href="/episode/demon-slayer/12" class="continue-card" data-tv-focus="true" data-tv-focus-id="continue-demon-slayer">
+      <div class="continue-poster">
+        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&q=80" alt="Demon Slayer" loading="lazy">
+        <span class="continue-badge">Ep. 12</span>
+      </div>
+      <div class="continue-info">
+        <h4>Demon Slayer</h4>
+        <p>Continuar episodio 12</p>
+        <div class="continue-progress">
+          <div class="continue-progress-bar" style="width: 65%"></div>
+        </div>
+      </div>
+    </a>
+
+    <a href="/episode/jujutsu-kaisen/8" class="continue-card" data-tv-focus="true" data-tv-focus-id="continue-jujutsu-kaisen">
+      <div class="continue-poster">
+        <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=400&q=80" alt="Jujutsu Kaisen" loading="lazy">
+        <span class="continue-badge">Ep. 8</span>
+      </div>
+      <div class="continue-info">
+        <h4>Jujutsu Kaisen</h4>
+        <p>Continuar episodio 8</p>
+        <div class="continue-progress">
+          <div class="continue-progress-bar" style="width: 40%"></div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- CONTINUE READING (Manga) -->
+<section class="continue-section" id="continueReading">
+  <div class="section-header">
+    <h2 class="section-title">Seguir leyendo</h2>
+  </div>
+  <div class="continue-grid">
+    
+    <a href="/manga/jujutsu-kaisen/chapter/245" class="continue-card" data-tv-focus="true" data-tv-focus-id="continue-jujutsu-kaisen">
+      <div class="continue-poster">
+        <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=400&q=80" alt="Jujutsu Kaisen" loading="lazy">
+        <span class="continue-badge">Cap. 245</span>
+      </div>
+      <div class="continue-info">
+        <h4>Jujutsu Kaisen</h4>
+        <p>Continuar capítulo 245</p>
+        <div class="continue-progress">
+          <div class="continue-progress-bar" style="width: 45%"></div>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>

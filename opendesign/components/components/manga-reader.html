@@ -1,0 +1,119 @@
+<!-- 
+  COMPONENT: Manga Reader
+  Used in: manga-lector.html
+  
+  Required CSS classes from design system:
+  - .reader-section, .reader-wrapper
+  - .reader-cascade (vertical scroll)
+  - .reader-paginated (single page view)
+  
+  Features:
+  - Two reading modes: Cascade (vertical) and Paginated (single page)
+  - Cascade: All pages stacked vertically, continuous scroll
+  - Paginated: One page at a time with navigation
+  - Images: max-width 100%, auto height, contained in wrapper
+  - Dark background for contrast
+  - TV navigation on reader container
+  
+  Controls:
+  - Mode toggle: Cascade / Paginated
+  - Page navigation: Previous / Next buttons
+  - Page counter: Current / Total
+  - Fullscreen button (fixed position)
+  - Mark as read button
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<section class="reader-section container">
+  <div class="reader-wrapper" id="readerWrapper" data-tv-focus="true" data-tv-focus-id="reader">
+    <!-- Cascade mode (default) -->
+    <div class="reader-cascade" id="readerContent">
+      <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=800&q=80" alt="Página 1" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=800&q=80" alt="Página 2" loading="lazy">
+      <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&q=80" alt="Página 3" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- Reader Controls -->
+<div class="container">
+  <div class="controls-bar">
+    <div class="control-group">
+      <span class="control-label">Modo</span>
+      <button class="mode-chip active" data-mode="cascade" data-tv-focus="true" data-tv-focus-id="mode-cascade">Cascada</button>
+      <button class="mode-chip" data-mode="paginated" data-tv-focus="true" data-tv-focus-id="mode-paginated">Paginado</button>
+    </div>
+    
+    <div class="control-group" id="pageControls" style="display: none;">
+      <span class="control-label">Página</span>
+      <button class="page-nav-btn" id="prevPage" data-tv-focus="true" data-tv-focus-id="prev-page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+      </button>
+      <span class="page-counter"><span id="currentPage">1</span> / <span id="totalPages">3</span></span>
+      <button class="page-nav-btn" id="nextPage" data-tv-focus="true" data-tv-focus-id="next-page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </button>
+    </div>
+    
+    <button class="read-btn" id="readBtn" data-tv-focus="true" data-tv-focus-id="read-toggle">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20,6 9,17 4,12"/>
+      </svg>
+      Marcar como leído
+    </button>
+  </div>
+</div>
+
+<!-- Fullscreen Button -->
+<button class="fullscreen-btn" id="fullscreenBtn" aria-label="Pantalla completa" data-tv-focus="true" data-tv-focus-id="fullscreen-btn">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+  </svg>
+</button>
+
+<script>
+  // Mode toggle
+  const modeChips = document.querySelectorAll('.mode-chip');
+  const readerContent = document.getElementById('readerContent');
+  const pageControls = document.getElementById('pageControls');
+  
+  modeChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const mode = chip.dataset.mode;
+      modeChips.forEach(c => c.classList.toggle('active', c.dataset.mode === mode));
+      
+      if (mode === 'cascade') {
+        readerContent.className = 'reader-cascade';
+        pageControls.style.display = 'none';
+      } else {
+        readerContent.className = 'reader-paginated';
+        pageControls.style.display = 'flex';
+      }
+    });
+  });
+
+  // Fullscreen toggle
+  document.getElementById('fullscreenBtn').addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  });
+
+  // Mark as read toggle
+  const readBtn = document.getElementById('readBtn');
+  let isRead = false;
+  readBtn.addEventListener('click', () => {
+    isRead = !isRead;
+    readBtn.classList.toggle('read', isRead);
+    readBtn.innerHTML = isRead
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg> Leído`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg> Marcar como leído`;
+  });
+</script>

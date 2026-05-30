@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-lg);
+  gap: 0;
+  padding: 24px;
 }
 
 .pageWrapper {
@@ -13,11 +13,12 @@
 }
 
 .pageImage {
-  max-width: 100%;
+  width: 100%;
+  max-width: 800px;
   height: auto;
   display: block;
   margin: 0 auto;
-  background-color: var(--color-surface);
+  border-radius: 8px;
 }
 
 .imageError {
@@ -26,9 +27,9 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
-  color: var(--color-text-muted);
+  background: var(--surface-1);
+  border-radius: 12px;
+  color: var(--text-secondary);
   gap: var(--space-md);
 }
 
@@ -40,7 +41,7 @@
 .emptyState {
   text-align: center;
   padding: var(--space-2xl);
-  color: var(--color-text-muted);
+  color: var(--text-secondary);
 }
 
 .imageLoading {
@@ -48,15 +49,15 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  border-radius: 12px;
 }
 
 .loadingSpinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
+  border: 3px solid var(--bg-tertiary);
+  border-top-color: var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

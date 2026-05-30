@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demon Slayer — 7Kanime</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* detalle.html specific overrides */
+    .detail-hero { min-height: 60vh; display: flex; align-items: flex-end; padding-bottom: 48px; }
+    .detail-hero-content { align-items: end; }
+    .detail-info { padding-bottom: 8px; }
+    .detail-title { margin-bottom: 8px; }
+    .detail-aka { margin-bottom: 20px; font-style: italic; }
+    .badge { border-radius: 10px; }
+    .score-badge { border-radius: 10px; }
+    .episode-row { padding: 14px 20px; border-radius: 14px; position: relative; overflow: hidden; }
+    .episode-play { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-tertiary); }
+    .episode-num { font-size: 0.875rem; font-weight: 700; min-width: 36px; text-align: center; }
+    .episode-duration { display: flex; align-items: center; gap: 4px; font-size: 0.8125rem; color: var(--text-tertiary); flex-shrink: 0; }
+    .episode-status { width: 8px; height: 8px; border-radius: 50%; background: var(--status-success); flex-shrink: 0; }
+    .relation-card { transform: translateY(-6px); }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="/" class="logo">
+        <span class="logo-accent">7K</span><span class="logo-text">anime</span>
+      </a>
+
+      <nav class="nav">
+        <a href="/" class="nav-link active">Anime</a>
+        <a href="/manga" class="nav-link">Manga</a>
+      </nav>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+    <!-- Breadcrumb -->
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Anime</a>
+        <span class="breadcrumb-separator">/</span>
+        <span style="color: var(--text-primary);">Demon Slayer: Kimetsu no Yaiba</span>
+      </nav>
+    </div>
+
+    <!-- Hero Detail -->
+    <section class="detail-hero">
+      <div class="detail-backdrop">
+        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&q=80" alt="">
+      </div>
+
+      <div class="container detail-hero-content">
+        <div class="detail-poster">
+          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&q=80" alt="Demon Slayer">
+        </div>
+
+        <div class="detail-info">
+          <div class="detail-meta-top">
+            <span class="badge badge-status">En Emision</span>
+            <span class="badge badge-type">TV Anime</span>
+            <span class="badge badge-type">2024</span>
+            <span class="badge badge-type">24 eps</span>
+            <span class="score-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+              </svg>
+              8.7
+            </span>
+          </div>
+
+          <h1 class="detail-title">Demon Slayer: Kimetsu no Yaiba</h1>
+          <p class="detail-aka"></p>
+
+          <div class="detail-genres">
+            <span class="genre-chip">Accion</span>
+            <span class="genre-chip">Fantasia</span>
+            <span class="genre-chip">Shounen</span>
+            <span class="genre-chip">Sobrenatural</span>
+            <span class="genre-chip">Artes Marciales</span>
+            <span class="genre-chip">Drama</span>
+          </div>
+
+          <div class="detail-actions">
+            <a href="/episode/demon-slayer/1" class="btn-primary" data-tv-focus="true" data-tv-focus-id="play-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5,3 19,12 5,21"/>
+              </svg>
+              Ver ahora
+            </a>
+            <button class="btn-secondary" id="favoriteBtn" data-tv-focus="true" data-tv-focus-id="favorite-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              Agregar a favoritos
+            </button>
+            <button class="btn-secondary" data-tv-focus="true" data-tv-focus-id="share-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"/>
+                <circle cx="6" cy="12" r="3"/>
+                <circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              Compartir
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- Synopsis -->
+      <section class="synopsis-section animate-fade-in">
+        <h2 class="section-title">Sinopsis</h2>
+        <p class="synopsis-text">
+          En un Japon de la era Taisho, Tanjiro Kamado es un joven bondadoso e inteligente que vive con su madre y sus hermanos menores, ganandose la vida vendiendo carbon en un pueblo cercano. Sin embargo, su vida tranquila se ve destrozada cuando regresa a casa y descubre que toda su familia ha sido masacrada por demonios. Lo unico que queda es su hermana menor Nezuko, pero ella ha sido convertida en demonio.
+        </p>
+        <p class="synopsis-text" style="margin-top: 16px;">
+          Decidido a vengar a su familia y encontrar una cura para devolver a Nezuko su humanidad, Tanjiro se embarca en un peligroso viaje. Se une a los Cazadores de Demonios, una organizacion secreta que ha estado combatiendo a los demonios desde la antiguedad, y comienza su entrenamiento para convertirse en un poderoso espadachin capaz de enfrentarse a los demonios mas temibles.
+        </p>
+      </section>
+
+      <!-- Info Grid -->
+      <section class="info-grid animate-fade-in">
+        <div class="info-item">
+          <div class="info-label">Estado</div>
+          <div class="info-value">En Emision</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Tipo</div>
+          <div class="info-value">TV Anime</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Episodios</div>
+          <div class="info-value">24</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Duracion</div>
+          <div class="info-value">24 min/ep</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Ano</div>
+          <div class="info-value">2024</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Estudio</div>
+          <div class="info-value">ufotable</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Clasificacion</div>
+          <div class="info-value">PG-13</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Puntuacion</div>
+          <div class="info-value" style="color: var(--status-warning);"> 8.7 / 10</div>
+        </div>
+      </section>
+
+      <!-- Episodes -->
+      <section class="episodes-section">
+        <div class="episodes-header">
+          <h2 class="section-title">Episodios</h2>
+          <span class="episodes-count">24 episodios</span>
+        </div>
+
+        <div class="episodes-list" id="episodesList">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Relations -->
+      <section class="relations-section">
+        <h2 class="section-title">Relacionado</h2>
+
+        <div class="relations-grid">
+          <a href="/anime/demon-slayer-movie" class="relation-card" data-tv-focus="true" data-tv-focus-id="relation-1">
+            <div class="relation-poster">
+              <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&q=80" alt="Mugen Train" loading="lazy">
+            </div>
+            <div class="relation-info">
+              <h4>Demon Slayer: Mugen Train</h4>
+              <p class="relation-type">Pelicula - Secuela</p>
+            </div>
+          </a>
+
+          <a href="/anime/demon-slayer-s2" class="relation-card" data-tv-focus="true" data-tv-focus-id="relation-2">
+            <div class="relation-poster">
+              <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=80" alt="Entertainment District" loading="lazy">
+            </div>
+            <div class="relation-info">
+              <h4>Demon Slayer: Entertainment District</h4>
+              <p class="relation-type">TV - Secuela</p>
+            </div>
+          </a>
+
+          <a href="/anime/demon-slayer-s3" class="relation-card" data-tv-focus="true" data-tv-focus-id="relation-3">
+            <div class="relation-poster">
+              <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80" alt="Swordsmith Village" loading="lazy">
+            </div>
+            <div class="relation-info">
+              <h4>Demon Slayer: Swordsmith Village</h4>
+              <p class="relation-type">TV - Secuela</p>
+            </div>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // ===== HEADER SCROLL =====
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // ===== FAVORITE TOGGLE =====
+    const favoriteBtn = document.getElementById('favoriteBtn');
+    let isFavorite = false;
+
+    favoriteBtn.addEventListener('click', () => {
+      isFavorite = !isFavorite;
+      favoriteBtn.classList.toggle('active', isFavorite);
+      favoriteBtn.innerHTML = isFavorite
+        ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          En favoritos`
+        : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          Agregar a favoritos`;
+    });
+
+    // ===== RENDER EPISODES =====
+    const watchedEpisodes = new Set([1, 2, 3, 4, 5]);
+    const episodesList = document.getElementById('episodesList');
+    const episodeTitles = [
+      'Crueldad', 'El instructor Sakonji Urokodaki', 'Sabito y Makomo', 'Seleccion final',
+      'Acero de almas', 'Demonio con forma de demonio', 'Kibutsuji Muzan', 'Hechizo de aroma',
+      'Demonio de los brazos gigantes', 'Siempre juntos', 'Casa de los tambores', 'El jabali se muestra',
+      'Algo mas importante que la vida', 'La casa de los hilos', 'Monte Natagumo', 'Alguien que vence a otros',
+      'Debes dominar una sola cosa', 'Una fabrica ficticia', 'Dios del fuego', 'La patrulla de la muerte',
+      'Contra las reglas del cuerpo', 'El señor de los demonios', 'Reunion de los Pilares', 'Funcionamiento rehabilitador'
+    ];
+
+    for (let i = 1; i <= 24; i++) {
+      const row = document.createElement('a');
+      row.className = `episode-row ${watchedEpisodes.has(i) ? 'watched' : ''} animate-fade-in`;
+      row.href = `/episode/demon-slayer/${i}`;
+      row.style.animationDelay = `${i * 30}ms`;
+      row.setAttribute('data-tv-focus', 'true');
+      row.setAttribute('data-tv-focus-id', `episode-${i}`);
+
+      row.innerHTML = `
+        <div class="episode-play">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+        </div>
+        <div class="episode-num">${String(i).padStart(2, '0')}</div>
+        <div class="episode-info">
+          <div class="episode-title">${episodeTitles[i - 1] || `Episodio ${i}`}</div>
+          <div class="episode-meta">
+            <span>Episodio ${i}</span>
+            ${watchedEpisodes.has(i) ? '<span style="color: var(--status-success);">Visto</span>' : ''}
+          </div>
+        </div>
+        <div class="episode-duration">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12,6 12,12 16,14"/>
+          </svg>
+          24 min
+        </div>
+        ${watchedEpisodes.has(i) ? '<div class="episode-status"></div>' : ''}
+      `;
+
+      episodesList.appendChild(row);
+    }
+
+    // ===== TV NAVIGATION =====
+    let tvFocusIndex = 0;
+    const tvFocusableElements = [];
+
+    function updateTVFocusable() {
+      tvFocusableElements.length = 0;
+      document.querySelectorAll('[data-tv-focus="true"]').forEach(el => {
+        tvFocusableElements.push(el);
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+        updateTVFocusable();
+        if (tvFocusableElements.length === 0) return;
+
+        e.preventDefault();
+        tvFocusableElements.forEach(el => el.classList.remove('tv-focused'));
+
+        if (e.key === 'ArrowRight') {
+          tvFocusIndex = (tvFocusIndex + 1) % tvFocusableElements.length;
+        } else if (e.key === 'ArrowLeft') {
+          tvFocusIndex = (tvFocusIndex - 1 + tvFocusableElements.length) % tvFocusableElements.length;
+        } else if (e.key === 'ArrowDown') {
+          const current = tvFocusableElements[tvFocusIndex];
+          const currentRect = current.getBoundingClientRect();
+          let bestIndex = tvFocusIndex;
+          let bestDistance = Infinity;
+
+          tvFocusableElements.forEach((el, i) => {
+            if (i === tvFocusIndex) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top > currentRect.top) {
+              const distance = Math.abs(rect.left - currentRect.left) + (rect.top - currentRect.top);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex = i;
+              }
+            }
+          });
+          tvFocusIndex = bestIndex;
+        } else if (e.key === 'ArrowUp') {
+          const current = tvFocusableElements[tvFocusIndex];
+          const currentRect = current.getBoundingClientRect();
+          let bestIndex = tvFocusIndex;
+          let bestDistance = Infinity;
+
+          tvFocusableElements.forEach((el, i) => {
+            if (i === tvFocusIndex) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top < currentRect.top) {
+              const distance = Math.abs(rect.left - currentRect.left) + (currentRect.top - rect.top);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex = i;
+              }
+            }
+          });
+          tvFocusIndex = bestIndex;
+        }
+
+        const focused = tvFocusableElements[tvFocusIndex];
+        focused.classList.add('tv-focused');
+        focused.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      if (e.key === 'Enter') {
+        const focused = document.querySelector('.tv-focused');
+        if (focused) focused.click();
+      }
+    });
+
+    updateTVFocusable();
+  </script>
+</body>
+</html>

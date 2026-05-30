@@ -1,0 +1,53 @@
+<!-- 
+  COMPONENT: Breadcrumb
+  Used in: detalle.html, manga-detalle.html, visualizador.html, manga-lector.html
+  
+  Required CSS classes from design system:
+  - .breadcrumb
+  - .breadcrumb-separator
+  
+  Features:
+  - Horizontal flex with gap
+  - Links + separators + current page (no link)
+  - Hover on links: color change to primary
+  - Responsive: wraps on mobile
+  
+  Patterns:
+  - Home > Anime > Title (detalle)
+  - Home > Manga > Title > Chapter (lector)
+  - Home > Anime > Title > Episode (visualizador)
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<!-- Anime Detail Breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="/">Anime</a>
+  <span class="breadcrumb-separator">/</span>
+  <span style="color: var(--text-primary);">Demon Slayer: Kimetsu no Yaiba</span>
+</nav>
+
+<!-- Manga Detail Breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="/manga">Manga</a>
+  <span class="breadcrumb-separator">/</span>
+  <span style="color: var(--text-primary);">Jujutsu Kaisen</span>
+</nav>
+
+<!-- Episode Viewer Breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="/">Anime</a>
+  <span class="breadcrumb-separator">/</span>
+  <a href="/anime/demon-slayer">Demon Slayer</a>
+  <span class="breadcrumb-separator">/</span>
+  <span style="color: var(--text-primary);">Episodio 1</span>
+</nav>
+
+<!-- Chapter Reader Breadcrumb -->
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="/manga">Manga</a>
+  <span class="breadcrumb-separator">/</span>
+  <a href="/manga/jujutsu-kaisen">Jujutsu Kaisen</a>
+  <span class="breadcrumb-separator">/</span>
+  <span style="color: var(--text-primary);">Capítulo 1</span>
+</nav>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7Kanime — Crystal Liquid</title>
+
+  <!-- Theme script: runs before paint to prevent flash -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme');
+      if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="7Kanime - Inicio" data-tv-focus="true" data-tv-focus-id="header-logo">
+        <span class="logo-accent">7K</span><span class="logo-text">anime</span>
+      </a>
+
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="/" class="nav-link active">Anime</a>
+        <a href="/manga" class="nav-link">Manga</a>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" class="search-toggle" id="searchToggle" aria-label="Buscar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+
+        <form class="search-form" id="searchForm" onsubmit="return false;">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="search" class="search-input" placeholder="Buscar anime..." aria-label="Buscar anime" id="searchInput">
+        </form>
+
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Cambiar tema" title="Cambiar tema">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+        </button>
+
+        <button type="button" class="avatar-btn" id="userMenuBtn" aria-label="Menú de usuario" data-tv-focus="true" data-tv-focus-id="user-menu-btn">
+          U
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: var(--header-height);">
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="hero-backdrop">
+        <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&q=80" alt="">
+      </div>
+      <div class="hero-content">
+        <div class="hero-meta">
+          <span class="hero-badge">Nuevo</span>
+          <span>TV Anime • 2024 • 24 eps</span>
+        </div>
+        <h1 class="hero-title">Demon Slayer: Kimetsu no Yaiba</h1>
+        <p class="hero-synopsis">En un mundo donde los demonios devoran humanos, Tanjiro Kamado se convierte en cazador de demonios para vengar a su familia y curar a su hermana Nezuko, quien fue transformada en demonio.</p>
+        <div class="hero-actions">
+          <a href="/episode/demon-slayer/1" class="btn-primary" data-tv-focus="true" data-tv-focus-id="hero-play">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+            Ver ahora
+          </a>
+          <a href="/anime/demon-slayer" class="btn-ghost" data-tv-focus="true" data-tv-focus-id="hero-info">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            Más info
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <!-- Continue Watching -->
+      <section class="continue-section" id="continueWatching" style="display: none;">
+        <div class="section-header">
+          <h2 class="section-title">Continuar viendo</h2>
+        </div>
+        <div class="continue-grid" id="continueGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Filters -->
+      <section class="filters-section">
+        <div class="filters-row" id="genreChips">
+          <button class="chip active" data-genre="">Todos</button>
+          <button class="chip" data-genre="accion">Acción</button>
+          <button class="chip" data-genre="aventura">Aventura</button>
+          <button class="chip" data-genre="comedia">Comedia</button>
+          <button class="chip" data-genre="drama">Drama</button>
+          <button class="chip" data-genre="fantasia">Fantasía</button>
+          <button class="chip" data-genre="romance">Romance</button>
+          <button class="chip" data-genre="shounen">Shounen</button>
+          <button class="chip" data-genre="isekai">Isekai</button>
+          <button class="chip" data-genre="terror">Terror</button>
+        </div>
+
+        <button class="filter-toggle" id="filterToggle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+          </svg>
+          <span>Más filtros</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="filterChevron">
+            <polyline points="6,9 12,15 18,9"/>
+          </svg>
+        </button>
+
+        <div class="advanced-filters" id="advancedFilters">
+          <div class="filter-group">
+            <span class="filter-label">Letras</span>
+            <div class="letter-grid" id="letterGrid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Tipo</span>
+            <select class="select" id="typeSelect">
+              <option value="">Todos</option>
+              <option value="tv-anime">TV Anime</option>
+              <option value="ova">OVA</option>
+              <option value="pelicula">Película</option>
+              <option value="especial">Especial</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Estado</span>
+            <select class="select" id="statusSelect">
+              <option value="">Todos</option>
+              <option value="emision">En Emisión</option>
+              <option value="finalizado">Finalizado</option>
+              <option value="proximamente">Próximamente</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Año</span>
+            <div class="year-slider">
+              <div class="slider-container">
+                <div class="slider-track"></div>
+                <div class="slider-track-filled" id="sliderTrackFilled" style="left: 0%; width: 100%;"></div>
+                <input type="range" class="slider-input" id="yearMin" min="1980" max="2024" value="1980">
+                <input type="range" class="slider-input" id="yearMax" min="1980" max="2024" value="2024">
+                <div class="slider-thumb" id="sliderThumbMin" style="left: 0%;"></div>
+                <div class="slider-thumb" id="sliderThumbMax" style="left: 100%;"></div>
+              </div>
+              <span class="year-value" id="yearValue">1980 — 2024</span>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Ordenar</span>
+            <select class="select" id="orderSelect">
+              <option value="">Predeterminado</option>
+              <option value="score">Puntuación</option>
+              <option value="popular">Popularidad</option>
+              <option value="title">Título</option>
+              <option value="latest">Más recientes</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Catalog -->
+      <section class="catalog-section">
+        <div class="catalog-header">
+          <h2 class="section-title">Catálogo de Anime</h2>
+          <span class="catalog-count" id="catalogCount">1,247 animes encontrados</span>
+        </div>
+
+        <div class="catalog-grid" id="catalogGrid">
+          <!-- Dynamically populated with skeletons -->
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+          <button class="page-btn" disabled>←</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="color: var(--text-tertiary); padding: 0 8px;">...</span>
+          <button class="page-btn">63</button>
+          <button class="page-btn">→</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    // ===== STATE =====
+    const state = {
+      filters: {
+        genre: '',
+        letter: '',
+        type: '',
+        status: '',
+        minYear: 1980,
+        maxYear: 2024,
+        order: '',
+        search: ''
+      },
+      page: 1,
+      totalPages: 63,
+      items: [],
+      favorites: new Set(),
+      continueWatching: [],
+      loading: true
+    };
+
+    // ===== MOCK DATA =====
+    const mockAnime = [
+      { id: 1, title: "Demon Slayer", slug: "demon-slayer", type: "TV", poster: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&q=80", score: 8.7, synopsis: "Un joven se convierte en cazador de demonios...", status: "emision" },
+      { id: 2, title: "Attack on Titan", slug: "attack-on-titan", type: "TV", poster: "https://images.unsplash.com/photo-1541562232579-512a21360020?w=400&q=80", score: 9.1, synopsis: "La humanidad lucha contra titanes...", status: "finalizado" },
+      { id: 3, title: "Jujutsu Kaisen", slug: "jujutsu-kaisen", type: "TV", poster: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=400&q=80", score: 8.6, synopsis: "Estudiantes combate maldiciones...", status: "emision" },
+      { id: 4, title: "My Hero Academia", slug: "my-hero-academia", type: "TV", poster: "https://images.unsplash.com/photo-1607604276583-eef5a0ad8f38?w=400&q=80", score: 8.0, synopsis: "En un mundo de superpoderes...", status: "emision" },
+      { id: 5, title: "Chainsaw Man", slug: "chainsaw-man", type: "TV", poster: "https://images.unsplash.com/photo-1580477667995-2b94f01c9516?w=400&q=80", score: 8.5, synopsis: "Un joven se fusiona con un demonio...", status: "finalizado" },
+      { id: 6, title: "Spy x Family", slug: "spy-x-family", type: "TV", poster: "https://images.unsplash.com/photo-1560972550-aba3456b5564?w=400&q=80", score: 8.4, synopsis: "Un espía forma una familia falsa...", status: "emision" },
+      { id: 7, title: "One Piece", slug: "one-piece", type: "TV", poster: "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?w=400&q=80", score: 8.9, synopsis: "Un pirata busca el tesoro legendario...", status: "emision" },
+      { id: 8, title: "Death Note", slug: "death-note", type: "TV", poster: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&q=80", score: 9.0, synopsis: "Un estudiante encuentra un cuaderno mortal...", status: "finalizado" },
+      { id: 9, title: "Fullmetal Alchemist", slug: "fma-brotherhood", type: "TV", poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=80", score: 9.1, synopsis: "Dos hermanos buscan la piedra filosofal...", status: "finalizado" },
+      { id: 10, title: "Steins;Gate", slug: "steins-gate", type: "TV", poster: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80", score: 9.0, synopsis: "Viajes en el tiempo y consecuencias...", status: "finalizado" },
+      { id: 11, title: "Hunter x Hunter", slug: "hunter-x-hunter", type: "TV", poster: "https://images.unsplash.com/photo-1514539079130-25950c84af65?w=400&q=80", score: 9.0, synopsis: "Un niño busca a su padre cazador...", status: "finalizado" },
+      { id: 12, title: "Naruto", slug: "naruto", type: "TV", poster: "https://images.unsplash.com/photo-1601850494422-3cf14624b0b3?w=400&q=80", score: 8.3, synopsis: "Un ninja busca ser el más fuerte...", status: "finalizado" }
+    ];
+
+    const continueWatchingData = [
+      { slug: "demon-slayer", title: "Demon Slayer", episode: 12, poster: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&q=80", progress: 65 },
+      { slug: "jujutsu-kaisen", title: "Jujutsu Kaisen", episode: 8, poster: "https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=400&q=80", progress: 40 },
+      { slug: "spy-x-family", title: "Spy x Family", episode: 5, poster: "https://images.unsplash.com/photo-1560972550-aba3456b5564?w=400&q=80", progress: 80 }
+    ];
+
+    // ===== HEADER SCROLL EFFECT =====
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // ===== SEARCH TOGGLE =====
+    const searchToggle = document.getElementById('searchToggle');
+    const searchForm = document.getElementById('searchForm');
+    
+    searchToggle.addEventListener('click', () => {
+      searchForm.classList.toggle('open');
+      if (searchForm.classList.contains('open')) {
+        document.getElementById('searchInput').focus();
+      }
+    });
+
+    // ===== FILTER TOGGLE =====
+    const filterToggle = document.getElementById('filterToggle');
+    const advancedFilters = document.getElementById('advancedFilters');
+    const filterChevron = document.getElementById('filterChevron');
+
+    filterToggle.addEventListener('click', () => {
+      advancedFilters.classList.toggle('open');
+      filterChevron.style.transform = advancedFilters.classList.contains('open') ? 'rotate(180deg)' : '';
+    });
+
+    // ===== GENRE CHIPS =====
+    const genreChips = document.querySelectorAll('#genreChips .chip');
+    genreChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        genreChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        state.filters.genre = chip.dataset.genre;
+        loadCatalog();
+      });
+    });
+
+    // ===== LETTER GRID =====
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ#'.split('');
+    const letterGrid = document.getElementById('letterGrid');
+    letters.forEach(letter => {
+      const btn = document.createElement('button');
+      btn.className = 'letter-btn';
+      btn.textContent = letter;
+      btn.dataset.letter = letter === '#' ? 'num' : letter.toLowerCase();
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.letter-btn').forEach(b => b.classList.remove('active'));
+        if (state.filters.letter === btn.dataset.letter) {
+          state.filters.letter = '';
+        } else {
+          btn.classList.add('active');
+          state.filters.letter = btn.dataset.letter;
+        }
+        loadCatalog();
+      });
+      letterGrid.appendChild(btn);
+    });
+
+    // ===== YEAR SLIDER =====
+    const yearMin = document.getElementById('yearMin');
+    const yearMax = document.getElementById('yearMax');
+    const sliderTrackFilled = document.getElementById('sliderTrackFilled');
+    const sliderThumbMin = document.getElementById('sliderThumbMin');
+    const sliderThumbMax = document.getElementById('sliderThumbMax');
+    const yearValue = document.getElementById('yearValue');
+
+    function updateSlider() {
+      const min = parseInt(yearMin.value);
+      const max = parseInt(yearMax.value);
+      const minPercent = ((min - 1980) / (2024 - 1980)) * 100;
+      const maxPercent = ((max - 1980) / (2024 - 1980)) * 100;
+      
+      sliderTrackFilled.style.left = minPercent + '%';
+      sliderTrackFilled.style.width = (maxPercent - minPercent) + '%';
+      sliderThumbMin.style.left = minPercent + '%';
+      sliderThumbMax.style.left = maxPercent + '%';
+      yearValue.textContent = `${min} — ${max}`;
+      
+      state.filters.minYear = min;
+      state.filters.maxYear = max;
+    }
+
+    yearMin.addEventListener('input', () => {
+      if (parseInt(yearMin.value) > parseInt(yearMax.value)) {
+        yearMin.value = yearMax.value;
+      }
+      updateSlider();
+    });
+
+    yearMax.addEventListener('input', () => {
+      if (parseInt(yearMax.value) < parseInt(yearMin.value)) {
+        yearMax.value = yearMin.value;
+      }
+      updateSlider();
+    });
+
+    // ===== RENDER CATALOG =====
+    function renderCatalog(items) {
+      const grid = document.getElementById('catalogGrid');
+      grid.innerHTML = '';
+
+      items.forEach((anime, index) => {
+        const card = document.createElement('a');
+        card.className = 'anime-card animate-fade-in';
+        card.href = `/anime/${anime.slug}`;
+        card.style.animationDelay = `${index * 50}ms`;
+        card.setAttribute('data-tv-focus', 'true');
+        card.setAttribute('data-tv-focus-id', `card-${anime.id}`);
+
+        const isFavorite = state.favorites.has(anime.id);
+
+        card.innerHTML = `
+          <div class="card-poster">
+            <img src="${anime.poster}" alt="${anime.title}" loading="lazy">
+            <div class="card-overlay">
+              <p style="font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">${anime.synopsis}</p>
+            </div>
+            <span class="card-type">${anime.type}</span>
+            <button class="card-favorite ${isFavorite ? 'active' : ''}" data-id="${anime.id}" onclick="event.preventDefault(); toggleFavorite(${anime.id})">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="${isFavorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="card-info">
+            <h3 class="card-title">${anime.title}</h3>
+            <div class="card-meta">
+              <span class="card-score">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                </svg>
+                ${anime.score}
+              </span>
+              <span>•</span>
+              <span>${anime.status === 'emision' ? 'En emisión' : 'Finalizado'}</span>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function renderSkeletons() {
+      const grid = document.getElementById('catalogGrid');
+      grid.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        const card = document.createElement('div');
+        card.className = 'anime-card';
+        card.innerHTML = `
+          <div class="card-poster skeleton" style="aspect-ratio: 2/3;"></div>
+          <div style="height: 20px; background: var(--surface-1); border-radius: 8px; margin-top: 12px;"></div>
+          <div style="height: 16px; background: var(--surface-1); border-radius: 8px; margin-top: 8px; width: 60%;"></div>
+        `;
+        grid.appendChild(card);
+      }
+    }
+
+    // ===== RENDER CONTINUE WATCHING =====
+    function renderContinueWatching() {
+      const section = document.getElementById('continueWatching');
+      const grid = document.getElementById('continueGrid');
+      
+      if (continueWatchingData.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+      grid.innerHTML = '';
+
+      continueWatchingData.forEach((item, index) => {
+        const card = document.createElement('a');
+        card.className = 'continue-card animate-slide-in';
+        card.href = `/episode/${item.slug}/${item.episode}`;
+        card.style.animationDelay = `${index * 100}ms`;
+        card.setAttribute('data-tv-focus', 'true');
+        card.setAttribute('data-tv-focus-id', `continue-${item.slug}`);
+
+        card.innerHTML = `
+          <div class="continue-poster">
+            <img src="${item.poster}" alt="${item.title}" loading="lazy">
+            <span class="continue-badge">Ep. ${item.episode}</span>
+          </div>
+          <div class="continue-info">
+            <h4>${item.title}</h4>
+            <p>Continuar episodio ${item.episode}</p>
+            <div class="continue-progress">
+              <div class="continue-progress-bar" style="width: ${item.progress}%"></div>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    // ===== TOGGLE FAVORITE =====
+    window.toggleFavorite = function(id) {
+      if (state.favorites.has(id)) {
+        state.favorites.delete(id);
+      } else {
+        state.favorites.add(id);
+      }
+      loadCatalog();
+    };
+
+    // ===== LOAD CATALOG =====
+    function loadCatalog() {
+      state.loading = true;
+      renderSkeletons();
+
+      // Simulate API delay
+      setTimeout(() => {
+        state.loading = false;
+        renderCatalog(mockAnime);
+      }, 600);
+    }
+
+    // ===== TV NAVIGATION =====
+    let tvFocusIndex = 0;
+    const tvFocusableElements = [];
+
+    function updateTVFocusable() {
+      tvFocusableElements.length = 0;
+      document.querySelectorAll('[data-tv-focus="true"]').forEach(el => {
+        tvFocusableElements.push(el);
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      // TV mode navigation with arrow keys
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        updateTVFocusable();
+        
+        if (tvFocusableElements.length === 0) return;
+
+        e.preventDefault();
+        
+        tvFocusableElements.forEach(el => el.classList.remove('tv-focused'));
+        
+        if (e.key === 'ArrowRight') {
+          tvFocusIndex = (tvFocusIndex + 1) % tvFocusableElements.length;
+        } else if (e.key === 'ArrowLeft') {
+          tvFocusIndex = (tvFocusIndex - 1 + tvFocusableElements.length) % tvFocusableElements.length;
+        } else if (e.key === 'ArrowDown') {
+          // Find element below current
+          const current = tvFocusableElements[tvFocusIndex];
+          const currentRect = current.getBoundingClientRect();
+          let bestIndex = tvFocusIndex;
+          let bestDistance = Infinity;
+          
+          tvFocusableElements.forEach((el, i) => {
+            if (i === tvFocusIndex) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top > currentRect.top) {
+              const distance = Math.abs(rect.left - currentRect.left) + (rect.top - currentRect.top);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex = i;
+              }
+            }
+          });
+          tvFocusIndex = bestIndex;
+        } else if (e.key === 'ArrowUp') {
+          // Find element above current
+          const current = tvFocusableElements[tvFocusIndex];
+          const currentRect = current.getBoundingClientRect();
+          let bestIndex = tvFocusIndex;
+          let bestDistance = Infinity;
+          
+          tvFocusableElements.forEach((el, i) => {
+            if (i === tvFocusIndex) return;
+            const rect = el.getBoundingClientRect();
+            if (rect.top < currentRect.top) {
+              const distance = Math.abs(rect.left - currentRect.left) + (currentRect.top - rect.top);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestIndex = i;
+              }
+            }
+          });
+          tvFocusIndex = bestIndex;
+        }
+        
+        const focused = tvFocusableElements[tvFocusIndex];
+        focused.classList.add('tv-focused');
+        focused.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Enter key to activate
+      if (e.key === 'Enter') {
+        const focused = document.querySelector('.tv-focused');
+        if (focused) {
+          focused.click();
+        }
+      }
+    });
+
+    // ===== THEME TOGGLE =====
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function updateThemeIcon() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark' ||
+        (!document.documentElement.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+      } else {
+        themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let newTheme;
+      if (current === 'dark') newTheme = 'light';
+      else if (current === 'light') newTheme = 'dark';
+      else newTheme = prefersDark ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon();
+    });
+
+    updateThemeIcon();
+
+    // ===== INITIALIZE =====
+    renderContinueWatching();
+    loadCatalog();
+    updateTVFocusable();
+
+    // Update TV focusable on dynamic content changes
+    const observer = new MutationObserver(updateTVFocusable);
+    observer.observe(document.body, { childList: true, subtree: true });
+  </script>
+</body>
+</html>

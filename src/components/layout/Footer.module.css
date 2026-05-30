@@ -1,0 +1,128 @@
+.footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  padding: 64px 0 0;
+  margin-top: 64px;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  margin-bottom: 48px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logoAccent {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-liquid));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logoText {
+  color: var(--text-primary);
+}
+
+.description {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.link {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  transition: color var(--duration-fast) ease;
+  cursor: pointer;
+}
+
+.link:hover {
+  color: var(--accent-primary);
+}
+
+.bottom {
+  border-top: 1px solid var(--border-subtle);
+  padding: 24px 0;
+}
+
+.bottomInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.copyright {
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
+}
+
+.social {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.social span {
+  color: var(--text-secondary);
+  transition: color var(--duration-fast) ease;
+  cursor: pointer;
+}
+
+.social span:hover {
+  color: var(--accent-primary);
+}
+
+@media (max-width: 768px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bottomInner {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}

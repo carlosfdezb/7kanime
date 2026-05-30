@@ -1,0 +1,144 @@
+<!-- 
+  COMPONENT: Filters Section
+  Used in: index.html, manga.html
+  
+  Required CSS classes from design system:
+  - .filters-section, .filters-row
+  - .chip, .chip.active
+  - .filter-toggle
+  - .advanced-filters, .filter-group, .filter-label
+  - .letter-grid, .letter-btn, .letter-btn.active
+  - .select
+  - .year-slider, .slider-container, .slider-track, .slider-track-filled
+  - .slider-input, .slider-thumb, .year-value
+  
+  Features:
+  - Genre chips: horizontal scrollable list, single select
+  - Advanced filters toggle: collapsible panel
+  - Letter filter: A-Z grid for alphabetical filtering
+  - Type select: TV, OVA, Movie, Special
+  - Status select: Airing, Finished, Upcoming
+  - Year range slider: dual handle range
+  - Order select: Default, Score, Popularity, Title, Latest
+  
+  Interactions:
+  - Click chip to select genre (adds .active)
+  - Click "More filters" to expand advanced panel
+  - Click letter to filter by initial
+  - Drag slider handles to set year range
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<section class="filters-section">
+  <!-- Genre Chips -->
+  <div class="filters-row" id="genreChips">
+    <button class="chip active" data-genre="">Todos</button>
+    <button class="chip" data-genre="accion">Acción</button>
+    <button class="chip" data-genre="aventura">Aventura</button>
+    <button class="chip" data-genre="comedia">Comedia</button>
+    <button class="chip" data-genre="drama">Drama</button>
+    <button class="chip" data-genre="fantasia">Fantasía</button>
+    <button class="chip" data-genre="romance">Romance</button>
+    <button class="chip" data-genre="shounen">Shounen</button>
+    <button class="chip" data-genre="isekai">Isekai</button>
+    <button class="chip" data-genre="terror">Terror</button>
+  </div>
+
+  <!-- Toggle Advanced Filters -->
+  <button class="filter-toggle" id="filterToggle">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
+    </svg>
+    <span>Más filtros</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="filterChevron">
+      <polyline points="6,9 12,15 18,9"/>
+    </svg>
+  </button>
+
+  <!-- Advanced Filters Panel -->
+  <div class="advanced-filters" id="advancedFilters">
+    <!-- Letter Filter -->
+    <div class="filter-group">
+      <span class="filter-label">Letras</span>
+      <div class="letter-grid" id="letterGrid">
+        <button class="letter-btn" data-letter="a">A</button>
+        <button class="letter-btn" data-letter="b">B</button>
+        <!-- ... A-Z ... -->
+        <button class="letter-btn" data-letter="num">#</button>
+      </div>
+    </div>
+
+    <!-- Type Select -->
+    <div class="filter-group">
+      <span class="filter-label">Tipo</span>
+      <select class="select" id="typeSelect">
+        <option value="">Todos</option>
+        <option value="tv-anime">TV Anime</option>
+        <option value="ova">OVA</option>
+        <option value="pelicula">Película</option>
+        <option value="especial">Especial</option>
+      </select>
+    </div>
+
+    <!-- Status Select -->
+    <div class="filter-group">
+      <span class="filter-label">Estado</span>
+      <select class="select" id="statusSelect">
+        <option value="">Todos</option>
+        <option value="emision">En Emisión</option>
+        <option value="finalizado">Finalizado</option>
+        <option value="proximamente">Próximamente</option>
+      </select>
+    </div>
+
+    <!-- Year Range Slider -->
+    <div class="filter-group">
+      <span class="filter-label">Año</span>
+      <div class="year-slider">
+        <div class="slider-container">
+          <div class="slider-track"></div>
+          <div class="slider-track-filled" style="left: 0%; width: 100%;"></div>
+          <input type="range" class="slider-input" min="1980" max="2024" value="1980">
+          <input type="range" class="slider-input" min="1980" max="2024" value="2024">
+          <div class="slider-thumb" style="left: 0%;"></div>
+          <div class="slider-thumb" style="left: 100%;"></div>
+        </div>
+        <span class="year-value">1980 — 2024</span>
+      </div>
+    </div>
+
+    <!-- Order Select -->
+    <div class="filter-group">
+      <span class="filter-label">Ordenar</span>
+      <select class="select" id="orderSelect">
+        <option value="">Predeterminado</option>
+        <option value="score">Puntuación</option>
+        <option value="popular">Popularidad</option>
+        <option value="title">Título</option>
+        <option value="latest">Más recientes</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Toggle advanced filters
+  const filterToggle = document.getElementById('filterToggle');
+  const advancedFilters = document.getElementById('advancedFilters');
+  const filterChevron = document.getElementById('filterChevron');
+
+  filterToggle.addEventListener('click', () => {
+    advancedFilters.classList.toggle('open');
+    filterChevron.style.transform = advancedFilters.classList.contains('open') ? 'rotate(180deg)' : '';
+  });
+
+  // Genre chips selection
+  const genreChips = document.querySelectorAll('#genreChips .chip');
+  genreChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      genreChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+</script>

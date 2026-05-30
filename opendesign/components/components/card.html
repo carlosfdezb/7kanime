@@ -1,0 +1,101 @@
+<!-- 
+  COMPONENT: Anime Card / Manga Card
+  Used in: index.html (catalog grid), manga.html (catalog grid), 
+           detalle.html (relations), manga-detalle.html (relations)
+  
+  Required CSS classes from design system:
+  - .anime-card / .manga-card
+  - .card-poster, .card-overlay
+  - .card-type, .card-favorite
+  - .card-info, .card-title, .card-meta, .card-score
+  
+  Features:
+  - Hover: translateY(-8px) scale(1.02), image zoom, overlay fade-in
+  - Favorite button: appears on hover, toggle state
+  - Type badge: top-right corner
+  - Responsive: 2 columns on mobile
+  - TV navigation: data-tv-focus="true"
+  
+  States:
+  - Default: Normal state
+  - Favorite: .card-favorite.active (red heart)
+  - Loading: .skeleton placeholder
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<!-- ANIME CARD -->
+<a href="/anime/demon-slayer" class="anime-card" data-tv-focus="true" data-tv-focus-id="card-1">
+  <div class="card-poster">
+    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&q=80" alt="Demon Slayer" loading="lazy">
+    <div class="card-overlay">
+      <p>En un mundo donde los demonios devoran humanos, Tanjiro Kamado se convierte en cazador de demonios...</p>
+    </div>
+    <span class="card-type">TV</span>
+    <button class="card-favorite active" data-id="1" onclick="event.preventDefault(); toggleFavorite(1)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="card-info">
+    <h3 class="card-title">Demon Slayer</h3>
+    <div class="card-meta">
+      <span class="card-score">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+        8.7
+      </span>
+      <span>•</span>
+      <span>En emisión</span>
+    </div>
+  </div>
+</a>
+
+<!-- MANGA CARD -->
+<a href="/manga/jujutsu-kaisen" class="manga-card" data-tv-focus="true" data-tv-focus-id="card-1">
+  <div class="card-poster">
+    <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=400&q=80" alt="Jujutsu Kaisen" loading="lazy">
+    <div class="card-overlay">
+      <p>Estudiantes combaten maldiciones...</p>
+    </div>
+    <span class="card-type">Manga</span>
+    <button class="card-favorite" data-id="1" onclick="event.preventDefault(); toggleFavorite(1)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="card-info">
+    <h3 class="card-title">Jujutsu Kaisen</h3>
+    <div class="card-meta">
+      <span class="card-score">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+        </svg>
+        8.6
+      </span>
+      <span>•</span>
+      <span>En emisión</span>
+    </div>
+  </div>
+</a>
+
+<!-- SKELETON LOADING CARD -->
+<div class="anime-card">
+  <div class="card-poster skeleton" style="aspect-ratio: 2/3;"></div>
+  <div style="height: 20px; background: var(--surface-1); border-radius: 8px; margin-top: 12px;"></div>
+  <div style="height: 16px; background: var(--surface-1); border-radius: 8px; margin-top: 8px; width: 60%;"></div>
+</div>
+
+<!-- RELATION CARD (compact variant) -->
+<a href="/anime/demon-slayer-movie" class="relation-card" data-tv-focus="true" data-tv-focus-id="relation-1">
+  <div class="relation-poster">
+    <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&q=80" alt="Mugen Train" loading="lazy">
+  </div>
+  <div class="relation-info">
+    <h4>Demon Slayer: Mugen Train</h4>
+    <p class="relation-type">Película - Secuela</p>
+  </div>
+</a>

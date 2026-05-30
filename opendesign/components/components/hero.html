@@ -1,0 +1,91 @@
+<!-- 
+  COMPONENT: Hero Section
+  Used in: index.html (Anime home), manga.html (Manga home)
+  
+  Required CSS classes from design system:
+  - .hero, .hero-backdrop, .hero-content
+  - .hero-meta, .hero-badge
+  - .hero-title, .hero-synopsis, .hero-actions
+  - .btn-primary, .btn-ghost
+  
+  Features:
+  - Full-width backdrop with gradient overlay
+  - Content overlaid at bottom
+  - Responsive: adjusts height on mobile
+  - TV navigation support on action buttons
+  
+  Variants:
+  - Anime: Shows episode count, play button
+  - Manga: Shows chapter count, read button
+-->
+
+<link rel="stylesheet" href="../styles.css" />
+
+<!-- ANIME HERO -->
+<section class="hero" id="hero">
+  <div class="hero-backdrop">
+    <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&q=80" alt="">
+  </div>
+  <div class="hero-content">
+    <div class="hero-meta">
+      <span class="hero-badge">Nuevo</span>
+      <span>TV Anime • 2024 • 24 eps</span>
+    </div>
+    <h1 class="hero-title">Demon Slayer: Kimetsu no Yaiba</h1>
+    <p class="hero-synopsis">
+      En un mundo donde los demonios devoran humanos, Tanjiro Kamado se convierte en cazador de demonios 
+      para vengar a su familia y curar a su hermana Nezuko, quien fue transformada en demonio.
+    </p>
+    <div class="hero-actions">
+      <a href="/episode/demon-slayer/1" class="btn-primary" data-tv-focus="true" data-tv-focus-id="hero-play">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+        Ver ahora
+      </a>
+      <a href="/anime/demon-slayer" class="btn-ghost" data-tv-focus="true" data-tv-focus-id="hero-info">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        Más info
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MANGA HERO -->
+<section class="hero" id="hero" style="height: 55vh; min-height: 420px;">
+  <div class="hero-backdrop">
+    <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=1920&q=80" alt="">
+  </div>
+  <div class="hero-content">
+    <div class="hero-meta">
+      <span class="hero-badge">Destacado</span>
+      <span>Manga • En emisión</span>
+    </div>
+    <h1 class="hero-title">Jujutsu Kaisen</h1>
+    <p class="hero-synopsis">
+      Yuji Itadori es un estudiante de secundaria con una capacidad atlética excepcional. 
+      Vive con su abuelo y, para evitar que sus compañeros del club de ocultismo se metan en problemas, 
+      consume un dedo maldito de Ryomen Sukuna, convirtiéndose en su recipiente.
+    </p>
+    <div class="hero-actions">
+      <a href="/manga/jujutsu-kaisen" class="btn-primary" data-tv-focus="true" data-tv-focus-id="hero-read">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+        Leer ahora
+      </a>
+      <a href="/manga/jujutsu-kaisen" class="btn-ghost" data-tv-focus="true" data-tv-focus-id="hero-info">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
+        Más info
+      </a>
+    </div>
+  </div>
+</section>

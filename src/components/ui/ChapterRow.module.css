@@ -1,0 +1,125 @@
+.chapterRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  transition: all var(--duration-fast) ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.chapterRow:hover {
+  background: var(--surface-2);
+  transform: translateX(4px);
+}
+
+.read {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.2);
+}
+
+.chapterReadIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: var(--text-tertiary);
+  transition: all var(--duration-fast) ease;
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
+}
+
+.chapterRow:hover .chapterReadIcon {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-liquid));
+  color: white;
+}
+
+.chapterNum {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  min-width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.read .chapterNum {
+  color: var(--status-success);
+}
+
+.chapterInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.chapterTitle {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapterMeta {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.readLabel {
+  color: var(--status-success);
+}
+
+.chapterDate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.chapterStatus {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-success);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .chapterRow {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .chapterReadIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .chapterNum {
+    font-size: 0.875rem;
+    min-width: 36px;
+  }
+
+  .chapterDate {
+    display: none;
+  }
+
+  .chapterStatus {
+    width: 6px;
+    height: 6px;
+  }
+}

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leer Jujutsu Kaisen Cap. 1 — 7Kanime</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* manga-lector.html specific styles */
+    .back-btn {
+      display: flex; align-items: center; gap: 8px; padding: 10px 18px;
+      background: var(--surface-glass); border: 1px solid var(--border-subtle); border-radius: 12px;
+      font-size: 0.9375rem; font-weight: 500; color: var(--text-secondary); transition: all var(--duration-fast) ease;
+    }
+    .back-btn:hover { background: var(--surface-2); color: var(--text-primary); border-color: var(--border-medium); }
+    
+    .reader-wrapper { min-height: 60vh; display: flex; align-items: center; justify-content: center; }
+    .reader-cascade { align-items: center; gap: 0; padding: 24px; }
+    .reader-cascade img { max-width: 100%; width: auto; max-height: 90vh; object-fit: contain; border-radius: 8px; margin-bottom: 8px; }
+    .reader-paginated { display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .reader-paginated img { max-width: 100%; width: auto; max-height: 80vh; object-fit: contain; border-radius: 8px; }
+    
+    .paginated-controls { display: flex; align-items: center; justify-content: center; gap: 24px; margin-bottom: 32px; }
+    
+    .chapter-nav {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-bottom: 48px; padding: 24px; background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: 20px;
+    }
+    .chapter-nav .nav-btn {
+      display: flex; align-items: center; gap: 12px; padding: 14px 24px;
+      background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 16px;
+      font-size: 0.9375rem; font-weight: 600; color: var(--text-primary); transition: all var(--duration-fast) ease; flex: 1; max-width: 280px;
+    }
+    .chapter-nav .nav-btn:hover { background: var(--surface-2); border-color: var(--border-glow); transform: translateY(-2px); }
+    .chapter-nav .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .chapter-nav .nav-btn-prev { justify-content: flex-start; }
+    .chapter-nav .nav-btn-next { justify-content: flex-end; }
+    
+    .chapter-counter { text-align: center; font-size: 0.9375rem; font-weight: 600; color: var(--text-secondary); padding: 0 16px; }
+    .chapter-counter span { color: var(--accent-primary); }
+    
+    .chapters-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .chapter-item {
+      display: flex; align-items: center; gap: 16px; padding: 16px;
+      background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: 16px;
+      transition: all var(--duration-normal) var(--ease-out-expo); cursor: pointer;
+    }
+    .chapter-item:hover { background: var(--surface-2); border-color: var(--border-glow); transform: translateX(4px); }
+    .chapter-item.current { background: var(--accent-primary-glow); border-color: var(--border-glow); }
+    .chapter-item.read { border-left: 3px solid var(--status-success); }
+    .chapter-item .chapter-num {
+      width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-secondary); border-radius: 14px; font-size: 1.125rem; font-weight: 700; color: var(--text-primary); flex-shrink: 0;
+    }
+    .chapter-item.current .chapter-num { background: linear-gradient(135deg, var(--accent-primary), var(--accent-liquid)); color: white; }
+    .chapter-item-info { flex: 1; min-width: 0; }
+    .chapter-item-title { font-size: 0.9375rem; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .chapter-item-meta { font-size: 0.8125rem; color: var(--text-tertiary); }
+    .chapter-item-status { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--status-success); flex-shrink: 0; }
+    
+    @media (max-width: 768px) {
+      .reader-wrapper { border-radius: 12px; }
+      .controls-bar { flex-direction: column; align-items: flex-start; }
+      .control-group { width: 100%; }
+      .chapter-nav { flex-direction: column; padding: 16px; }
+      .chapter-nav .nav-btn { max-width: 100%; width: 100%; }
+      .chapter-nav .nav-btn-next { justify-content: flex-start; }
+      .chapter-counter { order: -1; }
+      .chapters-list { grid-template-columns: 1fr; }
+      .back-btn span { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="/" class="logo"><span class="logo-accent">7K</span><span class="logo-text">anime</span></a>
+      <a href="/manga/jujutsu-kaisen" class="back-btn" data-tv-focus="true" data-tv-focus-id="back-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+        <span>Volver al manga</span>
+      </a>
+    </div>
+  </header>
+
+  <main style="padding-top: var(--header-height);">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/manga">Manga</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="/manga/jujutsu-kaisen">Jujutsu Kaisen</a>
+        <span class="breadcrumb-separator">/</span>
+        <span style="color: var(--text-primary);">Capítulo 1</span>
+      </nav>
+    </div>
+
+    <section class="reader-section container">
+      <div class="reader-wrapper" id="readerWrapper" data-tv-focus="true" data-tv-focus-id="reader">
+        <div class="reader-cascade" id="readerContent">
+          <img src="https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=800&q=80" alt="Página 1" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=800&q=80" alt="Página 2" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&q=80" alt="Página 3" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="controls-bar animate-fade-in">
+        <div class="control-group">
+          <span class="control-label">Modo</span>
+          <button class="mode-chip active" data-mode="cascade" data-tv-focus="true" data-tv-focus-id="mode-cascade">Cascada</button>
+          <button class="mode-chip" data-mode="paginated" data-tv-focus="true" data-tv-focus-id="mode-paginated">Paginado</button>
+        </div>
+        <div class="control-group" id="pageControls" style="display: none;">
+          <span class="control-label">Página</span>
+          <button class="page-nav-btn" id="prevPage" data-tv-focus="true" data-tv-focus-id="prev-page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg></button>
+          <span class="page-counter"><span id="currentPage">1</span> / <span id="totalPages">3</span></span>
+          <button class="page-nav-btn" id="nextPage" data-tv-focus="true" data-tv-focus-id="next-page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button>
+        </div>
+        <button class="read-btn" id="readBtn" data-tv-focus="true" data-tv-focus-id="read-toggle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>
+          Marcar como leído
+        </button>
+      </div>
+
+      <nav class="chapter-nav animate-fade-in" aria-label="Navegación de capítulos">
+        <a href="/manga/jujutsu-kaisen/chapter/1" class="nav-btn nav-btn-prev" disabled data-tv-focus="true" data-tv-focus-id="prev-chapter">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+          <div class="nav-btn-info"><span class="nav-btn-label">Anterior</span><span class="nav-btn-title">—</span></div>
+        </a>
+        <span class="chapter-counter">Capítulo <span>1</span> / 245</span>
+        <a href="/manga/jujutsu-kaisen/chapter/2" class="nav-btn nav-btn-next" data-tv-focus="true" data-tv-focus-id="next-chapter">
+          <div class="nav-btn-info"><span class="nav-btn-label">Siguiente</span><span class="nav-btn-title">Capítulo 2</span></div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+        </a>
+      </nav>
+
+      <section class="chapters-list-section">
+        <h2 class="section-title">Todos los capítulos</h2>
+        <div class="chapters-list" id="chaptersList"></div>
+      </section>
+    </div>
+  </main>
+
+  <button class="fullscreen-btn" id="fullscreenBtn" aria-label="Pantalla completa" data-tv-focus="true" data-tv-focus-id="fullscreen-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+  </button>
+
+  <script>
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => { if (window.scrollY > 50) header.classList.add('scrolled'); else header.classList.remove('scrolled'); });
+
+    const modeChips = document.querySelectorAll('.mode-chip');
+    const readerContent = document.getElementById('readerContent');
+    const pageControls = document.getElementById('pageControls');
+    const currentPageEl = document.getElementById('currentPage');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    let readingMode = 'cascade';
+    let currentPage = 1;
+    const totalPages = 3;
+
+    const pages = [
+      'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?w=800&q=80',
+      'https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=800&q=80',
+      'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&q=80'
+    ];
+
+    function setReadingMode(mode) {
+      readingMode = mode;
+      modeChips.forEach(c => c.classList.toggle('active', c.dataset.mode === mode));
+      if (mode === 'cascade') {
+        readerContent.className = 'reader-cascade';
+        readerContent.innerHTML = pages.map((src, i) => `<img src="${src}" alt="Página ${i + 1}" loading="lazy">`).join('');
+        pageControls.style.display = 'none';
+      } else {
+        readerContent.className = 'reader-paginated';
+        updatePaginatedView();
+        pageControls.style.display = 'flex';
+      }
+    }
+
+    function updatePaginatedView() {
+      readerContent.innerHTML = `<img src="${pages[currentPage - 1]}" alt="Página ${currentPage}" loading="eager">`;
+      currentPageEl.textContent = currentPage;
+      prevPageBtn.disabled = currentPage <= 1;
+      nextPageBtn.disabled = currentPage >= totalPages;
+    }
+
+    modeChips.forEach(chip => {
+      chip.addEventListener('click', () => setReadingMode(chip.dataset.mode));
+    });
+
+    prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; updatePaginatedView(); } });
+    nextPageBtn.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; updatePaginatedView(); } });
+
+    const readBtn = document.getElementById('readBtn');
+    let isRead = false;
+    readBtn.addEventListener('click', () => {
+      isRead = !isRead;
+      readBtn.classList.toggle('read', isRead);
+      readBtn.innerHTML = isRead
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg> Leído`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg> Marcar como leído`;
+    });
+
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    });
+
+    const chaptersList = document.getElementById('chaptersList');
+    const readChapters = [1];
+    const currentChapter = 1;
+    const totalChapters = 245;
+
+    for (let i = 1; i <= Math.min(totalChapters, 24); i++) {
+      const item = document.createElement('a');
+      item.className = `chapter-item ${i === currentChapter ? 'current' : ''} ${readChapters.includes(i) ? 'read' : ''} animate-fade-in`;
+      item.href = `/manga/jujutsu-kaisen/chapter/${i}`;
+      item.style.animationDelay = `${i * 20}ms`;
+      item.setAttribute('data-tv-focus', 'true');
+      item.setAttribute('data-tv-focus-id', `chapter-list-${i}`);
+      item.innerHTML = `
+        <div class="chapter-num">${i}</div>
+        <div class="chapter-item-info"><div class="chapter-item-title">Capítulo ${i}</div><div class="chapter-item-meta">Jujutsu Kaisen</div></div>
+        ${readChapters.includes(i) ? `<div class="chapter-item-status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg></div>` : ''}`;
+      chaptersList.appendChild(item);
+    }
+
+    let tvFocusIndex = 0;
+    const tvFocusableElements = [];
+    function updateTVFocusable() { tvFocusableElements.length = 0; document.querySelectorAll('[data-tv-focus="true"]').forEach(el => tvFocusableElements.push(el)); }
+    document.addEventListener('keydown', (e) => {
+      if (['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)) {
+        updateTVFocusable(); if (tvFocusableElements.length === 0) return;
+        e.preventDefault(); tvFocusableElements.forEach(el => el.classList.remove('tv-focused'));
+        if (e.key === 'ArrowRight') tvFocusIndex = (tvFocusIndex + 1) % tvFocusableElements.length;
+        else if (e.key === 'ArrowLeft') tvFocusIndex = (tvFocusIndex - 1 + tvFocusableElements.length) % tvFocusableElements.length;
+        else if (e.key === 'ArrowDown') {
+          const current = tvFocusableElements[tvFocusIndex]; const currentRect = current.getBoundingClientRect();
+          let bestIndex = tvFocusIndex, bestDistance = Infinity;
+          tvFocusableElements.forEach((el, i) => { if (i === tvFocusIndex) return; const rect = el.getBoundingClientRect(); if (rect.top > currentRect.top) { const distance = Math.abs(rect.left - currentRect.left) + (rect.top - currentRect.top); if (distance < bestDistance) { bestDistance = distance; bestIndex = i; } } });
+          tvFocusIndex = bestIndex;
+        } else if (e.key === 'ArrowUp') {
+          const current = tvFocusableElements[tvFocusIndex]; const currentRect = current.getBoundingClientRect();
+          let bestIndex = tvFocusIndex, bestDistance = Infinity;
+          tvFocusableElements.forEach((el, i) => { if (i === tvFocusIndex) return; const rect = el.getBoundingClientRect(); if (rect.top < currentRect.top) { const distance = Math.abs(rect.left - currentRect.left) + (currentRect.top - rect.top); if (distance < bestDistance) { bestDistance = distance; bestIndex = i; } } });
+          tvFocusIndex = bestIndex;
+        }
+        const focused = tvFocusableElements[tvFocusIndex]; focused.classList.add('tv-focused'); focused.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      if (e.key === 'Enter') { const focused = document.querySelector('.tv-focused'); if (focused) focused.click(); }
+    });
+    updateTVFocusable();
+  </script>
+</body>
+</html>

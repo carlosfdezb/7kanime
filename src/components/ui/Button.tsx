@@ -3,7 +3,7 @@ import styles from './Button.module.css';
 import { cn } from '../../utils/cn';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'ghost';
+  variant?: 'primary' | 'ghost' | 'secondary';
   loading?: boolean;
   children: ReactNode;
 }
