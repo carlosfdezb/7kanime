@@ -3,9 +3,6 @@
   padding: 0 0 80px;
   margin-bottom: 48px;
   min-height: 70vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
 }
 
 .breadcrumbWrapper {
