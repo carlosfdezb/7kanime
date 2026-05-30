@@ -116,6 +116,15 @@
   --header-height: 72px;
   --container-max: 1400px;
   --container-padding: 24px;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
 }
 
 /* ===== RESET & BASE ===== */
