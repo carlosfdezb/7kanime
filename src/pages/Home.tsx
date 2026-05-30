@@ -452,7 +452,7 @@ export function Home() {
           </div>
           {GENRES.length > GENRES_INITIAL_SHOW && (
             <button
-              className={styles.filterToggle}
+              className={`${styles.filterToggle} ${styles.filterToggleFullWidth}`}
               onClick={() => setGenreExpanded((e) => !e)}
               data-tv-focus="true"
               data-tv-focus-id="expand-genres-btn"
