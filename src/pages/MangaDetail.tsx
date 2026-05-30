@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import styles from './MangaDetail.module.css';
 import { Container } from '../components/layout/Container';
+import { Header } from '../components/layout/Header';
 import { MangaBreadcrumb } from '../components/layout/MangaBreadcrumb';
 import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
@@ -203,6 +204,7 @@ export const MangaDetail = function MangaDetail() {
 
   return (
     <div className={styles.page}>
+      <Header />
       <Container>
         <MangaBreadcrumb
           items={[

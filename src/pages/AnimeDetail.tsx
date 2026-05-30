@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useRef } from 'react';
 import styles from './AnimeDetail.module.css';
 import { Container } from '../components/layout/Container';
+import { Header } from '../components/layout/Header';
 import { Breadcrumb } from '../components/layout/Breadcrumb';
 import { Button } from '../components/ui/Button';
 import { Skeleton } from '../components/ui/Skeleton';
@@ -104,6 +105,7 @@ export function AnimeDetail() {
 
   return (
     <div className={styles.page}>
+      <Header />
       <Container>
         <Breadcrumb
           items={[
