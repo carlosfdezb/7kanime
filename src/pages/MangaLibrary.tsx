@@ -55,7 +55,6 @@ export function MangaLibrary() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [tagsExpanded, setTagsExpanded] = useState(false);
-  const [filtersVisible, setFiltersVisible] = useState(false);
   const validRecentMangas = recentMangas;
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -136,14 +135,6 @@ export function MangaLibrary() {
         newParams.set('tag', tag);
         newParams.delete('page');
       }
-      return newParams;
-    });
-  };
-
-  const handleClearTag = () => {
-    setSearchParams((prev) => {
-      const newParams = new URLSearchParams(prev);
-      newParams.delete('tag');
       return newParams;
     });
   };
@@ -258,60 +249,13 @@ export function MangaLibrary() {
 
             {availableTags.length > TAGS_COLLAPSED_COUNT && (
               <button
-                className={styles.filterToggle}
+                className={`${styles.filterToggle} ${styles.filterToggleFullWidth}`}
                 onClick={() => setTagsExpanded((e) => !e)}
               >
                 {tagsExpanded
                   ? 'Ver menos'
                   : `Ver más (${availableTags.length - TAGS_COLLAPSED_COUNT} más)`}
               </button>
-            )}
-
-            {/* Advanced Filters Toggle */}
-            <button
-              className={styles.filterToggle}
-              onClick={() => setFiltersVisible((v) => !v)}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
-              </svg>
-              <span>Más filtros</span>
-              <span
-                className={styles.filterChevron}
-                style={{
-                  transform: filtersVisible ? 'rotate(180deg)' : undefined,
-                }}
-              >
-                ▼
-              </span>
-              {!filtersVisible && selectedTag && (
-                <span className={styles.filterCount}>1</span>
-              )}
-            </button>
-
-            {filtersVisible && (
-              <div className={styles.advancedFilters}>
-                <div className={styles.filterGroup}>
-                  <span className={styles.filterLabel}>Ordenar</span>
-                  <div className={styles.orderRow}>
-                    <span className={styles.orderLabel}>
-                      <span className={styles.orderIcon}>⇅</span>
-                      Ordenar
-                    </span>
-                    <select className={styles.select}>
-                      <option value="">Predeterminado</option>
-                      <option value="score">Puntuación</option>
-                      <option value="latest">Más recientes</option>
-                    </select>
-                  </div>
-                </div>
-
-                {selectedTag && (
-                  <Button variant="ghost" onClick={handleClearTag}>
-                    Limpiar filtros
-                  </Button>
-                )}
-              </div>
             )}
           </div>
         )}

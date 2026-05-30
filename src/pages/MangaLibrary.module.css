@@ -65,6 +65,12 @@
   color: var(--text-primary);
 }
 
+.filterToggleFullWidth {
+  width: 100%;
+  justify-content: center;
+  margin-top: 12px;
+}
+
 .filterChevron {
   font-size: 0.75rem;
   color: var(--text-tertiary);

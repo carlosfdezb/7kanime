@@ -65,6 +65,11 @@
   color: var(--text-primary);
 }
 
+/* Add margin between consecutive filter toggles */
+.filterToggle + .filterToggle {
+  margin-top: 12px;
+}
+
 .filterChevron {
   font-size: 0.75rem;
   color: var(--text-tertiary);
