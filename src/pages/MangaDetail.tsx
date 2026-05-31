@@ -296,7 +296,10 @@ export const MangaDetail = function MangaDetail() {
         <InfoGrid items={infoItems} />
 
         {sortedChapters.length > 0 && (
-          <section className={styles.progressSection}>
+          <section 
+            className={styles.progressSection}
+            style={themeColor ? { '--theme-accent': themeColor } as React.CSSProperties : undefined}
+          >
             <div className={styles.progressLabel}>
               <span>Progreso</span>
               <span>

@@ -23,8 +23,13 @@ export interface Relation {
 }
 
 export interface AnilistAnimeData {
-  coverImage?: { large?: string; color?: string };
-  bannerImage?: string;
+  bannerImage: string | null;
+  coverImage: {
+    extraLarge: string;
+    large: string;
+    medium: string;
+    color: string | null;
+  };
 }
 
 export interface JikanAnimeData {
