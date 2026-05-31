@@ -181,10 +181,19 @@
 
 .detailActions {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 16px;
   margin-top: 8px;
   flex-wrap: wrap;
+}
+
+.detailActions > * {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  line-height: 1;
 }
 
 @media (max-width: 768px) {

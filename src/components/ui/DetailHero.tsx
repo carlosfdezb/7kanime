@@ -25,7 +25,6 @@ export function DetailHero({
   title,
   aka,
   status,
-  type,
   year,
   countLabel,
   score,
@@ -79,9 +78,6 @@ export function DetailHero({
           <div className={styles.detailMetaTop}>
             <span className={`${styles.badge} ${styles.badgeStatus}`}>
               {status}
-            </span>
-            <span className={`${styles.badge} ${styles.badgeType}`}>
-              {type}
             </span>
             {year !== undefined && (
               <span className={`${styles.badge} ${styles.badgeType}`}>
