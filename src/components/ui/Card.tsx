@@ -6,7 +6,6 @@ import { cn } from '../../utils/cn';
 import type { CatalogItem } from '../../types/api';
 import { Focusable } from './Focusable';
 import { useAnimeFavorites } from '../../hooks/useAnimeFavorites';
-import { usePrefetchAnime } from '../../hooks/usePrefetch';
 
 interface CardProps {
   anime: CatalogItem;
@@ -20,7 +19,6 @@ function CardInner({ anime, variant = 'default', className }: CardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
-  const prefetchAnime = usePrefetchAnime();
 
   const handleImageError = useCallback(() => {
     setImageError(true);
@@ -41,7 +39,7 @@ function CardInner({ anime, variant = 'default', className }: CardProps) {
   const hasStatus = 'statusText' in anime && typeof (anime as any).statusText === 'string';
 
   return (
-    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`} onMouseEnter={() => prefetchAnime(anime.slug, anime.poster)}>
+    <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />

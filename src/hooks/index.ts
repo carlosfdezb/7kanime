@@ -8,4 +8,3 @@ export { useContinueReading } from './useContinueReading';
 export { useReadChapters } from './useReadChapters';
 export { useWatchedEpisodes } from './useWatchedEpisodes';
 export { useTVNavigation } from './useTVNavigation';
-export { usePrefetchAnime, usePrefetchManga } from './usePrefetch';

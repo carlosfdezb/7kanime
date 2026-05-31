@@ -6,7 +6,6 @@ import { cn } from '../../utils/cn';
 import { useMangaFavorites } from '../../hooks/useMangaFavorites';
 import type { MangaItem, MangaFavorite } from '../../types/manga';
 import { Focusable } from './Focusable';
-import { usePrefetchManga } from '../../hooks/usePrefetch';
 
 interface MangaCardProps {
   manga: MangaItem | MangaFavorite;
@@ -20,7 +19,6 @@ function MangaCardInner({ manga, variant: _variant = 'default', className }: Man
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { isMangaFavorite, toggleMangaFavorite, isAuthenticated } = useMangaFavorites();
-  const prefetchManga = usePrefetchManga();
 
   const handleImageError = useCallback(() => {
     setImageError(true);
@@ -44,7 +42,7 @@ function MangaCardInner({ manga, variant: _variant = 'default', className }: Man
   const hasRating = 'rating' in manga && typeof manga.rating === 'number' && manga.rating > 0;
 
   return (
-    <Focusable as={Link} id={`mangacard-${manga.publicId}`} className={cn(styles.card, className)} to={`/manga/${manga.publicId}`} onMouseEnter={() => prefetchManga(manga.publicId, manga.coverUrl)}>
+    <Focusable as={Link} id={`mangacard-${manga.publicId}`} className={cn(styles.card, className)} to={`/manga/${manga.publicId}`}>
       <div className={styles.posterWrapper}>
         {!imageLoaded && !imageError && (
           <div className={styles.skeleton} aria-hidden="true" />
