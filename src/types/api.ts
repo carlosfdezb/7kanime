@@ -82,6 +82,7 @@ export interface EpisodeDetail {
 // Filter params types
 export interface CatalogParams {
   page?: number;
+  limit?: number;
   letter?: string;
   genre?: string[];
   category?: 'tv-anime' | 'ova' | 'pelicula' | 'especial';

@@ -5,6 +5,7 @@ export async function getCatalog(params: CatalogParams): Promise<CatalogResponse
   const qs = new URLSearchParams();
   
   if (params.page) qs.set('page', String(params.page));
+  if (params.limit) qs.set('limit', String(params.limit));
   if (params.letter) qs.set('letter', params.letter);
   if (params.genre && params.genre.length > 0) {
     params.genre.forEach(g => qs.append('genre', g));

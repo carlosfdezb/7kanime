@@ -49,7 +49,7 @@ const FEATURED_MANGA = {
 
 export function MangaLibrary() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { items, page, totalPages, totalItems, loading, error, fetchPage, fetchSearch } = useMangaLibrary();
+  const { items, page, totalPages, totalItems, loading, error, fetchPage, fetchSearch } = useMangaLibrary(ITEMS_PER_PAGE);
   const { favorites } = useMangaFavorites();
   const { recentMangas } = useContinueReading();
   const [showFavorites, setShowFavorites] = useState(false);

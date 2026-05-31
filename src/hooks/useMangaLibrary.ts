@@ -14,7 +14,7 @@ interface UseMangaLibraryResult {
   fetchSearch: (query: string, tag?: string) => Promise<void>;
 }
 
-export function useMangaLibrary(): UseMangaLibraryResult {
+export function useMangaLibrary(pageSize: number = 25): UseMangaLibraryResult {
   const [items, setItems] = useState<MangaItem[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -28,7 +28,7 @@ export function useMangaLibrary(): UseMangaLibraryResult {
     setError(null);
 
     try {
-      const response = await getPopular(pageNum, 25);
+      const response = await getPopular(pageNum, pageSize);
       setItems(response.items || []);
       setPage(response.page);
       setTotalPages(response.totalPages);
@@ -39,7 +39,7 @@ export function useMangaLibrary(): UseMangaLibraryResult {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageSize]);
 
   const fetchSearch = useCallback(async (query: string, tag?: string) => {
     setLoading(true);

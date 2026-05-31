@@ -214,6 +214,7 @@ export function Home() {
       try {
         const params: Record<string, string | number | string[]> = {
           page: pageNum,
+          limit: ITEMS_PER_PAGE,
         };
         if (letter) params.letter = letter;
         if (genres.length > 0) params.genre = genres;
