@@ -181,19 +181,23 @@
 
 .detailActions {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 16px;
   margin-top: 8px;
   flex-wrap: wrap;
 }
 
 .detailActions > * {
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 48px;
-  line-height: 1;
+}
+
+.detailActions svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
