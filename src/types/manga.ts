@@ -17,6 +17,11 @@ export interface MangaFavorite {
   type: string;
 }
 
+export interface AnilistMangaData {
+  coverImage?: { large?: string; color?: string };
+  bannerImage?: string;
+}
+
 export interface MangaDetail extends MangaItem {
   description: string;
   author: string | null;
@@ -25,6 +30,7 @@ export interface MangaDetail extends MangaItem {
   demographics: string[];
   genres: string[];
   chapters: MangaChapter[];
+  anilist?: AnilistMangaData;
 }
 
 export interface MangaChapter {

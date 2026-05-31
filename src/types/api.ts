@@ -22,6 +22,19 @@ export interface Relation {
   type: string;
 }
 
+export interface AnilistAnimeData {
+  coverImage?: { large?: string; color?: string };
+  bannerImage?: string;
+}
+
+export interface JikanAnimeData {
+  studios?: { name: string }[];
+  rank?: number;
+  popularity?: number;
+  members?: number;
+  favorites?: number;
+}
+
 export interface CatalogItem {
   id: number;
   title: string;
@@ -63,6 +76,8 @@ export interface AnimeDetail {
   category: Category;
   episodes: { id: number; number: number }[];
   relations: Relation[];
+  anilist?: AnilistAnimeData;
+  jikan?: JikanAnimeData;
 }
 
 export interface MediaLink {
