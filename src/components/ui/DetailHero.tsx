@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, type CSSProperties } from 'react';
 import styles from './DetailHero.module.css';
 
 interface DetailHeroProps {
@@ -13,6 +13,7 @@ interface DetailHeroProps {
   countLabel?: string;
   score: number;
   genres: string[];
+  themeColor?: string;
   breadcrumb?: ReactNode;
   children?: ReactNode;
 }
@@ -29,6 +30,7 @@ export function DetailHero({
   countLabel,
   score,
   genres,
+  themeColor,
   breadcrumb,
   children,
 }: DetailHeroProps) {
@@ -37,8 +39,12 @@ export function DetailHero({
 
   const hasBackdrop = backdropSrc && !backdropError;
 
+  const rootStyle: CSSProperties | undefined = themeColor
+    ? { '--theme-accent': themeColor } as CSSProperties
+    : undefined;
+
   return (
-    <section className={styles.detailHero}>
+    <section className={styles.detailHero} style={rootStyle}>
       {hasBackdrop && (
         <div className={styles.detailBackdrop}>
           <img
