@@ -1,8 +1,8 @@
 .detailHero {
   position: relative;
-  padding: 0 0 80px;
+  padding: 0 0 64px;
   margin-bottom: 48px;
-  min-height: 70vh;
+  min-height: 50vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -45,7 +45,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 20%;
+  object-position: center top;
   opacity: 0.4;
 }
 
