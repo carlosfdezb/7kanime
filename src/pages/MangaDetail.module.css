@@ -36,19 +36,19 @@
   align-items: center;
   gap: 8px;
   padding: 14px 28px;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-liquid));
+  background: var(--theme-accent, linear-gradient(135deg, var(--accent-primary), var(--accent-liquid)));
   border-radius: 14px;
   font-size: 1rem;
   font-weight: 600;
   color: white;
   transition: all var(--duration-fast) ease;
-  box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--theme-accent, rgba(96, 165, 250, 0.3)) 30%, transparent);
   text-decoration: none;
 }
 
 .primaryAction:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(96, 165, 250, 0.4);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--theme-accent, rgba(96, 165, 250, 0.4)) 40%, transparent);
 }
 
 .primaryAction:active {

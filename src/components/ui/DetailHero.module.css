@@ -107,8 +107,8 @@
 }
 
 .badgeStatus {
-  background: var(--theme-accent, rgba(52, 211, 153, 0.15));
-  color: var(--status-success);
+  background: color-mix(in srgb, var(--theme-accent, rgba(52, 211, 153, 0.15)) 15%, transparent);
+  color: var(--theme-accent, var(--status-success));
 }
 
 .badgeType {
@@ -121,11 +121,11 @@
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: rgba(251, 191, 36, 0.15);
+  background: color-mix(in srgb, var(--theme-accent, rgba(251, 191, 36, 0.15)) 15%, transparent);
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--status-warning);
+  color: var(--theme-accent, var(--status-warning));
   border: 2px solid var(--theme-accent, transparent);
 }
 
@@ -155,15 +155,28 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--theme-accent, var(--text-secondary));
   transition: all var(--duration-fast) ease;
   cursor: default;
 }
 
 .genreChip:hover {
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--theme-accent, var(--surface-2)) 15%, var(--surface-2));
   border-color: var(--theme-accent, var(--border-medium));
   color: var(--theme-accent, var(--text-primary));
+}
+
+/* Themed buttons inside detailActions */
+.detailActions > a:first-child,
+.detailActions > button[class*="primary"] {
+  background: var(--theme-accent, linear-gradient(135deg, var(--accent-primary), var(--accent-liquid))) !important;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--theme-accent, var(--accent-primary)) 30%, transparent) !important;
+  border-color: transparent !important;
+}
+
+.detailActions > a:first-child:hover,
+.detailActions > button[class*="primary"]:hover {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--theme-accent, var(--accent-primary)) 40%, transparent) !important;
 }
 
 .detailActions {
