@@ -51,7 +51,7 @@ const ORDER_OPTIONS = [
 
 const MIN_YEAR = 1980;
 const MAX_YEAR = new Date().getFullYear();
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 21;
 
 const GENRES = [
   { slug: "accion", label: "Acción" },

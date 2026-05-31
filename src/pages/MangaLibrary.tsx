@@ -19,7 +19,7 @@ import { useContinueReading } from '../hooks/useContinueReading';
 import { getTags } from '../api/manga';
 import { translateGenreDisplay } from '../api/manga';
 
-const ITEMS_PER_PAGE = 25;
+const ITEMS_PER_PAGE = 28;
 const TAGS_COLLAPSED_COUNT = 30;
 
 const POPULAR_TAGS = [
