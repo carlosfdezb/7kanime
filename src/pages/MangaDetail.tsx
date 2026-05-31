@@ -10,6 +10,7 @@ import { useMangaFavorites } from '../hooks/useMangaFavorites';
 import { useReadChapters } from '../hooks/useReadChapters';
 import { getMangaDetail, translateGenreDisplay } from '../api/manga';
 import { sortChaptersByOrden } from '../utils/manga';
+import { resolveMangaImage } from '../utils/images';
 import { DetailHero } from '../components/ui/DetailHero';
 import { InfoGrid } from '../components/ui/InfoGrid';
 import { ChapterRow } from '../components/ui/ChapterRow';
@@ -177,6 +178,10 @@ export const MangaDetail = function MangaDetail() {
       ? Math.round((readChapters.length / sortedChapters.length) * 100)
       : 0;
 
+  const posterSrc = resolveMangaImage(manga, 'poster') || manga.coverUrl;
+  const backdropSrc = resolveMangaImage(manga, 'backdrop') || manga.coverUrl;
+  const themeColor = manga.anilist?.coverImage?.color || undefined;
+
   const infoItems = [
     { label: 'Estado', value: translateStatus(manga.status) },
     { label: 'Tipo', value: manga.type },
@@ -214,15 +219,16 @@ export const MangaDetail = function MangaDetail() {
             ]}
           />
         }
-        posterSrc={manga.coverUrl}
+        posterSrc={posterSrc}
         posterAlt={manga.title}
-        backdropSrc={manga.coverUrl}
+        backdropSrc={backdropSrc}
         title={manga.title}
         status={translateStatus(manga.status)}
         type={manga.type}
         countLabel={`${sortedChapters.length} caps`}
         score={manga.rating}
         genres={(manga.genres || []).map(translateGenreDisplay)}
+        themeColor={themeColor}
       >
         {readingLink && (
           <Link to={readingLink} className={styles.primaryAction}>

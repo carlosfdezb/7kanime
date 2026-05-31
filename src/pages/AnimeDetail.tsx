@@ -13,6 +13,7 @@ import { useTVNavigation } from '../hooks/useTVNavigation';
 import { DetailHero } from '../components/ui/DetailHero';
 import { InfoGrid } from '../components/ui/InfoGrid';
 import { EpisodeRow } from '../components/ui/EpisodeRow';
+import { resolveAnimeImage } from '../utils/images';
 import type { AnimeDetail } from '../types/api';
 
 export function AnimeDetail() {
@@ -94,12 +95,31 @@ export function AnimeDetail() {
 
   const anime = data;
 
+  const posterSrc = resolveAnimeImage(anime, 'poster') || anime.poster;
+  const backdropSrc = resolveAnimeImage(anime, 'backdrop') || anime.backdrop;
+  const themeColor = anime.anilist?.coverImage?.color || undefined;
+
   const infoItems = [
     { label: 'Estado', value: anime.statusText },
     { label: 'Tipo', value: anime.type },
     { label: 'Episodios', value: String(anime.episodesCount) },
     ...(anime.score > 0
       ? [{ label: 'Puntuación', value: `★ ${anime.score.toFixed(1)} / 10` }]
+      : []),
+    ...(anime.jikan?.studios?.length
+      ? [{ label: 'Estudio', value: anime.jikan.studios.map((s) => s.name).join(', ') }]
+      : []),
+    ...(anime.jikan?.rank
+      ? [{ label: 'Rank', value: `#${anime.jikan.rank}` }]
+      : []),
+    ...(anime.jikan?.popularity
+      ? [{ label: 'Popularidad', value: `#${anime.jikan.popularity}` }]
+      : []),
+    ...(anime.jikan?.members
+      ? [{ label: 'Miembros', value: anime.jikan.members.toLocaleString() }]
+      : []),
+    ...(anime.jikan?.favorites
+      ? [{ label: 'Favoritos', value: anime.jikan.favorites.toLocaleString() }]
       : []),
   ];
 
@@ -115,9 +135,9 @@ export function AnimeDetail() {
             ]}
           />
         }
-        posterSrc={anime.poster}
+        posterSrc={posterSrc}
         posterAlt={anime.title}
-        backdropSrc={anime.backdrop}
+        backdropSrc={backdropSrc}
         title={anime.title}
         aka={anime.aka?.['ja-jp'] || anime.aka?.['en-us']}
         status={anime.statusText}
@@ -125,6 +145,7 @@ export function AnimeDetail() {
         countLabel={`${anime.episodesCount} eps`}
         score={anime.score}
         genres={anime.genres.map((g) => g.name)}
+        themeColor={themeColor}
       >
         <Link to={`/episode/${slug}/1`} className={styles.primaryAction}>
           <svg
