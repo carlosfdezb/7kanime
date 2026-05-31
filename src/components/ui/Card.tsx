@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import styles from './Card.module.css';
 import { cn } from '../../utils/cn';
+import { resolveAnimeImage } from '../../utils/images';
 import type { CatalogItem } from '../../types/api';
 import { Focusable } from './Focusable';
 import { useAnimeFavorites } from '../../hooks/useAnimeFavorites';
@@ -38,6 +39,8 @@ function CardInner({ anime, variant = 'default', className }: CardProps) {
   const hasScore = 'score' in anime && typeof (anime as any).score === 'number';
   const hasStatus = 'statusText' in anime && typeof (anime as any).statusText === 'string';
 
+  const imageSrc = resolveAnimeImage(anime, 'card') || anime.poster;
+
   return (
     <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`}>
       <div className={styles.posterWrapper}>
@@ -45,7 +48,7 @@ function CardInner({ anime, variant = 'default', className }: CardProps) {
           <div className={styles.skeleton} aria-hidden="true" />
         )}
         <img
-          src={imageError ? PLACEHOLDER_IMAGE : anime.poster}
+          src={imageError ? PLACEHOLDER_IMAGE : imageSrc}
           alt={anime.title}
           className={cn(styles.poster, !imageLoaded && styles.hidden)}
           loading="lazy"

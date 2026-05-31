@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import styles from './MangaCard.module.css';
 import { cn } from '../../utils/cn';
 import { useMangaFavorites } from '../../hooks/useMangaFavorites';
+import { resolveMangaImage } from '../../utils/images';
 import type { MangaItem, MangaFavorite } from '../../types/manga';
 import { Focusable } from './Focusable';
 
@@ -41,6 +42,8 @@ function MangaCardInner({ manga, variant: _variant = 'default', className }: Man
 
   const hasRating = 'rating' in manga && typeof manga.rating === 'number' && manga.rating > 0;
 
+  const imageSrc = resolveMangaImage(manga, 'card') || manga.coverUrl;
+
   return (
     <Focusable as={Link} id={`mangacard-${manga.publicId}`} className={cn(styles.card, className)} to={`/manga/${manga.publicId}`}>
       <div className={styles.posterWrapper}>
@@ -48,7 +51,7 @@ function MangaCardInner({ manga, variant: _variant = 'default', className }: Man
           <div className={styles.skeleton} aria-hidden="true" />
         )}
         <img
-          src={imageError ? PLACEHOLDER_IMAGE : manga.coverUrl}
+          src={imageError ? PLACEHOLDER_IMAGE : imageSrc}
           alt={manga.title}
           className={cn(styles.poster, !imageLoaded && styles.hidden)}
           loading="lazy"
