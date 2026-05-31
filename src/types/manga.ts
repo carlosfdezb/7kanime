@@ -18,8 +18,13 @@ export interface MangaFavorite {
 }
 
 export interface AnilistMangaData {
-  coverImage?: { large?: string; color?: string };
-  bannerImage?: string;
+  bannerImage: string | null;
+  coverImage: {
+    extraLarge: string;
+    large: string;
+    medium: string;
+    color: string | null;
+  };
 }
 
 export interface MangaDetail extends MangaItem {

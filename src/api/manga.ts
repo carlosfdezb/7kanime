@@ -36,6 +36,16 @@ interface BackendMangaItem {
   totalCapitulos: number;
 }
 
+interface AnilistMangaData {
+  bannerImage: string | null;
+  coverImage: {
+    extraLarge: string;
+    large: string;
+    medium: string;
+    color: string | null;
+  };
+}
+
 interface BackendMangaDetail extends BackendMangaItem {
   descripcion: string;
   tags: string | null;
@@ -46,6 +56,7 @@ interface BackendMangaDetail extends BackendMangaItem {
   visible: boolean;
   tipo: string | null;
   capitulos: BackendChapter[];
+  anilist?: AnilistMangaData;
 }
 
 interface BackendChapter {
@@ -280,6 +291,7 @@ function mapBackendDetail(raw: BackendMangaDetail): MangaDetail {
     demographics: [], // Not provided by backend
     genres: raw.generos ? raw.generos.split(',').map(g => g.trim()) : [],
     chapters: raw.capitulos.map(mapBackendChapter),
+    anilist: raw.anilist,
   };
 }
 
