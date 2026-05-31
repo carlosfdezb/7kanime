@@ -191,13 +191,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
 }
 
 .detailActions svg {
   display: inline-block;
   vertical-align: middle;
   flex-shrink: 0;
+  margin-right: 8px;
 }
 
 @media (max-width: 768px) {

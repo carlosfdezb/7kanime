@@ -34,7 +34,6 @@
 .primaryAction {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   padding: 14px 28px;
   background: var(--theme-accent, linear-gradient(135deg, var(--accent-primary), var(--accent-liquid)));
   border-radius: 14px;
