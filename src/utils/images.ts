@@ -13,7 +13,7 @@ export function resolveAnimeImage(
   }
   if (purpose === 'poster') {
     const detail = anime as AnimeDetail;
-    return detail.anilist?.coverImage?.large || detail.poster || null;
+    return detail.anilist?.coverImage?.extraLarge || detail.anilist?.coverImage?.large || detail.poster || null;
   }
   // card, thumbnail
   return anime.poster || null;
@@ -29,7 +29,7 @@ export function resolveMangaImage(
   }
   if (purpose === 'poster') {
     const detail = manga as MangaDetail;
-    return detail.anilist?.coverImage?.large || detail.coverUrl || null;
+    return detail.anilist?.coverImage?.extraLarge || detail.anilist?.coverImage?.large || detail.coverUrl || null;
   }
   // card, thumbnail
   return manga.coverUrl || null;
