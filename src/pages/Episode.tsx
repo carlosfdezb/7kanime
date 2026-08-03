@@ -4,7 +4,7 @@ import styles from './Episode.module.css';
 import { Container, Breadcrumb, Button, Chip, Skeleton, Focusable, VideoPlayer } from '../components';
 import { useFetch } from '../hooks';
 import { useWatchedEpisodes, useTVNavigation } from '../hooks';
-import { isHlsStream } from '../utils';
+import { isHlsStream, getStreamUrl } from '../utils';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
 
 type Variant = 'DUB' | 'SUB';
@@ -187,7 +187,7 @@ export function Episode() {
             isHlsStream(currentEmbed.url) ? (
               // Native HLS support when direct stream URL is available
               <VideoPlayer
-                src={currentEmbed.url}
+                src={getStreamUrl(currentEmbed.url)}
                 autoPlay
               />
             ) : (
