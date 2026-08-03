@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Hls, { HlsConfig } from 'hls.js';
 import styles from './VideoPlayer.module.css';
 import { cn } from '../../utils/cn';
+import { isHlsStream } from '../../utils/stream';
 
 interface VideoPlayerProps {
   src: string;
@@ -50,7 +51,7 @@ export function VideoPlayer({
     }
 
     // Check if source is HLS
-    if (src.includes('.m3u8')) {
+    if (isHlsStream(src)) {
       if (Hls.isSupported()) {
         const config: Partial<HlsConfig> = {
           enableWorker: true,

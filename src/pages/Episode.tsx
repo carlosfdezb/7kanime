@@ -4,6 +4,7 @@ import styles from './Episode.module.css';
 import { Container, Breadcrumb, Button, Chip, Skeleton, Focusable, VideoPlayer } from '../components';
 import { useFetch } from '../hooks';
 import { useWatchedEpisodes, useTVNavigation } from '../hooks';
+import { isHlsStream } from '../utils';
 import type { EpisodeDetail, MediaLink, AnimeDetail } from '../types/api';
 
 type Variant = 'DUB' | 'SUB';
@@ -183,7 +184,7 @@ export function Episode() {
           data-player-fullscreen="true"
         >
           {currentEmbed ? (
-            currentEmbed.url.includes('.m3u8') ? (
+            isHlsStream(currentEmbed.url) ? (
               // Native HLS support when direct stream URL is available
               <VideoPlayer
                 src={currentEmbed.url}
