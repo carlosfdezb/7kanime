@@ -1,7 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://animeav1-api-server.vercel.app';
 
 export function isHlsStream(url: string): boolean {
-  return url.includes('.m3u8') || url.includes('/m3u8/');
+  return url.includes('.m3u8') || url.includes('/m3u8/') || url.includes('/hls/playlist');
 }
 
 export function getStreamUrl(url: string): string {
