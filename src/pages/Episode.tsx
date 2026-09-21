@@ -18,8 +18,10 @@ const WATCHED_TIMER_MS = 15 * 60 * 1000; // 15 minutes
 // browser aborts segment loads with NS_BINDING_ABORTED.
 const PROXIED_HLS_HOSTS = ['player.zilla-networks.com'];
 
+import { API_BASE } from '../lib/config';
+
 function proxiedHlsUrl(original: string): string {
-  return `/hls/playlist?url=${encodeURIComponent(original)}`;
+  return `${API_BASE}/hls/playlist?url=${encodeURIComponent(original)}`;
 }
 
 function isProxiedHls(url: string): boolean {
