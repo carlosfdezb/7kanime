@@ -50,8 +50,19 @@ export function VideoPlayer({
     }
 
     // Check if source is HLS
-    if (src.includes('.m3u8')) {
-      if (Hls.isSupported()) {
+    if (src.includes('.m3u8') || src.includes('/hls/playlist')) {
+      // Browsers without native HLS support (Firefox) abort the request
+      // with NS_BINDING_ABORTED if we hand them the m3u8 directly. Force
+      // hls.js on those browsers. Safari keeps its native path because
+      // it doesn't expose MSE for hls.js to attach to.
+      const supportsNativeHls = video.canPlayType('application/vnd.apple.mpegurl') !== '';
+
+      if (supportsNativeHls) {
+        video.src = src;
+        if (shouldAutoplay) {
+          video.play().catch(() => {});
+        }
+      } else if (Hls.isSupported()) {
         const config: Partial<HlsConfig> = {
           enableWorker: true,
         };
@@ -69,12 +80,10 @@ export function VideoPlayer({
           }
         });
         hlsRef.current = hls;
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Safari native HLS support
+      } else {
+        // Last resort: hand it to the video element anyway. Some browsers
+        // (mobile Safari with MSE) handle it via the native decoder.
         video.src = src;
-        if (shouldAutoplay) {
-          video.play().catch(() => {});
-        }
       }
     } else {
       // Regular video source (MP4, WebM, etc.)
