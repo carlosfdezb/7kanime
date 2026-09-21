@@ -11,6 +11,26 @@ type Variant = 'DUB' | 'SUB';
 const SERVER_PRIORITY = ['HLS', 'UPNShare', 'Mega', 'MP4Upload'];
 const WATCHED_TIMER_MS = 15 * 60 * 1000; // 15 minutes
 
+// Hosts whose .m3u8 streams are protected by Sec-Fetch-Site checks.
+// We route those through /hls/playlist on our backend, which fetches the
+// upstream playlist with a browser UA and rewrites every segment URL to
+// also go through /hls/segment on the backend. Without this proxy the
+// browser aborts segment loads with NS_BINDING_ABORTED.
+const PROXIED_HLS_HOSTS = ['player.zilla-networks.com'];
+
+function proxiedHlsUrl(original: string): string {
+  return `/hls/playlist?url=${encodeURIComponent(original)}`;
+}
+
+function isProxiedHls(url: string): boolean {
+  try {
+    const host = new URL(url).hostname;
+    return PROXIED_HLS_HOSTS.includes(host);
+  } catch {
+    return false;
+  }
+}
+
 function sortServers(links: MediaLink[]): MediaLink[] {
   return [...(links || [])].sort((a, b) => {
     const aIndex = SERVER_PRIORITY.indexOf(a.server);
@@ -184,13 +204,18 @@ export function Episode() {
         >
           {currentEmbed ? (
             currentEmbed.url.includes('.m3u8') ? (
-              // Native HLS support when direct stream URL is available
-              <VideoPlayer
-                src={currentEmbed.url}
-                autoPlay
-              />
+              isProxiedHls(currentEmbed.url) ? (
+                <VideoPlayer
+                  src={proxiedHlsUrl(currentEmbed.url)}
+                  autoPlay
+                />
+              ) : (
+                <VideoPlayer
+                  src={currentEmbed.url}
+                  autoPlay
+                />
+              )
             ) : (
-              // Fallback to iframe for embedded players
               <iframe
                 src={currentEmbed.url}
                 className={styles.player}
