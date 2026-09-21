@@ -198,12 +198,7 @@ export function Episode() {
         </div>
 
         {/* Player */}
-        <div
-          className={styles.playerWrapper}
-          data-tv-focus="true"
-          data-tv-focus-id="video-player"
-          data-player-fullscreen="true"
-        >
+        <div className={styles.playerWrapper}>
           {currentEmbed ? (
             currentEmbed.server === 'HLS' ? (
               isProxiedHls(currentEmbed.url) ? (
