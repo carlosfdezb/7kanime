@@ -205,7 +205,7 @@ export function Episode() {
           data-player-fullscreen="true"
         >
           {currentEmbed ? (
-            currentEmbed.url.includes('.m3u8') ? (
+            currentEmbed.server === 'HLS' ? (
               isProxiedHls(currentEmbed.url) ? (
                 <VideoPlayer
                   src={proxiedHlsUrl(currentEmbed.url)}
