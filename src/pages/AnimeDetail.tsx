@@ -17,7 +17,7 @@ import type { AnimeDetail } from '../types/api';
 export function AnimeDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data, loading, error } = useFetch<AnimeDetail>(slug ? `/anime/${slug}` : null);
-  const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
+  const { isFavorite, toggleFavorite } = useAnimeFavorites();
   const { isWatched } = useWatchedEpisodes();
   const [posterError, setPosterError] = useState(false);
   const [backdropError, setBackdropError] = useState(false);
@@ -148,7 +148,7 @@ export function AnimeDetail() {
             </div>
 
             <div className={styles.actions}>
-              {isAuthenticated && (
+              {(
                 <Focusable
                   as={Button}
                   id="favorite-btn"

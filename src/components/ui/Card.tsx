@@ -19,7 +19,7 @@ const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/20
 function CardInner({ anime, variant = 'default', className }: CardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { isFavorite, toggleFavorite, isAuthenticated } = useAnimeFavorites();
+  const { isFavorite, toggleFavorite } = useAnimeFavorites();
   const prefetchAnime = usePrefetchAnime();
 
   const handleImageError = useCallback(() => {
@@ -31,10 +31,8 @@ function CardInner({ anime, variant = 'default', className }: CardProps) {
   const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isAuthenticated) {
-      toggleFavorite(anime);
-    }
-  }, [anime, isAuthenticated, toggleFavorite]);
+    toggleFavorite(anime);
+  }, [anime, toggleFavorite]);
 
   return (
     <Focusable as={Link} id={`card-${anime.id}`} className={cn(styles.card, className)} to={`/anime/${anime.slug}`} onMouseEnter={() => prefetchAnime(anime.slug, anime.poster)}>
@@ -50,7 +48,7 @@ function CardInner({ anime, variant = 'default', className }: CardProps) {
           onLoad={() => setImageLoaded(true)}
           onError={handleImageError}
         />
-        {isAuthenticated && (
+        {(
           <button
             className={cn(styles.favoriteBtn, favorite && styles.favoriteBtnActive)}
             onClick={handleFavoriteClick}

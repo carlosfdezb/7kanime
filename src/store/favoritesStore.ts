@@ -1,20 +1,17 @@
 /**
  * Anime Favorites Store
  *
- * Refactored in Phase 3 to use sync adapters from SyncContext.
- * - Guest mode: delegates to localStorage adapter
- * - Authenticated mode: delegates to Clerk-backed Supabase adapter
- *
- * Public API is IDENTICAL — components see no change.
- * Components must use SyncContext and pass adapter to store actions.
- *
- * Phase 4: Added zustand/persist as fallback for guests when no adapter provided.
+ * Public API is preserved — components call addFavorite / removeFavorite /
+ * toggleFavorite / isFavorite / hydrate unchanged. The adapter parameter is
+ * still accepted but optional: when omitted, the store performs only the
+ * in-memory + persist write. The SyncProvider wires the HTTP adapter at the
+ * app root and components keep working without changes.
  */
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CatalogItem } from '../types/api';
-import { SyncAdapter } from '../adapters/types';
+import type { SyncAdapter } from '../adapters/types';
 
 interface FavoritesStore {
   favorites: CatalogItem[];
@@ -30,47 +27,35 @@ export const useFavoritesStore = create<FavoritesStore>()(
     (set, get) => ({
       favorites: [] as CatalogItem[],
 
-      addFavorite: (anime: CatalogItem, adapter?: SyncAdapter<CatalogItem>) => {
+      addFavorite: (anime, adapter) => {
         const { favorites } = get();
-        if (!favorites.some(f => f.id === anime.id)) {
-          const newFavorites = [...favorites, anime];
-          set({ favorites: newFavorites });
-
-          if (adapter) {
-            adapter.upsert(anime);
-          }
-        }
+        if (favorites.some((f) => f.id === anime.id)) return;
+        set({ favorites: [...favorites, anime] });
+        adapter?.upsert(anime);
       },
 
-      removeFavorite: (id: number, adapter?: SyncAdapter<CatalogItem>) => {
+      removeFavorite: (id, adapter) => {
         const { favorites } = get();
-        const newFavorites = favorites.filter(f => f.id !== id);
-        set({ favorites: newFavorites });
-
-        if (adapter) {
-          adapter.remove(id);
-        }
+        if (!favorites.some((f) => f.id === id)) return;
+        set({ favorites: favorites.filter((f) => f.id !== id) });
+        adapter?.remove(id);
       },
 
-      isFavorite: (id: number) => {
-        return get().favorites.some(f => f.id === id);
-      },
+      isFavorite: (id) => get().favorites.some((f) => f.id === id),
 
-      toggleFavorite: (anime: CatalogItem, adapter?: SyncAdapter<CatalogItem>) => {
+      toggleFavorite: (anime, adapter) => {
         const { favorites, addFavorite, removeFavorite } = get();
-        if (favorites.some(f => f.id === anime.id)) {
+        if (favorites.some((f) => f.id === anime.id)) {
           removeFavorite(anime.id, adapter);
         } else {
           addFavorite(anime, adapter);
         }
       },
 
-      hydrate: (items: CatalogItem[]) => {
-        set({ favorites: items });
-      },
+      hydrate: (items) => set({ favorites: items }),
     }),
     {
-      name: 'animeav1-guest-favorites',
+      name: 'animeav1-favorites',
       partialize: (state) => ({ favorites: state.favorites }),
     }
   )

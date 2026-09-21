@@ -1,11 +1,9 @@
 /**
  * User Preferences Store
  *
- * Manages user reading preferences with SyncAdapter pattern.
- * - Guest mode: delegates to localStorage adapter
- * - Authenticated mode: delegates to Clerk-backed Supabase adapter
- *
- * The adapter is ALWAYS present (never null) unlike other sync adapters.
+ * No longer a Zustand persist: the HTTP adapter is the source of truth and
+ * falls back to a localStorage adapter when the API is unreachable. The
+ * store keeps an in-memory mirror for components to read synchronously.
  */
 
 import { create } from 'zustand';
@@ -18,7 +16,7 @@ interface PreferencesStore {
   loading: boolean;
   error: string | null;
   setReadingMode: (mode: ReadingMode, adapter?: SyncAdapter<UserPreferences>) => void;
-  hydrate: (data: UserPreferences, adapter?: SyncAdapter<UserPreferences>) => void;
+  hydrate: (data: UserPreferences) => void;
 }
 
 export const usePreferencesStore = create<PreferencesStore>((set, get) => ({
@@ -26,16 +24,11 @@ export const usePreferencesStore = create<PreferencesStore>((set, get) => ({
   loading: false,
   error: null,
 
-  setReadingMode: (mode: ReadingMode, adapter?: SyncAdapter<UserPreferences>) => {
-    const newPreferences = { ...get().preferences, readingMode: mode };
-    set({ preferences: newPreferences });
-
-    if (adapter) {
-      adapter.upsert(newPreferences);
-    }
+  setReadingMode: (mode, adapter) => {
+    const next = { ...get().preferences, readingMode: mode };
+    set({ preferences: next });
+    adapter?.upsert(next);
   },
 
-  hydrate: (data: UserPreferences, _adapter?: SyncAdapter<UserPreferences>) => {
-    set({ preferences: data, loading: false, error: null });
-  },
+  hydrate: (data) => set({ preferences: data, loading: false, error: null }),
 }));

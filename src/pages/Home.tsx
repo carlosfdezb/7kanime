@@ -7,7 +7,7 @@ import { getCatalog } from "../api/catalog";
 import { search } from "../api/search";
 import { useWatchedStore } from "../store/watchedStore";
 import type { CatalogItem } from "../types/api";
-import type { WatchedAnime } from "../adapters/supabaseEpisodeAdapter";
+import type { WatchedAnime } from "../store/watchedStore";
 
 const LETTERS = [
     "A",
